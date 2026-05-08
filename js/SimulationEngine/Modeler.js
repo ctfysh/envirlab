@@ -4,7 +4,7 @@
 Copyright 2010-2015 Scott Fortmann-Roe. All rights reserved.
 
 This file may distributed and/or modified under the
-terms of the Insight Maker Public License (https://InsightMaker.com/impl).
+terms of the Insight Maker Public License.
 
 */
 
@@ -767,7 +767,7 @@ function formatSimResults(res) {
 }
 
 function createUnitStore(u) {
-	if ((!u) || u.trim() == "" || u.trim().toLowerCase() == "unitless") {
+	if ((!u) || u.trim() == "" || u.trim().toLowerCase() == "unitless" || u.trim() == "无单位") {
 		return undefined;
 	}
 	return simpleEquation("{1 " + u + "}").units;
@@ -1052,7 +1052,7 @@ function getDNA(cell, solvers) {
 		if (dna.type != "Transition" && dna.type != "Action") {
 			var u = cell.getAttribute("Units");
 			try {
-				if (dna.type != "Flow" || (u && u.trim() != "" && u.trim().toLowerCase() != "unitless")) {
+				if (dna.type != "Flow" || (u && u.trim() != "" && u.trim().toLowerCase() != "unitless" && u.trim() != "无单位")) {
 					dna.units = createUnitStore(u);
 				} else {
 					dna.units = getUnitStore([timeUnits], [-1]);

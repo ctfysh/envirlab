@@ -4,7 +4,7 @@
 Copyright 2010-2018 Scott Fortmann-Roe. All rights reserved.
 
 This file may distributed and/or modified under the
-terms of the Insight Maker Public License (https://InsightMaker.com/impl).
+terms of the Insight Maker Public License.
 
 */
 
@@ -1677,7 +1677,7 @@ function main() {
 
 
 		} else if (cell.value.nodeName == "Button") {
-			bottomDesc = descBase + "按钮用于交互。 要在不触发其操作的情况下选择按钮，请在单击按钮时按住Shift键。 按钮目前处于测试阶段，其实施可能会在更高版本的Insight Maker中发生变化。 可用的按钮API命令是<a href='http://insightmaker.com/sites/default/files/API/'target='_blank'>此处</a>。" + descriptionLink("/scripting", "Model Scripting");
+			bottomDesc = descBase + "按钮用于交互。 要在不触发其操作的情况下选择按钮，请在单击按钮时按住Shift键。 按钮目前处于测试阶段，其实施可能会在更高版本的Insight Maker中发生变化。" + descriptionLink("/scripting", "Model Scripting");
 
 			properties.push({
 				'name': 'Function',

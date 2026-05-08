@@ -5,36 +5,7 @@
     <title>环境虚拟仿真实验平台</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta http-equiv="X-UA-Compatible" content="chrome=IE8">
-    <!--[if lte IE 8]>
 
-  <script type="text/javascript"
-     src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js">
-
-    </script>
-
-    <style>
-     /*
-      CSS rules to use for styling the overlay:
-        .chromeFrameOverlayContent
-        .chromeFrameOverlayContent iframe
-        .chromeFrameOverlayCloseBar
-        .chromeFrameOverlayUnderlay
-     */
-    </style>
-
-  <script type="text/javascript" >
-
-  alert("您使用的 Internet Explorer 版本过旧，不支持 Insight Maker。\n\n要运行 Insight Maker，请选择以下任一方式：\n\n* 将 Internet Explorer 更新到版本 9 或更高版本。\n* 使用其他浏览器（我们推荐 Google Chrome）。\n* 为 Internet Explorer 安装 Chrome Frame 浏览器插件（关闭此消息后系统会提示您安装）。\n\n以上三种方式均可让您运行 Insight Maker。");
-
-	 window.attachEvent("onload", function() {
-	        CFInstall.check({
-	          mode: "inline", // the default
-	          node: "prompt"
-	        });
-	      });
-
-    </script>
-	<![endif]-->
     <link rel="stylesheet" type="text/css" href="css/insighteditor.css" />
     <link rel="stylesheet" type="text/css" href="css/jquery.toastmessage.css" />
     <link rel="stylesheet" type="text/css" href="resources/font-awesome/css/font-awesome.css" />
@@ -43,16 +14,6 @@
     <link rel="stylesheet" type="text/css" href="resources/ext/packages/ext-theme-crisp-touch/build/resources/ext-theme-crisp-touch-all.css" />
     <link rel="stylesheet" type="text/css" href="resources/ext/packages/sencha-charts/build/crisp/resources/sencha-charts-all.css" />
     <link rel="stylesheet" type="text/css" href="resources/ext/packages/ext-ux/build/crisp/resources/ext-ux-all.css" />
-    <script>
-var _hmt = _hmt || [];
-(function() {
-  var hm = document.createElement("script");
-  hm.src = "https://hm.baidu.com/hm.js?3b0973e9f08a87c7e5cfccb5c8039cb6";
-  var s = document.getElementsByTagName("script")[0]; 
-  s.parentNode.insertBefore(hm, s);
-})();
-</script>
-
 </head>
 
 <body onbeforeunload="return confirmClose();">
@@ -85,7 +46,6 @@ var _hmt = _hmt || [];
 
     var base_path = ".";
     var builder_path = ".";
-    var drupal_node_ID = -1;
     var graph_source_data = "";
     var graph_title = "";
     var graph_description = "";
@@ -174,8 +134,6 @@ var _hmt = _hmt || [];
     <script type="text/javascript" src="js/SimulationEngine/TaskScheduler.js"></script>
     <script type="text/javascript" src="js/SimulationEngine/Simulator.js"></script>
     <script type="text/javascript" src="js/SimulationEngine/Modeler.js"></script>
-    <script type="text/javascript" src="js/3D.js"></script>
-
     <script type="text/javascript" src="resources/RedBlackNode.js"></script>
     <script type="text/javascript" src="resources/RedBlackTree.js"></script>
     <script type="text/javascript" src="resources/jquery.toastmessage.js"></script>

@@ -4,7 +4,7 @@
 Copyright 2010-2020 Scott Fortmann-Roe. All rights reserved.
 
 This file may distributed and/or modified under the
-terms of the Insight Maker Public License (https://InsightMaker.com/impl).
+terms of the Insight Maker Public License.
 
 */
 
@@ -3692,7 +3692,7 @@ function pressButton(button) {
 
 }
 
-var trusted = is_owner;
+var trusted = false;
 function runAction(code, errHeader, button) {
 	try {
 		var msg = getText('此 Insight 正在请求执行自定义代码的权限。出于安全原因，您只应在受信任的 Insight 中运行自定义代码。\n\n您确定要在此 Insight 中运行代码吗？');

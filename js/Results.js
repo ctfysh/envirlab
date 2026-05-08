@@ -4,7 +4,7 @@
 Copyright 2010-2020 Scott Fortmann-Roe. All rights reserved.
 
 This file may distributed and/or modified under the
-terms of the Insight Maker Public License (https://InsightMaker.com/impl).
+terms of the Insight Maker Public License.
 
 */
 

@@ -4,7 +4,7 @@
 Copyright 2010-2015 Scott Fortmann-Roe. All rights reserved.
 
 This file may distributed and/or modified under the
-terms of the Insight Maker Public License (https://InsightMaker.com/impl).
+terms of the Insight Maker Public License.
 
 */
 
@@ -821,7 +821,7 @@ var revealUnfoldButtons = function(showUnfold) {
 					},
 					items: [{
 							xtype: "displayfield",
-							value: getText("JavaScript 动作 (<a href='//insightmaker.com/sites/default/files/API/files/API-js.html' target='_blank'>API</a>)") + ":"
+							value: getText("JavaScript 动作") + ":"
 						}, {
 							xtype: 'aceeditor',
 							mode: "javascript",
