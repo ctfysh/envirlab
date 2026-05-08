@@ -263,12 +263,12 @@ UnitStore.prototype.toString = function () {
 
 
 	if (n == "") {
-		n = "Unitless";
+		n = "无单位";
 	}
 	if (den == "") {
 		return "<div class=\"units\">" + n + "</div>";
 	} else {
-		if (n == "Unitless") {
+		if (n == "无单位") {
 			n = "1";
 		}
 		return "<span class=\"units\">" + n + "<hr/><span class='markup'>/(</span>" + den + "<span class='markup'>)</span></span>";

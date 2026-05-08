@@ -17,67 +17,23 @@ function getGraphXml(graph) {
 	return mxUtils.getPrettyXml(node);
 }
 
-var isSendingtoServer = false;
-var waitingToSendToServer = false;
-var waitingToSendTimeout = -1;
 function sendGraphtoServer(graph) {
-	if(isSendingtoServer){
-		waitingToSendToServer = true;
-	}else{
-		if(!unfoldingManager.unfolding){
-			clearTimeout(waitingToSendTimeout);
-			waitingToSendToServer = false;
-			isSendingtoServer = true;
-
-			Ext.Ajax.request({
-				url: builder_path + '/save.php',
-				method: 'POST',
-				params: {
-					data: getGraphXml(graph),
-					nid: drupal_node_ID,
-					title: graph_title,
-					description: graph_description,
-					tags: graph_tags,
-					has_article: has_article,
-					published: published,
-					groups: JSON.stringify(node_groups)
-				},
-
-				success: function(result, request) {
-					if (parseInt(result.responseText) != result.responseText) {
-						console.log("保存发布:\n\n" + result.responseText);
-					} else {
-						drupal_node_ID = result.responseText;
-						setSaveEnabled(waitingToSendToServer);
-						updateWindowTitle();
-						setTopLinks();
-
-					}
-				},
-				failure: function(result, request) {
-					console.log("未保存:\n\n" + result.responseText);
-					/*Ext.MessageBox.hide();
-		            Ext.MessageBox.show({
-		                title: 'Error',
-		                msg: 'The Insight could not be saved. Please try again later.',
-		                buttons: Ext.MessageBox.OK,
-		                animEl: 'mb9',
-		                icon: Ext.MessageBox.ERROR
-		            });*/
-				},
-				callback: function(){
-					isSendingtoServer = false;
-
-					if(waitingToSendToServer){
-						waitingToSendTimeout = setTimeout(function(){
-							sendGraphtoServer(graph);
-						}, 5*1000); // Wait 5 seconds
-					}
-				}
-			});
-		}
+	if(!unfoldingManager.unfolding){
+		var xml = getGraphXml(graph);
+		var blob = new Blob([xml], {type: 'application/xml'});
+		var url = URL.createObjectURL(blob);
+		var a = document.createElement('a');
+		var filename = (graph_title || "未命名模型") + ".xml";
+		a.href = url;
+		a.download = filename;
+		document.body.appendChild(a);
+		a.click();
+		document.body.removeChild(a);
+		URL.revokeObjectURL(url);
+		setSaveEnabled(false);
+		updateWindowTitle();
+		setTopLinks();
 	}
-
 }
 
 function validPrimitiveName(name, primitive) {
@@ -353,10 +309,6 @@ function updateWindowTitle() {
 			document.title = "未命名 | 环境虚拟仿真实验平台";
 		} else {
 			document.title = graph_title + " | 环境虚拟仿真实验平台";
-			if(window.history && window.history.replaceState){
-
-				window.history.replaceState('Object', document.title, '/insight/' + drupal_node_ID + "/" + getURLTitle());
-			}
 		}
 	}
 }
@@ -591,7 +543,7 @@ function getSetting() {
 			return myCells[i];
 		}
 	}
-	alert("Settings primitive could not be found.")
+	alert(getText("设置图元未找到。"))
 	return null;
 }
 
@@ -631,7 +583,7 @@ function updateProperties() {
 				labelWidth: 150
 			},
 			items: [new Ext.form.TextField({
-				fieldLabel: 'Insight Title',
+				fieldLabel: getText('Insight 标题'),
 				name: 'sinsightTitle',
 				id: 'sinsightTitle',
 				allowBlank: false,
@@ -639,11 +591,11 @@ function updateProperties() {
 				value: model_title,
 				margin: 9
 			}), new Ext.form.TextField({
-				fieldLabel: 'Tags',
+				fieldLabel: getText('标签'),
 				name: 'sinsightTags',
 				id: 'sinsightTags',
 				allowBlank: true,
-				emptyText: "Environment, Health Care, Finance",
+				emptyText: getText("环境、医疗、金融"),
 				value: graph_tags,
 				margin: 9
 			}), new Ext.form.field.HtmlEditor({
@@ -652,60 +604,19 @@ function updateProperties() {
 				enableFont: false,
 				enableLists: true,
 				enableFontSize: false,
-				fieldLabel: 'Description',
+				fieldLabel: getText('描述'),
 				name: 'sinsightDescription',
 				id: 'sinsightDescription',
 				allowBlank: true,
-				emptyText: "Enter a brief description of the Insight.",
+				emptyText: getText("输入Insight的简短描述。"),
 				value: graph_description,
 				margin: 9,
 				minHeight: 100,
 				flex: 1
-			}),
-			{
-			        xtype: 'fieldcontainer',
-			        fieldLabel: 'Insight Access',
-			        layout: 'hbox',
-			        defaults: {
-			            flex: 1,
-			            hideLabel: true
-			        },
-					margin: 9,
-			        items: [
-			{
-				xtype: "segmentedbutton",
-				items: [
-				{
-					glyph: 0xf0ac,
-					text: 'Public Insight',
-					pressed: published,
-					id: 'insightPublic',
-					tooltip: "This Insight is public. Anyone can view it, but only you can edit it."
-				},
-				{
-					glyph: 0xf084,
-					//iconCls: 'green-icon',
-					text: 'Private Insight',
-					pressed: ! published,
-					tooltip: "This Insight is private. Only people you have given access to can view it."
-				}
-				]
-			}
-		]}, Ext.create('Ext.form.field.Tag', {
-			hidden: user_groups.length == 0,
-				fieldLabel: 'Share with Groups',
-				name: 'sinsightGroups',
-				id: 'sinsightGroups',
-				value: node_groups,
-				allowBlank: true,
-				filterPickList: true,
-				store: group_titles,
-				margin: 9
-			})
-		],
+			})],
 
 			buttons: [{
-				text: 'Cancel',
+				text: getText('取消'),
 				scale: "large",
 				glyph: 0xf05c,
 				handler: function() {
@@ -726,8 +637,6 @@ function updateProperties() {
 							graph_description = "";
 						}
 						graph_tags = Ext.getCmp('sinsightTags').getValue();
-						node_groups = Ext.getCmp('sinsightGroups').getValue();
-						published = Ext.getCmp('insightPublic').pressed;
 						setSaveEnabled(true);
 						sendGraphtoServer(graph);
 						selectionChanged(false);
@@ -931,7 +840,7 @@ function unitsUsedInModel() {
 	var us = [];
 	for (var i = 0; i < items.length; i++) {
 		var u = items[i].getAttribute("Units");
-		if (items[i].value.nodeName != "Setting" && isDefined(u) && u !== null && u != "Unitless") {
+		if (items[i].value.nodeName != "Setting" && isDefined(u) && u !== null && u != "无单位") {
 			us.push(u);
 		}
 	}
@@ -1208,7 +1117,7 @@ function flatten(arr) {
 var downloadButton = function(name){
 	return {
 					xtype: 'button',
-					text: 'Download',
+					text: getText('下载'),
 					glyph: 0xf0ed,
 					handler: function(){
 						var grid = this.up("gridpanel");

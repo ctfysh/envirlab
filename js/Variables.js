@@ -62,7 +62,7 @@ primitiveBank.display.setAttribute('LabelPosition', "Bottom");
 primitiveBank.display.setAttribute('legendPosition', "Automatic");
 
 function setValuedProperties(cell) {
-    cell.setAttribute('Units', "Unitless")
+    cell.setAttribute('Units', getText("无单位"))
     cell.setAttribute('MaxConstraintUsed', false)
     cell.setAttribute('MinConstraintUsed', false)
     cell.setAttribute('MaxConstraint', '100');
@@ -120,7 +120,7 @@ primitiveBank.agents.setAttribute('name', getText('新主体群'));
 primitiveBank.agents.setAttribute('Note', '');
 primitiveBank.agents.setAttribute('Size', 100);
 primitiveBank.agents.setAttribute('GeoWrap', false);
-primitiveBank.agents.setAttribute('GeoDimUnits', 'Unitless');
+primitiveBank.agents.setAttribute('GeoDimUnits', getText('无单位'));
 primitiveBank.agents.setAttribute('GeoWidth', 200);
 primitiveBank.agents.setAttribute('GeoHeight', 100);
 primitiveBank.agents.setAttribute('Placement', "Random");
@@ -177,7 +177,7 @@ primitiveBank.flow.setAttribute('TimeIndependent', false);
 setValuedProperties(primitiveBank.flow);
 
 primitiveBank.link = doc.createElement('Link');
-primitiveBank.link.setAttribute('name', getText('Link'));
+primitiveBank.link.setAttribute('name', getText('链接'));
 primitiveBank.link.setAttribute('Note', '');
 primitiveBank.link.setAttribute('BiDirectional', false);
 

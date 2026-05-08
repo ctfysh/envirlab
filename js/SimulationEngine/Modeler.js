@@ -42,7 +42,7 @@ function checkErr(err, config, results) {
 		};
 	} else {
 		errOut = {
-			error: getText("An unknown simulation error occurred. Please report this issue to the Insight Maker team."),
+			error: getText("发生未知的模拟错误。请向 Insight Maker 团队报告此问题。"),
 			errorPrimitive: null
 		};
 		if (typeof err == "string") {
@@ -211,7 +211,7 @@ function innerRunSimulation(config) {
 		} catch (err) {
 			var annotations = [];
 
-			var msg = getText("An error with the macros prevented the simulation from running.");
+			var msg = getText("宏错误导致模拟无法运行。");
 
 			if (err.msg) {
 				msg = msg + "<br/><br/>" + err.msg;
@@ -252,7 +252,7 @@ function innerRunSimulation(config) {
 			}
 			if (isUndefined(id)) {
 				throw {
-					msg: getText("You must select a base agent for the primitive %s. You can create agent definitions using Folder primitives.", "<i>" + clean(item.getAttribute("name")) + "</i>"),
+					msg: getText("必须为图元 %s 选择主体基类。您可以使用文件夹图元创建主体定义。", "<i>" + clean(item.getAttribute("name")) + "</i>"),
 					primitive: item,
 					showEditor: false
 				};
@@ -369,7 +369,7 @@ function innerRunSimulation(config) {
 				if (isLocal()) {
 					console.log(err);
 				}
-				var msg = getText("An error with the custom network function prevented the simulation from running.");
+				var msg = getText("自定义网络函数错误导致模拟无法运行。");
 				if (err.msg) {
 					msg = msg + "<br/><br/>" + err.msg;
 				} else if (err.toString().substr(0, 4) == "MSG:") {
@@ -392,7 +392,7 @@ function innerRunSimulation(config) {
 				if (isLocal()) {
 					console.log(err);
 				}
-				var msg = getText("An error with the agent placement function prevented the simulation from running.");
+				var msg = getText("主体放置函数错误导致模拟无法运行。");
 				if (err.msg) {
 					msg = msg + "<br/><br/>" + err.msg;
 				} else if (err.toString().substr(0, 4) == "MSG:") {
@@ -797,7 +797,7 @@ function simpleNum(mat, units) {
 	}
 
 	if ((!units) && (mat.units)) {
-		throw (getText("The result of the calculation has units %s, but no units are specified for the calculation. Please set the units for the calculation so we can determine the proper output.", mat.units.toString()));
+		throw (getText("计算结果具有单位 %s，但未为计算指定单位。请为计算设置单位以确定正确的输出。", mat.units.toString()));
 	}
 
 	if (!mat.units) {
@@ -835,7 +835,7 @@ function simpleUnitsTest(mat, units, primitive, showEditor) {
 				console.log(units);
 			}
 			throw {
-				msg: getText("Wrong units generated. Expected %s, and got %s.", "<i>" + clean(units ? units.toString() : "unitless") + "</i>", "<i>" + clean(mat.units ? mat.units.toString() : "unitless") + "</i>"),
+				msg: getText("生成的单位错误。应为 %s，实际为 %s。", "<i>" + clean(units ? units.toString() : "unitless") + "</i>", "<i>" + clean(mat.units ? mat.units.toString() : "unitless") + "</i>"),
 				primitive: primitive,
 				showEditor: showEditor
 			};
@@ -874,7 +874,7 @@ function handleErrorObject(err) {
 	} else if (err.error) {
 		mxUtils.alert(err);
 	} else {
-		mxUtils.alert(getText("An unknown model simulation error occurred. Please report this issue to the Insight Maker team."));
+		mxUtils.alert(getText("发生未知的模型模拟错误。请向 Insight Maker 团队报告此问题。"));
 	}
 }
 
@@ -934,7 +934,7 @@ function getDNA(cell, solvers) {
 				//console.log(neighborhood);
 				console.log(err);
 			}
-			var msg = getText("The primitive %s has an equation error that must be corrected before the model can be run.", "<i>[" + clean(dna.name) + "]</i>");
+			var msg = getText("图元 %s 存在方程错误，必须在运行模型之前更正。", "<i>[" + clean(dna.name) + "]</i>");
 			if (err.substr && err.substr(0, 4) == "MSG:") {
 				msg += "<br/><br/>" + err.toString().substr(4);
 			}
@@ -957,7 +957,7 @@ function getDNA(cell, solvers) {
 		try {
 			dna.triggerValue = createTree(""+cell.getAttribute("Value"));
 		} catch (err) {
-			var msg = getText("The trigger for %s has an equation error that must be corrected before the model can be run.", "<i>[" + clean(dna.name) + "]</i>");
+			var msg = getText("图元 %s 的触发条件存在方程错误，必须在运行模型之前更正。", "<i>[" + clean(dna.name) + "]</i>");
 			if (err.substr && err.substr(0, 4) == "MSG:") {
 				msg += "<br/><br/>" + err.toString().substr(4);
 			}
@@ -985,7 +985,7 @@ function getDNA(cell, solvers) {
 				}
 
 				throw ({
-					msg: getText("Invalid state residency."),
+					msg: getText("无效的状态驻留时间。"),
 					primitive: cell,
 					showEditor: false
 				});
@@ -1006,7 +1006,7 @@ function getDNA(cell, solvers) {
 				}
 
 				throw ({
-					msg: getText("Invalid stock delay."),
+					msg: getText("无效的库延迟。"),
 					primitive: cell,
 					showEditor: false
 				});
@@ -1022,7 +1022,7 @@ function getDNA(cell, solvers) {
 		if (isUndefined(cell.getAttribute("Data")) || cell.getAttribute("Data").trim() == "") {
 
 			throw ({
-				msg: getText("The converter %s does not have any data.", "<i>" + clean(dna.name) + "</i>"),
+				msg: getText("转换器 %s 没有任何数据。", "<i>" + clean(dna.name) + "</i>"),
 				primitive: cell,
 				showEditor: true
 			});
@@ -1063,7 +1063,7 @@ function getDNA(cell, solvers) {
 					console.log(err);
 				}
 				throw {
-					msg: getText("Invalid units specified for primitive: \"%s\".", clean(u)),
+					msg: getText("为图元 \"%s\" 指定的单位无效。", clean(u)),
 					primitive: cell,
 					showEditor: true
 				};
@@ -1205,7 +1205,7 @@ function linkPrimitive(primitive, dna) {
 			try {
 				primitive.equation = trimTree(dna.triggerValue, myNeighborhood);
 			} catch (err) {
-				var msg = getText("The primitive %s has an equation error that must be corrected before the model can be run.", "<i>[" + clean(dna.name) + "]</i>");
+				var msg = getText("图元 %s 存在方程错误，必须在运行模型之前更正。", "<i>[" + clean(dna.name) + "]</i>");
 				if (err.substr && err.substr(0, 4) == "MSG:") {
 					msg += "<br/><br/>" + err.toString().substr(4);
 				}
@@ -1214,7 +1214,7 @@ function linkPrimitive(primitive, dna) {
 			try {
 				primitive.action = trimTree(dna.value, myNeighborhood);
 			} catch (err) {
-				var msg = getText("The primitive %s has an equation error that must be corrected before the model can be run.", "<i>[" + clean(dna.name) + "]</i>");
+				var msg = getText("图元 %s 存在方程错误，必须在运行模型之前更正。", "<i>[" + clean(dna.name) + "]</i>");
 				if (err.substr && err.substr(0, 4) == "MSG:") {
 					msg += "<br/><br/>" + err.toString().substr(4);
 				}
@@ -1608,7 +1608,7 @@ function updateDisplayed(solver) {
 										d[simulate.displayInformation.elementIds[i]] = selectFromMatrix(simulate.results.data[k][displayed[j].id].fullClone(), simulate.results[simulate.displayInformation.ids[i]].indexedFullNames[z].slice());
 									} catch (err) {
 										throw ({
-											msg: getText("Cannot change vector keys during a simulation."),
+											msg: getText("模拟期间无法更改向量键。"),
 											primitive: displayed[j].dna.cell,
 											showEditor: true
 										});

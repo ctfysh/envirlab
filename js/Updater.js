@@ -211,20 +211,20 @@ function updateModel(){
 
 		if (obsolete.length > 0) {
 			if(window.Ext){
-				var msg = '<p>Insight Maker has received an update that removes the need for the <i>&lt;Primitive&gt;</i> notation. You may now use the <i>[Primitive]</i> in place of it.</p> ';
-				msg += '<br/><p>A side effect of this update is that the usage of the Min(), Max(), Mean(), Median() and StdDev() statistical functions for aggregating over a primitive\'s history have been renamed to PastMin(), PastMax(), etc... (the usage of these function for values is unchanged; e.g. Max(1, 4, 2) is still correct).</p>';
-				msg += '<br/><p>To correct this you need to change equations like:</p>';
+				var msg = getText('<p>Insight Maker 已进行更新，不再需要使用 <i>&lt;Primitive&gt;</i> 符号。您现在可以使用 <i>[Primitive]</i> 替代它。</p>');
+				msg += getText('<br/><p>此更新的副作用是，用于聚合图元历史数据的 Min()、Max()、Mean()、Median() 和 StdDev() 统计函数已重命名为 PastMin()、PastMax() 等（这些函数用于值计算时不受影响，例如 Max(1, 4, 2) 仍然正确）。</p>');
+				msg += getText('<br/><p>要修正此问题，您需要更改如下方程：</p>');
 				msg += '<br/><b>Max(&lt;x&gt;)</b></p>';
-				msg += '<br/>to</p>';
+				msg += getText('<br/>改为</p>');
 				msg += '<br/><b>PastMax([x])</b></p>';
-				msg += '<br/><p>The following of your primitives appear to use these function and need to be updated to work correctly with this change. You can adjust their equations manually:</p>';
+				msg += getText('<br/><p>以下图元似乎使用了这些函数，需要更新才能与此更改一起正常工作。您可以手动调整其方程：</p>');
 				msg += '<br/><p><b>' + Ext.Array.map(obsolete, function(x) {
 					return x.getAttribute("name")
 				}).join(", ") + '</b></p>';
 
 				Ext.Msg.show({
 					icon: Ext.MessageBox.WARNING,
-					title: 'Model Update Required',
+					title: getText('模型需要更新'),
 					msg: msg,
 					buttons: Ext.MessageBox.OK
 				});
@@ -314,25 +314,25 @@ function updateModel(){
 			if(viewConfig.allowEdits){
 				if (obsolete.length > 0) {
 
-					var msg = '<p>Insight Maker has received a significant update to its equation engine providing improved flexibility and power.</p>';
-					msg += '<br/><p>A side effect of this update is that function names must now immediately be followed by a parenthesis. Thus, for instance, "Max&nbsp;&nbsp(1,2)" is no longer valid and needs to be replaced with  "Max(1,2)." This also improves the clarity and readability of equations.</p> ';
-					msg += '<br/><p>The following of your primitives appear to use an unsupported format. Their equations will automatically be updated to use the correct format:</p>';
+					var msg = getText('<p>Insight Maker 对其方程引擎进行了重大更新，提供了更高的灵活性和功能。</p>');
+					msg += getText('<br/><p>此更新的副作用是，函数名现在必须紧跟括号。例如，"Max&nbsp;&nbsp(1,2)" 不再有效，需要替换为 "Max(1,2)"。这也提高了方程的清晰度和可读性。</p>');
+					msg += getText('<br/><p>以下图元似乎使用了不支持的格式。它们的方程将自动更新为正确格式：</p>');
 					msg += '<br/><p><b>' + Ext.Array.map(obsolete, function(x) {
 						return x.getAttribute("name")
 					}).join(", ") + '</b></p>';
 		
-					msg += '<br/><p>You may save your model to keep these updates.</p>'
+			msg += getText('<br/><p>您可以保存模型以保留这些更新。</p>')
 
-					Ext.Msg.show({
-						icon: Ext.MessageBox.WARNING,
-						title: 'Model Update Required',
-						msg: msg,
-						buttons: Ext.MessageBox.OK
-					});
+				Ext.Msg.show({
+					icon: Ext.MessageBox.WARNING,
+					title: getText('模型需要更新'),
+					msg: msg,
+					buttons: Ext.MessageBox.OK
+				});
 
-				}
 			}
 		}
+	}
 
 		if(obsolete.length>0){
 			obsolete.map(function(x){
@@ -343,61 +343,6 @@ function updateModel(){
 		mySetting.setAttribute("Version", 29);
 	}
 
-	if (mySetting.getAttribute("Version") < 30) {
-		var folders = primitives("Folder");
-
-		for (var i = 0; i < folders.length; i++) {
-			folders[i].setAttribute("Solver", defaultSolver);
-		}
-
-		mySetting.setAttribute("Version", 30);
-	}
-
-	if (mySetting.getAttribute("Version") < 31) {
-		var agents = primitives("Agents");
-
-		for (var i = 0; i < agents.length; i++) {
-			agents[i].setAttribute('ShowSlider', false);
-			agents[i].setAttribute('SliderMax', 100);
-			agents[i].setAttribute('SliderMin', 0);
-			agents[i].setAttribute('SliderStep', 1);
-		}
-
-		mySetting.setAttribute("Version", 31);
-	}
-
-	if (mySetting.getAttribute("Version") < 32) {
-		var folders = primitives("Folder");
-
-		for (var i = 0; i < folders.length; i++) {
-			folders[i].setAttribute("AgentBase", "");
-		}
-
-		mySetting.setAttribute("Version", 32);
-	}
-
-	if (mySetting.getAttribute("Version") < 33) {
-		
-		var actions = primitives("Action");
-		for (var i = 0; i < actions.length; i++) {
-			actions[i].setAttribute("Repeat", true);
-			actions[i].setAttribute("Recalculate", true);
-		}
-	
-		var transitions = primitives("Transition");
-		for (var i = 0; i < transitions.length; i++) {
-			transitions[i].setAttribute("Repeat", false);
-			transitions[i].setAttribute("Recalculate", true);
-		}
-		
-		var states = primitives("State");
-		for (var i = 0; i < states.length; i++) {
-			states[i].setAttribute("Residency", "0");
-		}
-
-		mySetting.setAttribute("Version", 33);
-	}
-	
 	if (mySetting.getAttribute("Version") < 34) {
 
 		var obsolete = excludeType(findValue(/\[self\]/i), "Button");
@@ -406,31 +351,25 @@ function updateModel(){
 			if(viewConfig.allowEdits){
 				if (obsolete.length > 0) {
 
-					var msg = '<p>Insight Maker has received a significant update to its equation engine improving Agent Based Modeling..</p>';
-					msg += '<br/><p>A side effect of this update is that the "Self" agent must always be referred to using the variable syntax -- <i>Self</i> -- instead of the old primitive syntax -- <i>[Self]</i>.</p> ';
-					msg += '<br/><p>The following of your primitives appear to use the outdated format. Their equations will automatically be updated to use the correct format:</p>';
+					var msg = getText('<p>Insight Maker 对其方程引擎进行了重大更新，改进了基于主体的建模。</p>');
+					msg += getText('<br/><p>此更新的副作用是，"Self" 主体必须始终使用变量语法 -- <i>Self</i> -- 而不是旧的图元语法 -- <i>[Self]</i>。</p>');
+					msg += getText('<br/><p>以下图元似乎使用了过时的格式。它们的方程将自动更新为正确格式：</p>');
 					msg += '<br/><p><b>' + Ext.Array.map(obsolete, function(x) {
 						return x.getAttribute("name")
 					}).join(", ") + '</b></p>';
 		
-					msg += '<br/><p>You may save your model to keep these updates.</p>'
+msg += getText('<br/><p>您可以保存模型以保留这些更新。</p>')
 
-					Ext.Msg.show({
-						icon: Ext.MessageBox.WARNING,
-						title: 'Model Update Required',
-						msg: msg,
-						buttons: Ext.MessageBox.OK
-					});
+				Ext.Msg.show({
+					icon: Ext.MessageBox.WARNING,
+					title: getText('模型需要更新'),
+					msg: msg,
+					buttons: Ext.MessageBox.OK
+				});
 
-				}
 			}
 		}
-
-		if(obsolete.length>0){
-			obsolete.map(function(x){
-				setValue(x, getValue(x).replace(/\[Self\]/gi, "Self"));
-			});
-		}
+	}
 
 		mySetting.setAttribute("Version", 34);
 	}

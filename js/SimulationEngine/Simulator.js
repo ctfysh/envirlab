@@ -376,7 +376,7 @@ Simulator.prototype.unitsToBase = function(v, u, flow){
 
 Simulator.prototype.adjustNum = function(v, x){
 	if(v.unitless && x.units){
-		error(getText("The result of the calculation has units %s, but the primitive is unitless. Please set the units for the primitive so we can determine the proper output.", x.units.toString()), findID(v.id), true);
+		error(getText("计算结果具有单位 %s，但图元为无单位。请为图元设置单位以确定正确的输出。", x.units.toString()), findID(v.id), true);
 	}
 	//console.log(x);
 	if((v instanceof Flow) && (! v.dna.flowUnitless)){

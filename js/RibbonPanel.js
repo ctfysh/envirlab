@@ -214,7 +214,7 @@ var RibbonPanel = function(graph, mainPanel, configPanel) {
     var imageMenu = {
         xtype: "menu",
         iconsCls: "picture-icon",
-        items: ["Growth", "Balance", 'Positive Feedback Clockwise', 'Positive Feedback Counterclockwise', 'Negative Feedback Clockwise', 'Negative Feedback Counterclockwise', 'Unknown Feedback Clockwise', 'Unknown Feedback Counterclockwise', 'Plus', 'Minus', 'Forwards', "Reload", "Play", "Pause", "Stop", "Info", 'Question', 'Warning', 'Checkmark', 'Prohibited', 'Idea', "Home", 'Book', 'Clock', 'Computer', 'Dice', 'Cards', 'Gear', 'Hammer', 'Smiley', 'Heart', 'Key', 'Lock', 'Loudspeaker', 'Footprints', 'Mail', 'Network', 'Notes', 'Paint', 'Pushpin', 'Paperclip', 'People', 'Person', 'Wallet', 'Money', 'Flag', 'Star', 'Rocket', 'Alarm', 'Beaker', 'Ball', 'Hat', 'List', 'Bolt', 'Cookie', 'Plugin', 'Monitor', 'Telescope', 'Chalkboard', 'Open', 'Trash'].map(function(x) {
+        items: ["Growth", "Balance", 'Positive Feedback Clockwise', 'Positive Feedback Counterclockwise', 'Negative Feedback Clockwise', 'Negative Feedback Counterclockwise', 'Unknown Feedback Clockwise', 'Unknown Feedback Counterclockwise', 'Plus', 'Minus', 'Forwards', "Reload", "Play", "Pause", "Stop", "Info", 'Question', 'Warning', 'Checkmark', 'Prohibited', 'Idea', "Home", 'Book', 'Clock', 'Computer', 'Dice', 'Cards', 'Gear', 'Hammer', 'Smiley', 'Heart', 'Key', 'Lock', 'Loudspeaker', 'Footprints', 'Mail', 'Network', 'Notes', 'Pushpin', 'Paperclip', 'People', 'Person', 'Wallet', 'Money', 'Flag', 'Star', 'Rocket', 'Alarm', 'Beaker', 'Ball', 'Hat', 'List', 'Bolt', 'Cookie', 'Plugin', 'Monitor', 'Telescope', 'Chalkboard', 'Open', 'Trash'].map(function(x) {
             return {
                 text: '<center><div class="x-combo-list-item" style=\"white-space:normal\";><img src="' + builder_path + '/images/SD/' + x + '.png" width=48 height=48/></div></center>',
                 handler: function() {
@@ -1092,7 +1092,7 @@ var RibbonPanel = function(graph, mainPanel, configPanel) {
                     iconCls: 'icon-icon',
 
                     //href: '//',
-                    tooltip: 'Home'
+                    tooltip: getText('主页')
                 },
                 '->',
                 
@@ -1293,12 +1293,12 @@ var RibbonPanel = function(graph, mainPanel, configPanel) {
                 },
                 /*{
 					hidden: (!viewConfig.connectionsGroup),
-					text: getText('Using Flows/Transitions'),
+					text: getText('使用流/转换'),
 					id: 'connect',
 					iconCls: 'green-icon',
 					glyph: 0xf0d1,
 					//iconCls: 'flow-small-icon',//f043
-					tooltip: "The method used in new connections to connect primitive. Select a primitive and drag the arrow that appears to make a connection. Flows transfer material. Links transfer information.",
+					tooltip: getText("新建连接时连接图元的方法。选择一个图元，拖动图元上出现的箭头来建立连接。流传输物质，链接传输信息。"),
 					handler: function() {
 						var flow = (connectionType() == "Flow");
 						if (flow) {
@@ -1372,7 +1372,7 @@ var RibbonPanel = function(graph, mainPanel, configPanel) {
                 	hidden: (!is_editor) || is_embed || is_ebook,
                 	text: getText(''),
                 	glyph: 0xf059,
-                	tooltip: getText("Insight Maker Help"),
+                	tooltip: getText("帮助"),
                 	handler: function() {
                 		showURL("//insightmaker.com/help")
                 	},
@@ -1502,22 +1502,12 @@ var RibbonPanel = function(graph, mainPanel, configPanel) {
                             glyph: 0xf0ac,
                             tooltip: getText('将此模型嵌入另一个网页'),
                             handler: function() {
-                                if (drupal_node_ID == -1) {
-                                    Ext.MessageBox.show({
-                                        title: getText('保存模型'),
-                                        msg: getText('嵌入之前您必须保存模型'),
-                                        buttons: Ext.MessageBox.OK,
-                                        icon: Ext.MessageBox.ERROR
-                                    });
-                                } else {
-
-                                    Ext.MessageBox.show({
-                                        title: getText('嵌入'),
-                                        msg: getText('要将此Insight嵌入其他网页（例如博客或私人网站），请将以下代码复制并粘贴到您网页的源HTML代码中： %s', '<br/><br/><center><tt>&lt;IFRAME SRC="//InsightMaker.com/insight/' + drupal_node_ID + '/embed?topBar=1&sideBar=1&zoom=1" TITLE="Embedded Insight" width=600 height=420&gt;&lt;/IFRAME&gt;</tt></center><br/>'),
-                                        buttons: Ext.MessageBox.OK,
-                                        icon: Ext.MessageBox.INFO
-                                    });
-                                }
+                                Ext.MessageBox.show({
+                                    title: getText('嵌入'),
+                                    msg: getText('嵌入功能在离线模式下不可用。请部署到支持 InsightMaker 嵌入的服务后使用。'),
+                                    buttons: Ext.MessageBox.OK,
+                                    icon: Ext.MessageBox.INFO
+                                });
                             },
                             scope: this
                         },
@@ -1559,7 +1549,7 @@ var RibbonPanel = function(graph, mainPanel, configPanel) {
                                     itemId: 'textBut',
                                     text: getText('完整的公式列表'),
                                     /*glyph: 0xf03a,*/
-                                    tooltip: getText('A listing of all equations in the Insight'),
+                                    tooltip: getText('模型中所有方程的列表'),
                                     handler: textEquations,
                                     scope: this
                                 },

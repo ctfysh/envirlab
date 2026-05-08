@@ -11,7 +11,7 @@ terms of the Insight Maker Public License (https://InsightMaker.com/impl).
 
 
 function showInsertModelWindow(pt) {
-	Ext.Msg.prompt('插入模型', 'Enter the URL for the Insight Maker model you wish to insert (e.g. <i>' + base_path + '/insight/1234</i>). This model will be inserted as a component into your current model.', function(btn, url) {
+	Ext.Msg.prompt(getText('插入模型'), getText('输入要插入的模型文件的 URL（或本地文件路径）。此模型将作为组件插入到当前模型中。'), function(btn, url) {
 		if (btn == 'ok') {
 			var progress = Ext.MessageBox.wait(getText("插入模型..."), undefined, {
 				icon: 'run-icon',
@@ -223,7 +223,7 @@ function importXMILE() {
 		multiple: true,
 		onCompleted: function(result) {
 			
-			 var importProgress = Ext.MessageBox.show({msg:getText("Importing XMILE model...<br/><br/>This may take a few minutes."),icon:'run-icon',width:300, closable:false, modal:true});
+			 var importProgress = Ext.MessageBox.show({msg:getText("正在导入 XMILE 模型...<br/><br/>这可能需要几分钟。"),icon:'run-icon',width:300, closable:false, modal:true});
 
 			function xStr(str) {
 				if (!str) {

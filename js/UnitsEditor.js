@@ -281,7 +281,7 @@ function UnitsWindow(config) {
 					editor: {
 						xtype: 'textfield',
 						allowBlank: true,
-						emptyText: "米/秒^2",
+						emptyText: getText("米/秒^2"),
 						regex: /^([a-zA-Z][a-z A-Z]*(\^-?[\d\.]+)?[\*\/]?)*$/,
 						regexText: getText("单位同义词的格式应为： 米*秒^2/千克.")
 					}

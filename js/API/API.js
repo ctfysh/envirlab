@@ -541,7 +541,7 @@ function showData(title, tabs, size) {
 
 
 		} else {
-			alert("Unknown tab type: " + tabs[i].type);
+			alert(getText("未知标签类型：") + tabs[i].type);
 		}
 		tabItems.push(tab);
 	}
@@ -723,7 +723,7 @@ function openFile(config) {
 			if (config.onError) {
 				config.onError(reader.error)
 			} else {
-				alert("FileReader error.");
+				alert(getText("文件读取器错误。"));
 				console.log("FileReader Error");
 				console.log(reader.error);
 			}
@@ -733,7 +733,7 @@ function openFile(config) {
 			if (config.onError) {
 				config.onError(reader.error)
 			} else {
-				alert("FileReader aborted.");
+				alert(getText("文件读取器已中止。"));
 				console.log("FileReader Error");
 				console.log(reader.error);
 			}
@@ -953,7 +953,7 @@ function layoutModel(algorithm) {
 		layout.moveTree = false;
 		executeLayout(layout, true);
 	} else {
-		alert("Unknown layout algorithm: " + algorithm);
+		alert(getText("未知布局算法：") + algorithm);
 	}
 }
 
@@ -2285,7 +2285,7 @@ function showEditor(primitive, annotations) {
 			editable: false,
 			selectOnFocus: false,
 			value: getTriggerType(primitive),
-			fieldLabel: 'Trigger Type',
+			fieldLabel: getText('触发器类型'),
 			width: 240,
 			listeners: {
 				change: function(){
@@ -2436,7 +2436,7 @@ function setValue(primitive, value) {
 				setAttributeUndoable(primitive, "Action", String(value));
 			} else if (n == "Agents") {
 				if (value < 0 || Math.round(value) != value) {
-					alert("The agent population size must be a non-negative integer.");
+					alert(getText("主体种群大小必须为非负整数。"));
 					return;
 				}
 				setAttributeUndoable(primitive, "Size", parseFloat(value));
@@ -3695,7 +3695,7 @@ function pressButton(button) {
 var trusted = is_owner;
 function runAction(code, errHeader, button) {
 	try {
-		var msg = 'This insight is requesting permission to execute custom code. For security reasons, you should only run custom code in trusted insights.\n\nAre you sure you want to run code in this insight?';
+		var msg = getText('此 Insight 正在请求执行自定义代码的权限。出于安全原因，您只应在受信任的 Insight 中运行自定义代码。\n\n您确定要在此 Insight 中运行代码吗？');
 		if (trusted || confirm(msg)) {
 			trusted = true;
 			eval("\"use strict;\"\n\n" + code);

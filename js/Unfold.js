@@ -388,7 +388,7 @@ var revealUnfoldButtons = function(showUnfold) {
 			treeStore.setRootNode(JSON.parse(mySetting.getAttribute("unfolding")));
 		} else {
 			treeStore.setRootNode({
-				text: 'Root Node',
+				text: getText('根节点'),
 				type: 'root',
 				id: 'src',
 				expanded: true
@@ -739,7 +739,7 @@ var revealUnfoldButtons = function(showUnfold) {
 									glyph: 0xf055,
 									xtype: "button",
 									text: getText('从图中添加'),
-									tooltip: 'Add the selected primitives in the diagram.',
+									tooltip: getText('在图表中添加选中的图元。'),
 									handler: function() {
 										Ext.getCmp("unfoldingPrimitives").setValue(Ext.Array.unique(Ext.getCmp("unfoldingPrimitives").getValue().concat(getSelected().map(function(x) {
 											return getID(x);
@@ -962,7 +962,7 @@ var revealUnfoldButtons = function(showUnfold) {
 									glyph: 0xf055,
 									xtype: "button",
 									text: getText('从图中添加'),
-									tooltip: 'Add the selected primitives in the diagram.',
+									tooltip: getText('在图表中添加选中的图元。'),
 									handler: function() {
 										Ext.getCmp("unfoldingPrimitivesNotes").setValue(Ext.Array.unique(Ext.getCmp("unfoldingPrimitivesNotes").getValue().concat(getSelected().map(function(x) {
 											return getID(x);
@@ -1149,35 +1149,10 @@ var revealUnfoldButtons = function(showUnfold) {
 	}
 
 	function configureArticle() {
-		if (has_article) {
-			Ext.getCmp("articleText").update("<a href='https://InsightMaker.com/article/" + drupal_node_ID + "/"+getURLTitle()+"' target='_blank'>https://InsightMaker.com/article/" + drupal_node_ID + "/"+getURLTitle()+"</a>");
-			Ext.getCmp("articlePublish").hide();
-			Ext.getCmp("articleRefresh").show();
-			Ext.getCmp("articleDelete").show();
-		} else {
-
-			Ext.getCmp("articleText").update("故事文章尚未发表");
-			Ext.getCmp("articlePublish").show();
-			Ext.getCmp("articleRefresh").hide();
-			Ext.getCmp("articleDelete").hide();
-		}
-	}
-
-	function deleteArticle() {
-		var request = $.ajax({
-			type: "GET",
-			url: "/builder/StoryConverter.php",
-			data: {
-				nid: drupal_node_ID,
-				"delete": "1"
-			}
-		});
-
-
-		has_article = false;
-		saveModel();
-
-		configureArticle();
+		Ext.getCmp("articleText").update("文章功能在离线模式下不可用");
+		Ext.getCmp("articlePublish").hide();
+		Ext.getCmp("articleRefresh").hide();
+		Ext.getCmp("articleDelete").hide();
 	}
 
 	

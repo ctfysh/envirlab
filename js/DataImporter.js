@@ -28,7 +28,7 @@ function importData(targetStore){
 	    	},
 			{
 				xtype: 'textareafield',
-			    fieldLabel: 'Data',
+			    fieldLabel: getText('数据'),
 			    name: 'impData',
 			    id: 'impData',
 			    allowBlank: false,

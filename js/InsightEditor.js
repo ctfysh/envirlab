@@ -813,13 +813,8 @@ function main() {
 
 
 
-	if ((graph_source_data != null && graph_source_data.length > 0) || drupal_node_ID == -1) {
-		var code;
-		if (drupal_node_ID == -1) {
-			code = blankGraphTemplate;
-		} else {
-			code = graph_source_data;
-		}
+	{
+		var code = (graph_source_data != null && graph_source_data.length > 0) ? graph_source_data : blankGraphTemplate;
 
 		var doc = mxUtils.parseXml(code);
 		var dec = new mxCodec(doc);
@@ -1503,7 +1498,7 @@ function main() {
 		}
 
 		function descriptionLink(url, subject) {
-			return "<a href='" + url + "' class='description_link' target='_blank'>Learn more about " + subject + "&nbsp;&rsaquo;</a><div style='clear:both'></div>"
+			return "<a href='" + url + "' class='description_link' target='_blank'>" + getText("了解更多关于") + " " + subject + "&nbsp;&rsaquo;</a><div style='clear:both'></div>"
 		}
 
 		var descBase = "<br/><div class = 'fa fa-question-circle' style='float:left; margin-right: 7px; font-size: xx-large; display: block; color: grey'></div>";
@@ -1514,7 +1509,7 @@ function main() {
 			var slids = sliderPrimitives();
 
 			//no primitive has been selected. Stick in empty text and sliders.
-			if (drupal_node_ID == -1 && slids.length == 0) {
+			if (slids.length == 0) {
 				if (is_ebook) {
 					topDesc = "<center><big>Select a primitive to see its properties.</big></center>";
 				} else {
@@ -1523,18 +1518,12 @@ function main() {
 			} else {
 
 				var topDesc = clean(graph_description);
-				if (topDesc == "" && drupal_node_ID != -1) {
-					if (viewConfig.saveEnabled) {
-						topDesc = "<span style='color: #555'>" + getText("您尚未输入此Insight的说明。 请输入一个以帮助其他人理解。") + "</span>";
-					}
-				}
-
 
 				if (topDesc != "") {
 					topDesc = "<div class='sidebar_description'>" + topDesc + "</div>";
 				}
-				if (drupal_node_ID != -1 && cell == null) {
-					topDesc = topDesc + ' <div class="sidebar_share"> ' /*+ getText('Share')*/ + '<div class="addthis_sharing_toolbox addthis_default_style" style="display:inline-block"><a class="addthis_button_preferred_1"></a> <a class="addthis_button_preferred_2"></a>  <a class="addthis_button_preferred_3"></a>  <a class="addthis_button_preferred_4"></a> <a class="addthis_button_compact"></a></div> </div>' + (is_editor ? '<div class="sidebar_edit"><a href="#" onclick="blockUnfold(updateProperties)()"><i class="fa fa-pencil-square"></i> ' + getText('Edit Info') + '</a></div>' : '');
+				if (cell == null) {
+					topDesc = topDesc + (is_editor ? '<div class="sidebar_edit"><a href="#" onclick="blockUnfold(updateProperties)()"><i class="fa fa-pencil-square"></i> ' + getText('编辑信息') + '</a></div>' : '');
 				}
 
 				if (graph_tags.trim() != "") {
@@ -1543,10 +1532,6 @@ function main() {
 					return "<a target='_blank' href='/tag/" + clean(t.replace(/ /g, "-")) + "'>" + clean(t) + "</a>";
 					}).join(", ");
 					topDesc = topDesc + "<div class='sidebar_tags'>Tags: " + topTags + "</div>";
-				}
-
-				if ((!is_editor) && graph_author_name != "") {
-					topDesc = topDesc + "<div class='sidebar_author'>Insight Author: <a target='_blank' href='/user/" + clean(graph_author_id) + "'>" + clean(graph_author_name) + "</a></div>";
 				}
 
 				if (slids.length > 0) {
@@ -1565,7 +1550,7 @@ function main() {
 							});
 						}
 					}, function(slider, setValue, textField, newValue) {
-						Ext.Msg.confirm("Change Value", "<p>The current value of the primitive is:</p><br/><p><pre>" + getValue(slider.sliderCell).replace(/\\n/g, "\n") + "</pre></p><br/><p>Are you sure you want to change this value using the slider?</p>", function(btn) {
+						Ext.Msg.confirm(getText("更改值"), getText("<p>图元的当前值为：</p><br/><p><pre>") + getValue(slider.sliderCell).replace(/\\n/g, "\n") + getText("</pre></p><br/><p>您确定要使用滑块更改此值吗？</p>"), function(btn) {
 							if (btn == 'yes') {
 								setValue(slider.sliderCell, parseFloat(newValue));
 							} else {
@@ -1588,7 +1573,7 @@ function main() {
 		} else if (cellType == "Stock") {
 
 
-			bottomDesc = descBase + 'A stock stores a material or a resource. Lakes and Bank Accounts are both examples of stocks. One stores water while the other stores money. The Initial Value defines how much material is initially in the Stock. ' + descriptionLink("/stocks", "Stocks");
+			bottomDesc = descBase + getText('库存（Stock）存储材料或资源。湖泊和银行账户都是库存的例子。一个储存水，另一个储存金钱。初始值（Initial Value）定义了库存中最初有多少物质。') + descriptionLink("/stocks", getText("库存"));
 			properties.push({
 				'name': 'InitialValue',
 				'text': getText('值初始化') + ' =',
@@ -2045,7 +2030,7 @@ function main() {
 
 		if (topDesc != "") {
 			topItems.push(Ext.create('Ext.Component', {
-				html: '<div class="' + ((drupal_node_ID == -1) ? "" : "sidebar_top") + '">' + topDesc + '</div>'
+				html: '<div class="sidebar_top">' + topDesc + '</div>'
 			}));
 		}
 		if (bottomDesc != "") {
@@ -2058,23 +2043,13 @@ function main() {
 		createGrid(properties, topItems, bottomItems, cell);
 
 
-		if (drupal_node_ID != -1) {
-			try {
-				addthis.toolbox('.addthis_sharing_toolbox')
-			} catch (err) {
-
-			}
-		}
+		
 	}
 
 
 	selectionChanged(false);
 
-	if (drupal_node_ID == -1) {
-		setSaveEnabled(true);
-	} else {
-		setSaveEnabled(false);
-	}
+	setSaveEnabled(true);
 
 	updateWindowTitle();
 
@@ -2582,7 +2557,7 @@ function showContextMenu(node, e) {
 				handler: makeFolder
 			},
 			'-'/*, {
-				text: getText("Style"),
+				text: getText("样式"),
 				glyph: 0xf0d0,
 				menu: styleMenu
 			}*/

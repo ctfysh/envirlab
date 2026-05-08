@@ -59,12 +59,12 @@
 	color: darkred !important;
 }
 
-.sidebar_top {
+/* .sidebar_top {
 	background-color: palegoldenrod;
 	padding:  6px;
 	border-bottom:  solid 3px goldenrod;
 	margin-bottom:  20px;
-}
+} */
 
 .sidebar_description{
 	font-family: "Lucida Grande", Lucida, Verdana, sans-serif;
@@ -392,8 +392,7 @@ div.mxRubberband {
 .register-icon {
     background-image:url(../images/register.png) !important;
 }
-.login-icon {
-    background-image:url(../images/login.png) !important;
+
 }
 .scratchpad-icon {
     background-image:url(../images/scratchpad.png) !important;

@@ -1943,7 +1943,7 @@ function createResultsWindow(displayInformation, config) {
 		},
 		{
 			type: 'gear',
-			tooltip: 'Edit Title',
+			tooltip: getText('编辑标题'),
 			handler: function () {
 				Ext.Msg.prompt('编辑结果标题', '输入这些模拟结果的标题：', function (btn, text) {
 					if (btn == 'ok') {

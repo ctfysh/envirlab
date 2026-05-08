@@ -82,43 +82,43 @@
         </mxGeometry>
       </mxCell>
     </Folder>
-    <Stock name="N10农产品加工" Note="" InitialValue="0" StockMode="Store" Delay="10" Volume="100" NonNegative="false" Units="Unitless" MaxConstraintUsed="false" MinConstraintUsed="false" MaxConstraint="100" MinConstraint="0" ShowSlider="false" SliderMax="100" SliderMin="0" SliderStep="" Image="https://zwyuangroup.github.io/envirlab/examples/fig/N10.jpg" FlipHorizontal="false" FlipVertical="false" LabelPosition="Bottom" oldId="163" id="163">
-      <mxCell style="stock;image=https://zwyuangroup.github.io/envirlab/examples/fig/N10.jpg;imageFlipV=0;imageFlipH=0;shape=image;labelPosition=middle;align=center;verticalLabelPosition=bottom;verticalAlign=top;opacity=0;textOpacity=0;" parent="1" vertex="1">
+    <Stock name="N10农产品加工" Note="" InitialValue="0" StockMode="Store" Delay="10" Volume="100" NonNegative="false" Units="Unitless" MaxConstraintUsed="false" MinConstraintUsed="false" MaxConstraint="100" MinConstraint="0" ShowSlider="false" SliderMax="100" SliderMin="0" SliderStep="" Image="./examples/fig/N10.jpg" FlipHorizontal="false" FlipVertical="false" LabelPosition="Bottom" oldId="163" id="163">
+      <mxCell style="stock;image=./examples/fig/N10.jpg;imageFlipV=0;imageFlipH=0;shape=image;labelPosition=middle;align=center;verticalLabelPosition=bottom;verticalAlign=top;opacity=0;textOpacity=0;" parent="1" vertex="1">
         <mxGeometry x="113" y="344.5" width="104" height="60" as="geometry"/>
       </mxCell>
     </Stock>
-    <Stock name="N8畜禽养殖" Note="" InitialValue="0" StockMode="Store" Delay="10" Volume="100" NonNegative="false" Units="Unitless" MaxConstraintUsed="false" MinConstraintUsed="false" MaxConstraint="100" MinConstraint="0" ShowSlider="false" SliderMax="100" SliderMin="0" SliderStep="" Image="https://zwyuangroup.github.io/envirlab/examples/fig/N8.jpg" FlipHorizontal="false" FlipVertical="false" LabelPosition="Bottom" oldId="164" id="164">
-      <mxCell style="stock;image=https://zwyuangroup.github.io/envirlab/examples/fig/N8.jpg;imageFlipV=0;imageFlipH=0;shape=image;labelPosition=middle;align=center;verticalLabelPosition=bottom;verticalAlign=top;fontColor=#000080;fillColor=#A6D3F8;fontStyle=1;opacity=0;textOpacity=0;" parent="1" vertex="1">
+    <Stock name="N8畜禽养殖" Note="" InitialValue="0" StockMode="Store" Delay="10" Volume="100" NonNegative="false" Units="Unitless" MaxConstraintUsed="false" MinConstraintUsed="false" MaxConstraint="100" MinConstraint="0" ShowSlider="false" SliderMax="100" SliderMin="0" SliderStep="" Image="./examples/fig/N8.jpg" FlipHorizontal="false" FlipVertical="false" LabelPosition="Bottom" oldId="164" id="164">
+      <mxCell style="stock;image=./examples/fig/N8.jpg;imageFlipV=0;imageFlipH=0;shape=image;labelPosition=middle;align=center;verticalLabelPosition=bottom;verticalAlign=top;fontColor=#000080;fillColor=#A6D3F8;fontStyle=1;opacity=0;textOpacity=0;" parent="1" vertex="1">
         <mxGeometry x="322" y="225" width="204" height="167" as="geometry"/>
       </mxCell>
     </Stock>
-    <Stock name="N14国际贸易" Note="" InitialValue="0" StockMode="Store" Delay="10" Volume="100" NonNegative="false" Units="Unitless" MaxConstraintUsed="false" MinConstraintUsed="false" MaxConstraint="100" MinConstraint="0" ShowSlider="false" SliderMax="100" SliderMin="0" SliderStep="" Image="https://zwyuangroup.github.io/envirlab/examples/fig/N14.png" FlipHorizontal="false" FlipVertical="false" LabelPosition="Top" oldId="165" id="165">
-      <mxCell style="stock;image=https://zwyuangroup.github.io/envirlab/examples/fig/N14.png;imageFlipV=0;imageFlipH=0;shape=image;labelPosition=middle;align=center;verticalLabelPosition=top;verticalAlign=bottom;opacity=0;textOpacity=0;" parent="1" vertex="1">
+    <Stock name="N14国际贸易" Note="" InitialValue="0" StockMode="Store" Delay="10" Volume="100" NonNegative="false" Units="Unitless" MaxConstraintUsed="false" MinConstraintUsed="false" MaxConstraint="100" MinConstraint="0" ShowSlider="false" SliderMax="100" SliderMin="0" SliderStep="" Image="./examples/fig/N14.png" FlipHorizontal="false" FlipVertical="false" LabelPosition="Top" oldId="165" id="165">
+      <mxCell style="stock;image=./examples/fig/N14.png;imageFlipV=0;imageFlipH=0;shape=image;labelPosition=middle;align=center;verticalLabelPosition=top;verticalAlign=bottom;opacity=0;textOpacity=0;" parent="1" vertex="1">
         <mxGeometry x="358" y="80" width="120" height="70" as="geometry"/>
       </mxCell>
     </Stock>
-    <Stock name="N10农产品加工" Note="" InitialValue="0" StockMode="Store" Delay="10" Volume="100" NonNegative="false" Units="Unitless" MaxConstraintUsed="false" MinConstraintUsed="false" MaxConstraint="100" MinConstraint="0" ShowSlider="false" SliderMax="100" SliderMin="0" SliderStep="" Image="https://zwyuangroup.github.io/envirlab/examples/fig/N10_1.jpg" FlipHorizontal="false" FlipVertical="false" LabelPosition="Bottom" oldId="166" id="166">
-      <mxCell style="stock;image=https://zwyuangroup.github.io/envirlab/examples/fig/N10_1.jpg;imageFlipV=0;imageFlipH=0;shape=image;labelPosition=middle;align=center;verticalLabelPosition=bottom;verticalAlign=top;opacity=0;textOpacity=0;" parent="1" vertex="1">
+    <Stock name="N10农产品加工" Note="" InitialValue="0" StockMode="Store" Delay="10" Volume="100" NonNegative="false" Units="Unitless" MaxConstraintUsed="false" MinConstraintUsed="false" MaxConstraint="100" MinConstraint="0" ShowSlider="false" SliderMax="100" SliderMin="0" SliderStep="" Image="./examples/fig/N10_1.jpg" FlipHorizontal="false" FlipVertical="false" LabelPosition="Bottom" oldId="166" id="166">
+      <mxCell style="stock;image=./examples/fig/N10_1.jpg;imageFlipV=0;imageFlipH=0;shape=image;labelPosition=middle;align=center;verticalLabelPosition=bottom;verticalAlign=top;opacity=0;textOpacity=0;" parent="1" vertex="1">
         <mxGeometry x="654" y="135" width="117" height="60" as="geometry"/>
       </mxCell>
     </Stock>
-    <Stock name="N2非耕地" Note="" InitialValue="0" StockMode="Store" Delay="10" Volume="100" NonNegative="false" Units="Unitless" MaxConstraintUsed="false" MinConstraintUsed="false" MaxConstraint="100" MinConstraint="0" ShowSlider="false" SliderMax="100" SliderMin="0" SliderStep="" Image="https://zwyuangroup.github.io/envirlab/examples/fig/N2.jpg" FlipHorizontal="false" FlipVertical="false" LabelPosition="Bottom" oldId="167" id="167">
-      <mxCell style="stock;image=https://zwyuangroup.github.io/envirlab/examples/fig/N2.jpg;imageFlipV=0;imageFlipH=0;shape=image;labelPosition=middle;align=center;verticalLabelPosition=bottom;verticalAlign=top;opacity=0;textOpacity=0;" parent="1" vertex="1">
+    <Stock name="N2非耕地" Note="" InitialValue="0" StockMode="Store" Delay="10" Volume="100" NonNegative="false" Units="Unitless" MaxConstraintUsed="false" MinConstraintUsed="false" MaxConstraint="100" MinConstraint="0" ShowSlider="false" SliderMax="100" SliderMin="0" SliderStep="" Image="./examples/fig/N2.jpg" FlipHorizontal="false" FlipVertical="false" LabelPosition="Bottom" oldId="167" id="167">
+      <mxCell style="stock;image=./examples/fig/N2.jpg;imageFlipV=0;imageFlipH=0;shape=image;labelPosition=middle;align=center;verticalLabelPosition=bottom;verticalAlign=top;opacity=0;textOpacity=0;" parent="1" vertex="1">
         <mxGeometry x="657" y="225" width="126" height="55" as="geometry"/>
       </mxCell>
     </Stock>
-    <Stock name="N3内陆水体" Note="" InitialValue="0" StockMode="Store" Delay="10" Volume="100" NonNegative="false" Units="Unitless" MaxConstraintUsed="false" MinConstraintUsed="false" MaxConstraint="100" MinConstraint="0" ShowSlider="false" SliderMax="100" SliderMin="0" SliderStep="" Image="https://zwyuangroup.github.io/envirlab/examples/fig/N3.jpg" FlipHorizontal="false" FlipVertical="false" LabelPosition="Bottom" oldId="168" id="168">
-      <mxCell style="stock;image=https://zwyuangroup.github.io/envirlab/examples/fig/N3.jpg;imageFlipV=0;imageFlipH=0;shape=image;labelPosition=middle;align=center;verticalLabelPosition=bottom;verticalAlign=top;opacity=0;textOpacity=0;" parent="1" vertex="1">
+    <Stock name="N3内陆水体" Note="" InitialValue="0" StockMode="Store" Delay="10" Volume="100" NonNegative="false" Units="Unitless" MaxConstraintUsed="false" MinConstraintUsed="false" MaxConstraint="100" MinConstraint="0" ShowSlider="false" SliderMax="100" SliderMin="0" SliderStep="" Image="./examples/fig/N3.jpg" FlipHorizontal="false" FlipVertical="false" LabelPosition="Bottom" oldId="168" id="168">
+      <mxCell style="stock;image=./examples/fig/N3.jpg;imageFlipV=0;imageFlipH=0;shape=image;labelPosition=middle;align=center;verticalLabelPosition=bottom;verticalAlign=top;opacity=0;textOpacity=0;" parent="1" vertex="1">
         <mxGeometry x="659" y="315" width="131" height="70" as="geometry"/>
       </mxCell>
     </Stock>
-    <Stock name="N7农业种植" Note="" InitialValue="0" StockMode="Store" Delay="10" Volume="100" NonNegative="false" Units="Unitless" MaxConstraintUsed="false" MinConstraintUsed="false" MaxConstraint="100" MinConstraint="0" ShowSlider="false" SliderMax="100" SliderMin="0" SliderStep="" Image="https://zwyuangroup.github.io/envirlab/examples/fig/N7.jpg" FlipHorizontal="false" FlipVertical="false" LabelPosition="Bottom" oldId="169" id="169">
-      <mxCell style="stock;image=https://zwyuangroup.github.io/envirlab/examples/fig/N7.jpg;imageFlipV=0;imageFlipH=0;shape=image;labelPosition=middle;align=center;verticalLabelPosition=bottom;verticalAlign=top;opacity=0;textOpacity=0;" parent="1" vertex="1">
+    <Stock name="N7农业种植" Note="" InitialValue="0" StockMode="Store" Delay="10" Volume="100" NonNegative="false" Units="Unitless" MaxConstraintUsed="false" MinConstraintUsed="false" MaxConstraint="100" MinConstraint="0" ShowSlider="false" SliderMax="100" SliderMin="0" SliderStep="" Image="./examples/fig/N7.jpg" FlipHorizontal="false" FlipVertical="false" LabelPosition="Bottom" oldId="169" id="169">
+      <mxCell style="stock;image=./examples/fig/N7.jpg;imageFlipV=0;imageFlipH=0;shape=image;labelPosition=middle;align=center;verticalLabelPosition=bottom;verticalAlign=top;opacity=0;textOpacity=0;" parent="1" vertex="1">
         <mxGeometry x="656" y="412" width="120" height="70" as="geometry"/>
       </mxCell>
     </Stock>
-    <Ghost Source="167" name="N2非耕地" oldId="170" Image="https://zwyuangroup.github.io/envirlab/examples/fig/N2.jpg" id="170">
-      <mxCell style="stock;image=https://zwyuangroup.github.io/envirlab/examples/fig/N2.jpg;imageFlipV=0;imageFlipH=0;shape=image;labelPosition=middle;align=center;verticalLabelPosition=bottom;verticalAlign=top;opacity=0;textOpacity=0;" parent="1" vertex="1">
+    <Ghost Source="167" name="N2非耕地" oldId="170" Image="./examples/fig/N2.jpg" id="170">
+      <mxCell style="stock;image=./examples/fig/N2.jpg;imageFlipV=0;imageFlipH=0;shape=image;labelPosition=middle;align=center;verticalLabelPosition=bottom;verticalAlign=top;opacity=0;textOpacity=0;" parent="1" vertex="1">
         <mxGeometry x="91" y="212.5" width="126" height="55" as="geometry"/>
       </mxCell>
     </Ghost>

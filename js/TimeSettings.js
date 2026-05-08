@@ -144,7 +144,7 @@ function showTimeSettings(config)
                 id: 'stimepause',
                 allowBlank: true,
                 minValue: 0,
-				emptyText: 'No Pause',
+				emptyText: getText('无暂停'),
                 decimalPrecision: 12,
 				value: config.timePause
             }),

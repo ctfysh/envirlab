@@ -206,7 +206,7 @@ Primitive.method("testUnits", function(m, ignoreFlow) {
 	}
 
 	if((! this.dna.units) && m.units){
-		error(getText("Wrong units generated for %s. Expected no units and got %s. Either specify units for the primitive or adjust the equation.", "<i>"+clean(this.dna.name)+"</i>", "<i>"+clean(m.units.toString())+"</i>"), this, true);
+		error(getText("为 %s 生成的单位错误。期望无单位，实际得到 %s。请为图元指定单位或调整方程。", "<i>"+clean(this.dna.name)+"</i>", "<i>"+clean(m.units.toString())+"</i>"), this, true);
 	}else if (this.dna.units !== m.units) {
 		var scale = convertUnits(m.units, this.dna.units, true);//XXX fixme
 		if (scale == 0) {
@@ -214,7 +214,7 @@ Primitive.method("testUnits", function(m, ignoreFlow) {
 				console.log(m.units);
 				console.log(this.dna.units);
 			}
-			error(getText("Wrong units generated for %s. Expected %s, and got %s.", "<i>"+clean(this.dna.name)+"</i>", "<i>"+clean(this.dna.units.toString())+"</i>", "<i>"+clean(m.units.toString())+"</i>"), this, true);
+			error(getText("为 %s 生成的单位错误。应为 %s，实际为 %s。", "<i>"+clean(this.dna.name)+"</i>", "<i>"+clean(this.dna.units.toString())+"</i>", "<i>"+clean(m.units.toString())+"</i>"), this, true);
 			return
 		} else {
 			//console.log("----+")
@@ -239,7 +239,7 @@ Primitive.method("testUnits", function(m, ignoreFlow) {
 	}
 });
 Primitive.method("setValue", function() {
-	throw "MSG: "+getText("You cannot set the value for that primitive.");
+	throw "MSG: "+getText("无法为该图元设置值。");
 });
 Primitive.method("printPastValues", function() {
 	console.log(this.pastValues.map(function(x){return x.value;}))
@@ -260,7 +260,7 @@ Primitive.method("value", function() {
 
 
 		if(simulate.valuedPrimitives.indexOf(this) > -1){
-			throw "MSG: "+getText("Circular equation loop identified including the primitives: %s", simulate.valuedPrimitives.slice(simulate.valuedPrimitives.indexOf(this)).map(function(x){return x.dna.name}).join(", "));
+			throw "MSG: "+getText("检测到包含图元的循环方程：%s", simulate.valuedPrimitives.slice(simulate.valuedPrimitives.indexOf(this)).map(function(x){return x.dna.name}).join(", "));
 		}
 		simulate.valuedPrimitives.push(this);
 
@@ -271,9 +271,9 @@ Primitive.method("value", function() {
 					console.log(x)
 				}
 				if(this instanceof Stock){
-					throw("MSG: "+getText("The stock has become infinite in size. Check the flows into it for rapid growth."));
+					throw("MSG: "+getText("库的大小已变为无限。请检查流入它的流是否存在快速增长。"));
 				}else{
-					throw("MSG: "+getText("The result of this calculation is not a number (are you dividing by 0?)."));
+					throw("MSG: "+getText("计算结果不是数字（是否除以了 0？）。"));
 				}
 			}
 		}catch(err){
@@ -432,7 +432,7 @@ State.method("setActive", function(active, suppress){
 				}
 
 				if(simulate.transitionPrimitives.length > 1200 && simulate.transitionPrimitives.indexOf(this) > -1){
-					throw "MSG: " + getText("Circular fully active transition loop identified including the states: %s", simulate.transitionPrimitives.slice(0, 5).map(function(x){return x.dna.name}).join(", "));
+					throw "MSG: " + getText("检测到包含状态的完全活跃转换循环：%s", simulate.transitionPrimitives.slice(0, 5).map(function(x){return x.dna.name}).join(", "));
 				}
 				simulate.transitionPrimitives.push(this);
 			}
@@ -561,7 +561,7 @@ function updateTrigger(clear){
 			}
 		}else{
 			if(! (v instanceof Material)){
-				error(getText("The value of this trigger must evaluate to a number."), this, true);
+				error(getText("此触发条件的值必须计算为数字。"), this, true);
 			}
 
 			var t;
@@ -576,7 +576,7 @@ function updateTrigger(clear){
 					return;
 				}
 				if(this.dna.repeat && v.value == 0){
-					error(getText("A trigger Timeout of 0 with 'Repeat' set to true results in an infinite loop."), this, true);
+					error(getText("触发超时设为 0 且'重复'为真会导致无限循环。"), this, true);
 				}
 
 				t = v;
@@ -584,7 +584,7 @@ function updateTrigger(clear){
 			}else if( this.dna.trigger == "Probability" ){
 
 				if(v.units){
-					error(getText("The probability for the trigger had units of %s. Probabilities must be unitless.", this.value().units.toString()), this, true);
+					error(getText("触发条件的概率具有单位 %s。概率必须为无单位。", this.value().units.toString()), this, true);
 				}
 				var v = v.value
 				if(this.scheduledTrigger && eq(v, this.scheduledTrigger.data.value)){
@@ -593,13 +593,13 @@ function updateTrigger(clear){
 
 				if(v == 1){
 					if(this.dna.repeat){
-						error(getText("A trigger probability of 1 with 'Repeat' as true results in an infinite loop."), this, true);
+						error(getText("触发概率设为 1 且'重复'为真会导致无限循环。"), this, true);
 					}
 					t = new Material(0, simulate.timeUnits);
 				}else if(v > 1){
-					error(getText("The probability for the trigger must be less than or equal to 1."), this, true);
+					error(getText("触发条件的概率必须小于或等于 1。"), this, true);
 				}else if(v < 0){
-					error(getText("The probability for the trigger must be greater than or equal to 0."), this, true);
+					error(getText("触发条件的概率必须大于或等于 0。"), this, true);
 				}else if(v == 0){
 					if(! this.scheduledTrigger){
 						return;
@@ -1294,10 +1294,10 @@ Converter.method("getInputValue", function(){
 		  */
         inp = this.source.value().toNum();
 		if(! inp){
-			error(getText("Undefined input value."), this, false);
+			error(getText("未定义的输入值。"), this, false);
 		}
 		if(inp instanceof Vector){
-			error(getText("Converters do not accept vectors as input values."), this, false);
+			error(getText("转换器不接受向量作为输入值。"), this, false);
 		}
 		//console.log(inp);
       }
@@ -1430,7 +1430,7 @@ Flow.method("predict", function(override) {
 			//console.log(this.equation);
 			//console.log(x);
 			if(!((x instanceof Vector) || isFinite(x.value))){
-				throw("MSG: "+getText("The result of this calculation is not finite. Flows must have finite values. Are you dividing by 0?"));
+				throw("MSG: "+getText("计算结果不是有限值。流必须具有有限值。是否除以了 0？"));
 			}
 
 		}catch(err){
@@ -1545,7 +1545,7 @@ Flow.method("apply", function(timeChange, oldTime, newTime) {
 				in_rate = rate.fullClone().collapseDimensions(v);
 				collapsed = true;
 			}else if((v instanceof Vector) && ( (!(rate instanceof Vector)) || v.depth() > rate.depth()) ){
-				error(getText("The alpha of the flow is a vector with a higher order than the flow rate. There has to be at least one element in the flow rate for each element in the alpha."), this, true)
+				error(getText("流的 Alpha 是阶数高于流速的向量。流速中必须至少有一个元素对应于 Alpha 中的每个元素。"), this, true)
 			}
 		}
 		if(this.omega !== null){
@@ -1555,7 +1555,7 @@ Flow.method("apply", function(timeChange, oldTime, newTime) {
 				out_rate = rate.fullClone().collapseDimensions(v);
 				collapsed = true;
 			}else if((v instanceof Vector) && ( (!(rate instanceof Vector)) || v.depth() > rate.depth()) ){
-				error(getText("The omega of the flow is a vector with a higher order than the flow rate. There has to be at least one element in the flow rate for each element in the omega."), this, true)
+				error(getText("流的 Omega 是阶数高于流速的向量。流速中必须至少有一个元素对应于 Omega 中的每个元素。"), this, true)
 			}
 		}
 
@@ -1608,22 +1608,22 @@ Flow.method("apply", function(timeChange, oldTime, newTime) {
 					var vec = functionBank["flatten"]([plus(this.omega.level.toNum(), rate)]);
 					for(var i=0; i<vec.items.length; i++){
 						if (vec.items[i].value < 0 ) {
-							error(getText("Inconsistent non-negative constraints for flow."), this, false);
+							error(getText("流的非负约束不一致。"), this, false);
 						}
 					}
 				}else{
 					if (plus(this.omega.level.toNum(), rate).value < 0) {
 
-						error(getText("Inconsistent non-negative constraints for flow."), this, false);
+						error(getText("流的非负约束不一致。"), this, false);
 					}
 				}
 			}
 		}else{
 			if (this.alpha !== null && this.alpha.dna.nonNegative) {
-				error(getText("Cannot use non-negative stocks when the flow rate is a vector that needs to be collapsed."), this.alpha, false);
+				error(getText("当流速是需要折叠的向量时，无法使用非负库。"), this.alpha, false);
 			}
 			if (this.omega !== null && this.omega.dna.nonNegative) {
-				error(getText("Cannot use non-negative stocks when the flow rate is a vector that needs to be collapsed."), this.omega, false);
+				error(getText("当流速是需要折叠的向量时，无法使用非负库。"), this.omega, false);
 			}
 		}
 
@@ -1656,9 +1656,9 @@ Flow.method("apply", function(timeChange, oldTime, newTime) {
 			}
 
 			if(err == "MSG: Keys do not match for vector operation."){
-				error(getText("Incompatible vector keys for flow %s and connected stock %s.", "<i>["+clean(this.dna.name)+"]</i>", "<i>["+clean(stock.dna.name)+"]</i>"), this, false);
+				error(getText("流 %s 和连接的库 %s 的向量键不兼容。", "<i>["+clean(this.dna.name)+"]</i>", "<i>["+clean(stock.dna.name)+"]</i>"), this, false);
 			}else{
-				error(getText("Incompatible units for flow %s and connected stock %s. Stock has units of %s. The flow should have the equivalent units divided by some time unit such as Years.", "<i>["+clean(this.dna.name)+"]</i>", "<i>["+clean(stock.dna.name)+"]</i>", "<i>"+(stock.dna.units?clean(stock.dna.units.toString()):"unitless")+"</i>"), this, false);
+				error(getText("流 %s 和连接的库 %s 的单位不兼容。库的单位为 %s。流的单位应等价于除以某个时间单位（如年）后的结果。", "<i>["+clean(this.dna.name)+"]</i>", "<i>["+clean(stock.dna.name)+"]</i>", "<i>"+(stock.dna.units?clean(stock.dna.units.toString()):"unitless")+"</i>"), this, false);
 			}
 
 		}

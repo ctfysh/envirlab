@@ -3,7 +3,7 @@
 <html>
 <head>
 	
-    <title>Insight Maker</title>
+    <title>飞行模拟器示例</title>
 
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
@@ -40,23 +40,23 @@
 	<script type="text/javascript" src="../resources/RedBlackTree.js"></script> 
 	<script type="text/javascript" src="../resources/graph.js"></script>
 	
-	<p>Illustrates the use of the Insight Maker simulation engine to creative a simple interactive flight simulator. No dependencies on MxGraph or ExtJS are needed to run this.</p>
+	<p>展示如何使用 Insight Maker 仿真引擎创建简单的交互式飞行模拟器。运行此示例无需依赖 MxGraph 或 ExtJS。</p>
 	
-	<p>Simulated time series for the Users stock from the blank model demo. You can change the growth rate and advance the simulation forward.</p>
+	<p>空白模型演示中 Users 库的模拟时间序列。您可以更改增长率并推进模拟。</p>
 	
     <table>
 		<thead>
-		  <tr><th>Time</th><th>Growth Rate</th><th>Users</th></tr>
+		  <tr><th>时间</th><th>增长率</th><th>用户数</th></tr>
 	    </thead>
 		<tbody>
 		</tbody>
 	</table>
 	
 	<br/>
-	Growth Rate: <input type="text" id="rate"/> <button onclick="updateSimulation()">Advance</button>
+	增长率：<input type="text" id="rate"/> <button onclick="updateSimulation()">前进</button>
 	
 	<br/><br/>
-	<button onclick="restartSimulation()">Restart</button>
+	<button onclick="restartSimulation()">重新开始</button>
 	
 	<script>
 		function isLocal(){
@@ -124,7 +124,7 @@
 				simulateController.setValue(ratePrimitive, document.getElementById("rate").value);
 				simulateController.resume();
 			}else{
-				alert("Simulation is at its final step, you must Restart it to continue.");
+				alert("模拟已到达最后一步，必须重新开始才能继续。");
 			}
 		}
 		
