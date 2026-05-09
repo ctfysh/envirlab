@@ -486,10 +486,21 @@ function main() {
 			if (cell.value.nodeName == "Link" && orig(cell).getAttribute("name") == "Link") {
 				return "";
 			} else {
-				return clean(orig(cell).getAttribute("name"));
+				var name = orig(cell).getAttribute("name");
+				if (cell.value.nodeName == "Text" && isTrue(cell.getAttribute("UseMathJax"))) {
+					return '<span class="mathjax-content">' + clean(name) + '</span>';
+				}
+				return clean(name);
 			}
 		}
 		return '';
+	};
+
+	graph.isHtmlLabel = function(cell) {
+		if (cell && cell.value && cell.value.nodeName == "Text" && isTrue(cell.getAttribute("UseMathJax"))) {
+			return true;
+		}
+		return false;
 	};
 
 	var cellLabelChanged = graph.cellLabelChanged;
@@ -519,6 +530,25 @@ function main() {
 
 	setupHoverIcons();
 
+	var mathJaxTimer;
+	function triggerMathJax() {
+		clearTimeout(mathJaxTimer);
+		mathJaxTimer = setTimeout(function() {
+			if (typeof MathJax === 'undefined' || !MathJax.typesetPromise || !graph || !graph.container) return;
+			var elements = graph.container.querySelectorAll('.mathjax-content');
+			if (elements.length > 0) {
+				MathJax.typesetPromise([].slice.call(elements)).catch(function(err) {
+					console.log('MathJax typeset error:', err);
+				});
+			}
+		}, 150);
+	}
+	graph.getModel().addListener(mxEvent.CHANGE, function() {
+		triggerMathJax();
+	});
+
+	// Initial render: trigger MathJax once graph is loaded and any async CDN script has arrived
+	triggerMathJax();
 
 	mxPanel = Ext.create('Ext.Component', {
 		border: false,
@@ -2023,6 +2053,14 @@ function main() {
 			});
 		} else if (cellType == "Picture") {
 			bottomDesc = descBase + "图片可以让你的模型图变得活跃起来。 使用主工具栏的“样式”菜单中的图片设置更改图片。" + descriptionLink("/diagramming", "Modeling Diagramming");
+		} else if (cellType == "Text") {
+			bottomDesc = descBase + "文本框用于注释模型。勾选“使用数学公式”后，标签内容将被MathJax渲染，支持LaTeX数学公式语法。";
+			properties.push({
+				'name': 'UseMathJax',
+				'text': '使用数学公式',
+				'value': isTrue(cell.getAttribute("UseMathJax")),
+				'group': '  ' + getText('配置')
+			});
 		}
 		configPanel.removeAll();
 

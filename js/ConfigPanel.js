@@ -236,6 +236,11 @@ function saveConfigRecord(record, selectedPrimitive){
             setLabelPosition(selectedPrimitive);
         }
 
+        if (itemId == "UseMathJax") {
+            graph.view.invalidate(selectedPrimitive, true, true);
+            graph.view.validate();
+        }
+
     }
     finally
     {

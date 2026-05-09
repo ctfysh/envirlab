@@ -17,6 +17,7 @@ var doc = document.implementation.createDocument("", "", null);
 primitiveBank.text = doc.createElement('Text');
 primitiveBank.text.setAttribute('name', getText('文本区域'));
 primitiveBank.text.setAttribute('LabelPosition', "Middle");
+primitiveBank.text.setAttribute('UseMathJax', false);
 
 primitiveBank.folder = doc.createElement('Folder');
 primitiveBank.folder.setAttribute('name', getText('新文件夹'));

@@ -15,6 +15,7 @@
 - 模型保存与加载（本地文件下载）
 - **多格式导入/导出**：InsightMaker XML (`.evl`)、ModelJSON (`.json`)、XMILE (`.xmile`)
 - 中文界面
+- **MathJax 数学公式渲染**：文本框支持 LaTeX 数学公式（行内 `\(...\)` 与行间 `$$...$$`）
 
 ---
 
@@ -85,6 +86,7 @@ XMILE 导入使用 xmldom（已内置于 `js/xmldom.js`）进行解析，输出�
 | ACE Editor | 代码/公式编辑器                        |
 | jQuery     | DOM 操作                               |
 | Raphaël   | 矢量图形渲染                           |
+| MathJax 3 | 数学公式渲染（LaTeX 行内/行间公式）    |
 
 ---
 
@@ -92,6 +94,7 @@ XMILE 导入使用 xmldom（已内置于 `js/xmldom.js`）进行解析，输出�
 
 ### 2026-05-09
 
+- **文本框 MathJax 数学公式支持**：Text 图元新增"使用数学公式"选项，勾选后标签支持 LaTeX 数学公式渲染（`$$...$$` 行间公式，`\(...\)` 行内公式）。使用 MathJax 3（tex-mml-chtml），仅对勾选的文本框进行渲染，不影响其他图元。
 - **JSON 导入/导出**：新增 ModelJSON 格式的导入（`js/ModelImporter.js` / `importModelJSON`）与导出（`exportModelJSON`）功能。导出从 mxCodec XML 中提取单元格属性与几何数据；导入将 JSON 还原为 mxGraph XML 后解码到画布。
 - **XMILE 导入/导出**：新增 `js/XMILEImporter.js`，实现 XMILE ↔ SimpleNode 树的双向转换，支持 OASIS XMILE v1.0 标准的 `<stock>`、`<flow>`、`<aux>`、`<connector>`、`<sim_specs>` 元素。
 - **UI 菜单**：在导入菜单新增"JSON 文件..."，导出菜单新增"下载 JSON"；XMILE 导入按钮保留在导入菜单中。
