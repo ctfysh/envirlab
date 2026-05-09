@@ -13,6 +13,7 @@
 - 系统动力学建模（Stock/Flow 图、Agent 建模）
 - 仿真模拟与结果可视化
 - 模型保存与加载（本地文件下载）
+- **多格式导入/导出**：InsightMaker XML (`.evl`)、ModelJSON (`.json`)、XMILE (`.xmile`)
 - 中文界面
 
 ---
@@ -36,6 +37,45 @@
 
 ---
 
+## 文件格式
+
+平台支持三种模型文件格式，可在 **文件 → 导入/导出** 菜单中访问：
+
+| 格式 | 扩展名 | 说明 |
+| ---- | ------ | ---- |
+| **InsightMaker XML** | `.evl` | 原生 mxGraph 编码格式，完整保留所有模型信息（含 UI 布局、显示配置等）。 |
+| **ModelJSON** | `.json` | 轻量 JSON 格式，适合程序化处理与跨工具交换。可通过 `ModelJSON.js` 在 Node.js 中读写。 |
+| **XMILE** | `.xmile` | OASIS XMILE v1.0 标准格式，用于与其他系统动力学工具（如 Stella、Vensim）交换模型。 |
+
+### ModelJSON 格式
+
+```json
+{
+  "format": "InsightMaker-ModelJSON",
+  "version": 1,
+  "setting": { "TimeStart": "0", "TimeLength": "100", "TimeStep": "1", ... },
+  "elements": [
+    { "type": "Stock", "id": "3", "name": "库存", "InitialValue": "0", "geometry": { "x": 200, "y": 200, "width": 100, "height": 40 } },
+    { "type": "Flow",  "id": "4", "name": "流入", "value": "rate", "sourceId": "3", "targetId": "5", "geometry": { "sourcePoint": { "x": 300, "y": 220 }, "targetPoint": { "x": 400, "y": 220 } } },
+    { "type": "Variable", "id": "5", "name": "变量", "value": "10", "geometry": { "x": 400, "y": 200, "width": 100, "height": 40 } }
+  ]
+}
+```
+
+示例文件位于 `examples/` 目录：
+- `pflow_sim_story.evl` / `pflow_sim_story.json` — 畜禽养殖磷流模拟（故事版）
+- `pflow_sim_slide.evl` / `pflow_sim_slide.json` — 畜禽养殖磷流模拟（幻灯片版）
+
+### XMILE
+
+XMILE 导入使用 xmldom（已内置于 `js/xmldom.js`）进行解析，输出为 InsightMaker XML 后再加载到画布。
+转换逻辑位于 `js/XMILEImporter.js`，支持 `<stock>`、`<flow>`、`<aux>`、`<connector>`、`<sim_specs>` 等基本元素类型。
+
+> `examples/` 目录下的 `.json` 文件由 `loadInsightMaker()` + `toModelJSON()` 自动生成，
+> 可用 `importModelJSON()` 重新导入。
+
+---
+
 ## 主要依赖
 
 | 库         | 用途                                   |
@@ -49,6 +89,13 @@
 ---
 
 ## 修改记录
+
+### 2026-05-09
+
+- **JSON 导入/导出**：新增 ModelJSON 格式的导入（`js/ModelImporter.js` / `importModelJSON`）与导出（`exportModelJSON`）功能。导出从 mxCodec XML 中提取单元格属性与几何数据；导入将 JSON 还原为 mxGraph XML 后解码到画布。
+- **XMILE 导入/导出**：新增 `js/XMILEImporter.js`，实现 XMILE ↔ SimpleNode 树的双向转换，支持 OASIS XMILE v1.0 标准的 `<stock>`、`<flow>`、`<aux>`、`<connector>`、`<sim_specs>` 元素。
+- **UI 菜单**：在导入菜单新增"JSON 文件..."，导出菜单新增"下载 JSON"；XMILE 导入按钮保留在导入菜单中。
+- **示例文件**：将 `examples/` 中的 `.evl` 模型文件批量转换为 JSON 格式，便于程序化访问。
 
 ### 2026-05-08
 

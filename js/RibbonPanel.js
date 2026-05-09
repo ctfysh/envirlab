@@ -1531,6 +1531,10 @@ var RibbonPanel = function(graph, mainPanel, configPanel) {
                                 '-', {
                                     text: getText("XMILE 文件... <span style='color: #bbb'>(测试)<span>"),
                                     handler: importXMILE
+                                },
+                                '-', {
+                                    text: getText("JSON 文件..."),
+                                    handler: importModelJSON
                                 }
 
                             ]
@@ -1543,6 +1547,10 @@ var RibbonPanel = function(graph, mainPanel, configPanel) {
                                     handler: function() {
                                         downloadFile("Model.InsightMaker", getGraphXml(graph).replace(/mxGraphModel/g, "InsightMakerModel"),"text/xml");
                                     }
+                                },
+                                {
+                                    text: getText("下载 JSON"),
+                                    handler: exportModelJSON
                                 }, '-',
                                 {
                                     /*hidden: (!is_editor),*/
