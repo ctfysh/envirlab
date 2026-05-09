@@ -1523,10 +1523,11 @@ var RibbonPanel = function(graph, mainPanel, configPanel) {
 											y: 100
 										});
 									}
-                                }, */{
+                                }, /*{
+                                    // 已注释: 与"开始→文件→加载"功能重复
                                     text: getText("文件..."),
                                     handler: importInsightMaker
-                                },
+                                },*/
 
                                 '-', {
                                     text: getText("XMILE 文件... <span style='color: #bbb'>(测试)<span>"),
@@ -1542,12 +1543,13 @@ var RibbonPanel = function(graph, mainPanel, configPanel) {
                             hidden: (!is_editor),
                             text: "导出",
                             glyph: 0xf019,
-                            menu: [{
+                            menu: [/*{
+                                    // 已注释: 与"开始→文件→保存"功能重复
                                     text: getText("下载"),
                                     handler: function() {
                                         downloadFile("Model.InsightMaker", getGraphXml(graph).replace(/mxGraphModel/g, "InsightMakerModel"),"text/xml");
                                     }
-                                },
+                                },*/
                                 {
                                     text: getText("下载 JSON"),
                                     handler: exportModelJSON

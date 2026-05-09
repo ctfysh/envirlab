@@ -30,9 +30,9 @@ function getModelXML2() {
 	return xml_data;
 }
 
-// Makes a new model
+// Makes a new model — reload page to fully reset all settings and state
 function newModel() {
-	clearModel();
+	location.reload();
 }
 
 // High-level File manager. Does save and load of models

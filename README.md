@@ -96,6 +96,8 @@ XMILE 导入使用 xmldom（已内置于 `js/xmldom.js`）进行解析，输出�
 - **XMILE 导入/导出**：新增 `js/XMILEImporter.js`，实现 XMILE ↔ SimpleNode 树的双向转换，支持 OASIS XMILE v1.0 标准的 `<stock>`、`<flow>`、`<aux>`、`<connector>`、`<sim_specs>` 元素。
 - **UI 菜单**：在导入菜单新增"JSON 文件..."，导出菜单新增"下载 JSON"；XMILE 导入按钮保留在导入菜单中。
 - **示例文件**：将 `examples/` 中的 `.evl` 模型文件批量转换为 JSON 格式，便于程序化访问。
+- **去重 UI 菜单**：注释掉"分享 → 导入 → 文件..."（与"开始 → 文件 → 加载"重复）和"分享 → 导出 → 下载"（与"开始 → 文件 → 保存"重复）。
+- **新建重置**："开始 → 文件 → 新建"改为 `location.reload()`，确保所有设置和状态彻底重置。
 
 ### 2026-05-08
 
