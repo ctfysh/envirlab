@@ -78,7 +78,7 @@ function textEquations(){
 	if(items.length>0){
 		divide(getText("模型流"));
 		for(var i=0; i<items.length; i++){
-			add(name(items[i]), list( addNote([ [getText("速率"), equationRenderer(getValue(items[i]), true)], [getText("Alpha"), clean(name(items[i].source))], [getText("Omega"), clean(name(items[i].target))], [getText("正数"), boolYesNo(items[i].getAttribute("OnlyPositive"))], [getText("单位"), clean(items[i].getAttribute("Units"))] ], items[i]) ))
+			add(name(items[i]), list( addNote([ [getText("速率"), equationRenderer(getValue(items[i]), true)], [getText("源"), clean(name(items[i].source))], [getText("汇"), clean(name(items[i].target))], [getText("正数"), boolYesNo(items[i].getAttribute("OnlyPositive"))], [getText("单位"), clean(items[i].getAttribute("Units"))] ], items[i]) ))
 		}
 	}
 	items = findAndSort("Converter");
@@ -178,6 +178,96 @@ function textEquations(){
         height:  Math.min(Ext.getBody().getViewSize().height, 500),
         items: [{title: getText("公式"), xtype: "box", html: html, style: "background-color: white", autoScroll: true}],
         buttons: [
+        {
+            scale: "large",
+            glyph: 0xf0ed,
+            text: getText('下载 CSV'),
+            handler: function() {
+                function escCsv(val) {
+                    if (val == null) return '""';
+                    var s = String(val).replace(/"/g, '""');
+                    return '"' + s + '"';
+                }
+
+                function namePlain(item) {
+                    if (item && item != null) {
+                        return item.getAttribute("name") || "";
+                    }
+                    return getText("无");
+                }
+
+                var csvRows = [];
+                csvRows.push(escCsv(getText('类型')) + ',' + escCsv(getText('名称')) + ',' + escCsv(getText('属性')) + ',' + escCsv(getText('值')));
+
+                var mySetting = getSetting();
+                function addCsv(cat, itemName, prop, val) {
+                    csvRows.push(escCsv(cat) + ',' + escCsv(itemName) + ',' + escCsv(prop) + ',' + escCsv(val));
+                }
+
+                addCsv(getText('模拟设置'), '', getText('开始时间'), mySetting.getAttribute("TimeStart"));
+                addCsv(getText('模拟设置'), '', getText('时间长度'), mySetting.getAttribute("TimeLength"));
+                addCsv(getText('模拟设置'), '', getText('时间步长'), mySetting.getAttribute("TimeStep"));
+                addCsv(getText('模拟设置'), '', getText('时间单位'), mySetting.getAttribute("TimeUnits"));
+                addCsv(getText('模拟设置'), '', getText('算法'), mySetting.getAttribute("SolutionAlgorithm"));
+
+                function extractCsv(label, catLabel, props) {
+                    var items = findAndSort(label);
+                    for (var i = 0; i < items.length; i++) {
+                        var n = namePlain(items[i]);
+                        for (var j = 0; j < props.length; j++) {
+                            addCsv(catLabel, n, props[j][0], props[j][1](items[i]));
+                        }
+                        if (items[i].getAttribute("Note")) {
+                            addCsv(catLabel, n, getText('注释'), items[i].getAttribute("Note"));
+                        }
+                    }
+                }
+
+                extractCsv("Variable", getText('模型变量'), [
+                    [getText('值'), function(item) { return getValue(item); }],
+                    [getText('单位'), function(item) { return item.getAttribute("Units") || ""; }]
+                ]);
+
+                extractCsv("Stock", getText('模型库'), [
+                    [getText('初始值'), function(item) { return getValue(item); }],
+                    [getText('非负'), function(item) { return boolYesNo(item.getAttribute("NonNegative")); }],
+                    [getText('单位'), function(item) { return item.getAttribute("Units") || ""; }]
+                ]);
+
+                extractCsv("Flow", getText('模型流'), [
+                    [getText('速率'), function(item) { return getValue(item); }],
+                    [getText('源'), function(item) { return namePlain(item.source); }],
+                    [getText('汇'), function(item) { return namePlain(item.target); }],
+                    [getText('正数'), function(item) { return boolYesNo(item.getAttribute("OnlyPositive")); }],
+                    [getText('单位'), function(item) { return item.getAttribute("Units") || ""; }]
+                ]);
+
+                extractCsv("Converter", getText('模型转换器'), [
+                    [getText('数据'), function(item) { return getValue(item).replace(/\;/g, "; "); }],
+                    [getText('源'), function(item) { return item.getAttribute("Source") == "Time" ? "Time" : namePlain(findID(item.getAttribute("Source"))); }],
+                    [getText('插值'), function(item) { return item.getAttribute("Interpolation") || ""; }],
+                    [getText('单位'), function(item) { return item.getAttribute("Units") || ""; }]
+                ]);
+
+                extractCsv("State", getText('模型状态'), [
+                    [getText('初始活跃'), function(item) { return getValue(item); }]
+                ]);
+
+                extractCsv("Transition", getText('模型转换'), [
+                    [getText('触发'), function(item) { return item.getAttribute("Trigger") || ""; }],
+                    [getText('值'), function(item) { return getValue(item); }]
+                ]);
+
+                extractCsv("Action", getText('模型动作'), [
+                    [getText('触发'), function(item) { return item.getAttribute("Trigger") || ""; }],
+                    [getText('触发值'), function(item) { return item.getAttribute("Value") || ""; }],
+                    [getText('动作'), function(item) { return getValue(item); }]
+                ]);
+
+                var csvContent = csvRows.join('\n');
+                downloadFile(getText("公式列表") + ".csv", "\ufeff" + csvContent, "text/csv;charset=utf-8");
+            }
+        },
         "->",
         {
             scale: "large",

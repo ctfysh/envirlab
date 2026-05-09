@@ -653,7 +653,7 @@ var RibbonPanel = function(graph, mainPanel, configPanel) {
         displayField: 'label',
         valueField: 'size',
         queryMode: 'local',
-        width: 50,
+        width: 120,
         triggerAction: 'all',
         emptyText: '字体大小...',
         selectOnFocus: true,
@@ -1117,7 +1117,7 @@ var RibbonPanel = function(graph, mainPanel, configPanel) {
                             glyph: 0xf115,
                             /*0xf115 alternative icon we could have used */
                             text: getText('加载'),
-                            tooltip: getText('加载模型'),
+                            tooltip: getText('加载模型 (.evl / .json / .xmile)'),
                             handler: FileManagerWeb.loadModel,
                             scope: this
                         },
@@ -1513,66 +1513,19 @@ var RibbonPanel = function(graph, mainPanel, configPanel) {
                         },
                         '-', {
                             hidden: (!is_editor),
-                            text: "导入",
-                            glyph: 0xf093,
-                            menu: [/*{
-									text: getText("链接..."),
-									handler: function() {
-										showInsertModelWindow({
-											x: 200,
-											y: 100
-										});
-									}
-                                }, /*{
-                                    // 已注释: 与"开始→文件→加载"功能重复
-                                    text: getText("文件..."),
-                                    handler: importInsightMaker
-                                },*/
-
-                                // '-', 
-                                {
-                                    text: getText("XMILE 文件... <span style='color: #bbb'>(测试)<span>"),
-                                    handler: importXMILE
-                                },
-                                '-', {
-                                    text: getText("JSON 文件..."),
-                                    handler: importModelJSON
-                                }
-
-                            ]
-                        }, {
+                            itemId: 'textBut',
+                            text: getText('完整的公式列表'),
+                            tooltip: getText('模型中所有方程的列表'),
+                            handler: textEquations,
+                            scope: this
+                        },
+                        {
                             hidden: (!is_editor),
-                            text: "导出",
-                            glyph: 0xf019,
-                            menu: [/*{
-                                    // 已注释: 与"开始→文件→保存"功能重复
-                                    text: getText("下载"),
-                                    handler: function() {
-                                        downloadFile("Model.InsightMaker", getGraphXml(graph).replace(/mxGraphModel/g, "InsightMakerModel"),"text/xml");
-                                    }
-                                },*/
-                                {
-                                    text: getText("下载 JSON"),
-                                    handler: exportModelJSON
-                                }, '-',
-                                {
-                                    /*hidden: (!is_editor),*/
-                                    itemId: 'textBut',
-                                    text: getText('完整的公式列表'),
-                                    /*glyph: 0xf03a,*/
-                                    tooltip: getText('模型中所有方程的列表'),
-                                    handler: textEquations,
-                                    scope: this
-                                },
-                                {
-                                    glyph: 0xf1c5,
-                                    text: getText("导出SVG"),
-                                    handler: function() {
-                                        exportSvg();
-                                    }
-                                }
-
-                            ]
+                            glyph: 0xf1c5,
+                            text: getText("导出SVG"),
+                            handler: function() {
+                                exportSvg();
+                            }
                         }
                     ],
                     glyph: 0xf1e0
