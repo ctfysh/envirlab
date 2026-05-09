@@ -1529,7 +1529,8 @@ var RibbonPanel = function(graph, mainPanel, configPanel) {
                                     handler: importInsightMaker
                                 },*/
 
-                                '-', {
+                                // '-', 
+                                {
                                     text: getText("XMILE 文件... <span style='color: #bbb'>(测试)<span>"),
                                     handler: importXMILE
                                 },

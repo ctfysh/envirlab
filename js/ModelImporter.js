@@ -78,8 +78,17 @@ function showInsertModelWindow(pt) {
 						graph.getModel().endUpdate();
 
 
-	clearPrimitiveCache();
-	setAllConnectable();
+						clearPrimitiveCache();
+						setAllConnectable();
+					}
+				},
+				error: function() {
+					mxUtils.alert("Model could not be inserted. Please ensure the morel URL is correct.");
+					progress.close();
+				}
+			})
+		}
+	})
 }
 
 // ========================================================================
@@ -101,248 +110,109 @@ function modelJSONToInsightMakerXML(json) {
 			.replace(/>/g, '&gt;');
 	}
 
+	var mxCellAttrMap = { parent: true, style: true, vertex: true, edge: true,
+		source: true, target: true, visible: true };
+	function isMxCellAttr(k) { return mxCellAttrMap.hasOwnProperty(k); }
+
+	var skipKeyMap = { type: true, id: true, geometry: true, sourceId: true,
+		targetId: true, parentId: true, _xmlId: true };
+	function isSkipped(k) { return skipKeyMap.hasOwnProperty(k) || k.charAt(0) === '_'; }
+
+	var connectorTypes = { Flow: true, Link: true, Transition: true };
+
 	var lines = [];
 	lines.push('<InsightMakerModel>');
 	lines.push('  <root>');
-	lines.push('    <mxCell id="0" />');
-	lines.push('    <mxCell id="1" parent="0" />');
+	lines.push('    <mxCell id="0"/>');
+	lines.push('    <mxCell id="1" parent="0"/>');
 
 	var idCounter = 100;
 	function nextId() { return String(++idCounter); }
 
-	var connectorTypes = { Flow: true, Link: true, Transition: true };
-	var skipKeys = ['type', 'id', 'geometry', 'sourceId', 'targetId', 'parentId', '_xmlId'];
-
-	function buildAttrs(obj) {
+	function primAttrs(el) {
 		var s = '';
-		for (var key in obj) {
-			if (skipKeys.indexOf(key) >= 0) continue;
-			if (key.charAt(0) === '_') continue;
-			s += ' ' + key + '="' + esc(obj[key]) + '"';
+		for (var key in el) {
+			if (isSkipped(key) || isMxCellAttr(key)) continue;
+			s += ' ' + key + '="' + esc(el[key]) + '"';
 		}
 		return s;
 	}
 
+	function emitVertex(el, isSetting) {
+		var id = el.id || nextId();
+		var type = isSetting ? 'Setting' : (el.type || 'Unknown');
+		var style = el.style || type.toLowerCase();
+		var parent = el.parent || '1';
+		var visible = (isSetting || el.visible === '0' || el.visible === 0) ? ' visible="0"' : '';
+		var g = el.geometry || {};
+		var gx = g.x || 0, gy = g.y || 0, gw = g.width || 100, gh = g.height || 40;
+
+		lines.push('    <' + type + primAttrs(el) + ' id="' + id + '">');
+		lines.push('      <mxCell parent="' + parent + '" vertex="1" style="' + esc(style) + '"' + visible + '>');
+		lines.push('        <mxGeometry x="' + gx + '" y="' + gy + '" width="' + gw + '" height="' + gh + '" as="geometry"/>');
+		lines.push('      </mxCell>');
+		lines.push('    </' + type + '>');
+	}
+
+	function emitConnector(el) {
+		var id = el.id || nextId();
+		var type = el.type;
+		var style = el.style || type.toLowerCase();
+		var src = el.sourceId || '';
+		var tgt = el.targetId || '';
+		var g = el.geometry || {};
+
+		lines.push('    <' + type + primAttrs(el) + ' id="' + id + '">');
+		var cellLine = '      <mxCell parent="1" edge="1" style="' + esc(style) + '"';
+		if (src) cellLine += ' source="' + src + '"';
+		if (tgt) cellLine += ' target="' + tgt + '"';
+		cellLine += '>';
+		lines.push(cellLine);
+
+		if (g.sourcePoint || g.targetPoint) {
+			lines.push('        <mxGeometry as="geometry">');
+			if (g.sourcePoint) {
+				lines.push('          <mxPoint x="' + (g.sourcePoint.x || 0) + '" y="' +
+					(g.sourcePoint.y || 0) + '" as="sourcePoint"/>');
+			}
+			if (g.targetPoint) {
+				lines.push('          <mxPoint x="' + (g.targetPoint.x || 0) + '" y="' +
+					(g.targetPoint.y || 0) + '" as="targetPoint"/>');
+			}
+			lines.push('        </mxGeometry>');
+		} else if (g.x != null || g.y != null) {
+			lines.push('        <mxGeometry x="' + (g.x || 0) + '" y="' + (g.y || 0) +
+				'" width="100" height="100" as="geometry"/>');
+		} else {
+			lines.push('        <mxGeometry as="geometry"/>');
+		}
+
+		lines.push('      </mxCell>');
+		lines.push('    </' + type + '>');
+	}
+
 	if (json.setting && Object.keys(json.setting).length > 0) {
-		var sid = json.setting.id || "2";
-		lines.push('    <mxCell id="' + sid + '" parent="1" vertex="1" style="setting"' + buildAttrs(json.setting) + '>');
-		lines.push('      <Setting' + buildAttrs(json.setting) + ' />');
-		var sg = json.setting.geometry || {};
-		lines.push('      <mxGeometry x="' + (sg.x || 10) + '" y="' + (sg.y || 10) +
-			'" width="' + (sg.width || 80) + '" height="' + (sg.height || 40) + '" as="geometry" />');
-		lines.push('    </mxCell>');
+		emitVertex(json.setting, true);
 	}
 
 	for (var i = 0; i < json.elements.length; i++) {
 		var el = json.elements[i];
-		if (connectorTypes[el.type]) continue;
-
-		var id = el.id || nextId();
-		el._xmlId = id;
-
-		lines.push('    <mxCell id="' + id + '" parent="1" vertex="1" style="' + el.type.toLowerCase() + '"' + buildAttrs(el) + '>');
-		lines.push('      <' + el.type + buildAttrs(el) + ' />');
-		if (el.geometry) {
-			lines.push('      <mxGeometry x="' + (el.geometry.x || 0) + '" y="' + (el.geometry.y || 0) +
-				'" width="' + (el.geometry.width || 100) + '" height="' + (el.geometry.height || 40) + '" as="geometry" />');
-		} else {
-			lines.push('      <mxGeometry x="0" y="0" width="100" height="40" as="geometry" />');
+		if (!connectorTypes[el.type]) {
+			emitVertex(el, false);
 		}
-		lines.push('    </mxCell>');
 	}
 
 	for (var i = 0; i < json.elements.length; i++) {
 		var el = json.elements[i];
-		if (!connectorTypes[el.type]) continue;
-
-		var id = el.id || nextId();
-
-		var line = '    <mxCell id="' + id + '" parent="1" edge="1" style="' + el.type.toLowerCase() + '"' + buildAttrs(el);
-		if (el.sourceId) line += ' source="' + el.sourceId + '"';
-		if (el.targetId) line += ' target="' + el.targetId + '"';
-		line += '>';
-		lines.push(line);
-		lines.push('      <' + el.type + buildAttrs(el) + ' />');
-		if (el.geometry && (el.geometry.sourcePoint || el.geometry.targetPoint)) {
-			lines.push('      <mxGeometry as="geometry">');
-			if (el.geometry.sourcePoint) {
-				lines.push('        <mxPoint x="' + el.geometry.sourcePoint.x + '" y="' +
-					el.geometry.sourcePoint.y + '" as="sourcePoint" />');
-			}
-			if (el.geometry.targetPoint) {
-				lines.push('        <mxPoint x="' + el.geometry.targetPoint.x + '" y="' +
-					el.geometry.targetPoint.y + '" as="targetPoint" />');
-			}
-			lines.push('      </mxGeometry>');
-		} else {
-			lines.push('      <mxGeometry as="geometry" />');
+		if (connectorTypes[el.type]) {
+			emitConnector(el);
 		}
-		lines.push('    </mxCell>');
 	}
 
 	lines.push('  </root>');
 	lines.push('</InsightMakerModel>');
 
 	return lines.join('\n');
-}
-
-function importModelJSON() {
-	openFile({
-		read: "text",
-		multiple: false,
-		onCompleted: function(result) {
-			try {
-				var json = JSON.parse(result.contents);
-				var xml = modelJSONToInsightMakerXML(json);
-				importMXGraph(xml);
-				if (typeof showNotification === 'function') {
-					showNotification("JSON 模型导入成功。", "notice");
-				}
-			} catch(e) {
-				var msg = "无法导入 JSON 模型文件。请确保选择了有效的 ModelJSON 文件。";
-				if (typeof showNotification === 'function') {
-					showNotification(msg, "error");
-				} else {
-					alert(msg);
-				}
-				if (typeof console !== 'undefined') console.log(e);
-			}
-		}
-	});
-}
-
-function exportModelJSON() {
-	try {
-		var enc = new mxCodec(mxUtils.createXmlDocument());
-		var modelNode = enc.encode(graph.getModel());
-
-		var root = null;
-		for (var ci = 0; ci < modelNode.childNodes.length; ci++) {
-			var child = modelNode.childNodes[ci];
-			if (child.nodeType === 1 && child.tagName === 'root') {
-				root = child;
-				break;
-			}
-		}
-		if (!root && modelNode.firstElementChild) {
-			root = modelNode.firstElementChild;
-		}
-
-		var elements = [];
-		var setting = null;
-
-		if (root) {
-			for (var i = 0; i < root.childNodes.length; i++) {
-				var cellEl = root.childNodes[i];
-				if (cellEl.nodeType !== 1 || cellEl.tagName !== 'mxCell') continue;
-
-				var id = cellEl.getAttribute('id');
-				if (id === '0' || id === '1') continue;
-
-				var typeEl = null;
-				var geoEl = null;
-				for (var j = 0; j < cellEl.childNodes.length; j++) {
-					var ch = cellEl.childNodes[j];
-					if (ch.nodeType !== 1) continue;
-					if (ch.tagName === 'mxGeometry') {
-						geoEl = ch;
-					} else if (!typeEl) {
-						typeEl = ch;
-					}
-				}
-
-				if (!typeEl) {
-					var val = cellEl.getAttribute('value');
-					if (val) {
-						typeEl = { tagName: val, getAttribute: function() { return ''; }, attributes: [] };
-					} else {
-						continue;
-					}
-				}
-
-				var type = (typeEl.tagName === 'mxCell' && cellEl.getAttribute('value')) ?
-					cellEl.getAttribute('value') : typeEl.tagName;
-
-				var el = { type: type, id: id };
-
-				for (var j = 0; j < cellEl.attributes.length; j++) {
-					var attr = cellEl.attributes[j];
-					var name = attr.name;
-					if (name === 'id' || name === 'parent' || name === 'style' ||
-						name === 'vertex' || name === 'edge' || name === 'source' ||
-						name === 'target' || name === 'value') continue;
-					el[name] = attr.value;
-				}
-
-				if (typeEl.attributes) {
-					for (var j = 0; j < typeEl.attributes.length; j++) {
-						var attr = typeEl.attributes[j];
-						if (attr.name === 'xmlns') continue;
-						el[attr.name] = attr.value;
-					}
-				}
-
-				var source = cellEl.getAttribute('source');
-				var target = cellEl.getAttribute('target');
-				if (source) el.sourceId = source;
-				if (target) el.targetId = target;
-
-				if (geoEl) {
-					el.geometry = {};
-					var x = geoEl.getAttribute('x');
-					var y = geoEl.getAttribute('y');
-					var w = geoEl.getAttribute('width');
-					var h = geoEl.getAttribute('height');
-					if (x) el.geometry.x = parseFloat(x);
-					if (y) el.geometry.y = parseFloat(y);
-					if (w) el.geometry.width = parseFloat(w);
-					if (h) el.geometry.height = parseFloat(h);
-
-					var pts = geoEl.getElementsByTagName('mxPoint');
-					for (var k = 0; k < pts.length; k++) {
-						var pt = pts[k];
-						var as = pt.getAttribute('as');
-						var px = parseFloat(pt.getAttribute('x'));
-						var py = parseFloat(pt.getAttribute('y'));
-						if (as === 'sourcePoint') el.geometry.sourcePoint = { x: px, y: py };
-						else if (as === 'targetPoint') el.geometry.targetPoint = { x: px, y: py };
-					}
-				}
-
-				if (type === 'Setting') {
-					setting = el;
-				} else {
-					elements.push(el);
-				}
-			}
-		}
-
-		var json = {
-			format: "InsightMaker-ModelJSON",
-			version: 1,
-			setting: setting,
-			elements: elements
-		};
-
-		downloadFile("Model.json", JSON.stringify(json, null, 2), "application/json");
-	} catch(e) {
-		var msg = "无法导出模型为 JSON。";
-		if (typeof showNotification === 'function') {
-			showNotification(msg, "error");
-		} else {
-			alert(msg);
-		}
-		if (typeof console !== 'undefined') console.log(e);
-	}
-}
-				},
-				error: function() {
-					mxUtils.alert("Model could not be inserted. Please ensure the morel URL is correct.");
-					progress.close();
-				}
-			})
-		}
-	})
 }
 
 
@@ -864,106 +734,6 @@ function importXMILE() {
 	setAllConnectable();
 }
 
-function modelJSONToInsightMakerXML(json) {
-	if (json.format !== "InsightMaker-ModelJSON") {
-		throw new Error("Unsupported format: " + json.format);
-	}
-
-	function esc(str) {
-		if (str == null) return '';
-		return String(str)
-			.replace(/&/g, '&amp;')
-			.replace(/"/g, '&quot;')
-			.replace(/'/g, '&apos;')
-			.replace(/</g, '&lt;')
-			.replace(/>/g, '&gt;');
-	}
-
-	var lines = [];
-	lines.push('<InsightMakerModel>');
-	lines.push('  <root>');
-	lines.push('    <mxCell id="0" />');
-	lines.push('    <mxCell id="1" parent="0" />');
-
-	var idCounter = 100;
-	function nextId() { return String(++idCounter); }
-
-	var connectorTypes = { Flow: true, Link: true, Transition: true };
-	var skipKeys = ['type', 'id', 'geometry', 'sourceId', 'targetId', 'parentId', '_xmlId'];
-
-	function buildAttrs(obj) {
-		var s = '';
-		for (var key in obj) {
-			if (skipKeys.indexOf(key) >= 0) continue;
-			if (key.charAt(0) === '_') continue;
-			s += ' ' + key + '="' + esc(obj[key]) + '"';
-		}
-		return s;
-	}
-
-	if (json.setting && Object.keys(json.setting).length > 0) {
-		var sid = json.setting.id || "2";
-		lines.push('    <mxCell id="' + sid + '" parent="1" vertex="1" style="setting"' + buildAttrs(json.setting) + '>');
-		lines.push('      <Setting' + buildAttrs(json.setting) + ' />');
-		var sg = json.setting.geometry || {};
-		lines.push('      <mxGeometry x="' + (sg.x || 10) + '" y="' + (sg.y || 10) +
-			'" width="' + (sg.width || 80) + '" height="' + (sg.height || 40) + '" as="geometry" />');
-		lines.push('    </mxCell>');
-	}
-
-	for (var i = 0; i < json.elements.length; i++) {
-		var el = json.elements[i];
-		if (connectorTypes[el.type]) continue;
-
-		var id = el.id || nextId();
-		el._xmlId = id;
-
-		lines.push('    <mxCell id="' + id + '" parent="1" vertex="1" style="' + el.type.toLowerCase() + '"' + buildAttrs(el) + '>');
-		lines.push('      <' + el.type + buildAttrs(el) + ' />');
-		if (el.geometry) {
-			lines.push('      <mxGeometry x="' + (el.geometry.x || 0) + '" y="' + (el.geometry.y || 0) +
-				'" width="' + (el.geometry.width || 100) + '" height="' + (el.geometry.height || 40) + '" as="geometry" />');
-		} else {
-			lines.push('      <mxGeometry x="0" y="0" width="100" height="40" as="geometry" />');
-		}
-		lines.push('    </mxCell>');
-	}
-
-	for (var i = 0; i < json.elements.length; i++) {
-		var el = json.elements[i];
-		if (!connectorTypes[el.type]) continue;
-
-		var id = el.id || nextId();
-
-		var line = '    <mxCell id="' + id + '" parent="1" edge="1" style="' + el.type.toLowerCase() + '"' + buildAttrs(el);
-		if (el.sourceId) line += ' source="' + el.sourceId + '"';
-		if (el.targetId) line += ' target="' + el.targetId + '"';
-		line += '>';
-		lines.push(line);
-		lines.push('      <' + el.type + buildAttrs(el) + ' />');
-		if (el.geometry && (el.geometry.sourcePoint || el.geometry.targetPoint)) {
-			lines.push('      <mxGeometry as="geometry">');
-			if (el.geometry.sourcePoint) {
-				lines.push('        <mxPoint x="' + el.geometry.sourcePoint.x + '" y="' +
-					el.geometry.sourcePoint.y + '" as="sourcePoint" />');
-			}
-			if (el.geometry.targetPoint) {
-				lines.push('        <mxPoint x="' + el.geometry.targetPoint.x + '" y="' +
-					el.geometry.targetPoint.y + '" as="targetPoint" />');
-			}
-			lines.push('      </mxGeometry>');
-		} else {
-			lines.push('      <mxGeometry as="geometry" />');
-		}
-		lines.push('    </mxCell>');
-	}
-
-	lines.push('  </root>');
-	lines.push('</InsightMakerModel>');
-
-	return lines.join('\n');
-}
-
 function importModelJSON() {
 	openFile({
 		read: "text",
@@ -1009,6 +779,10 @@ function exportModelJSON() {
 		var elements = [];
 		var setting = null;
 
+		// mxCell-level attr names to skip when reading from both mxCell and type element
+		var mxCellAttrs = { parent: true, style: true, vertex: true, edge: true,
+			source: true, target: true, visible: true, value: true };
+
 		if (root) {
 			for (var i = 0; i < root.childNodes.length; i++) {
 				var cellEl = root.childNodes[i];
@@ -1043,19 +817,26 @@ function exportModelJSON() {
 
 				var el = { type: type, id: id };
 
+				// Read mxCell attributes (skip cell-level attrs, they belong on mxCell not JSON)
 				for (var j = 0; j < cellEl.attributes.length; j++) {
 					var attr = cellEl.attributes[j];
 					var name = attr.name;
-					if (name === 'id' || name === 'parent' || name === 'style' ||
-						name === 'vertex' || name === 'edge' || name === 'source' ||
-						name === 'target' || name === 'value') continue;
+					if (name === 'id' || mxCellAttrs[name]) continue;
 					el[name] = attr.value;
 				}
 
+				// Capture parent for folder nesting
+				var cellParent = cellEl.getAttribute('parent');
+				if (cellParent && cellParent !== '0' && cellParent !== '1') {
+					el.parentId = cellParent;
+				}
+
+				// Read type element attributes (skip mxCell attrs to keep JSON clean)
 				if (typeEl.attributes) {
 					for (var j = 0; j < typeEl.attributes.length; j++) {
 						var attr = typeEl.attributes[j];
 						if (attr.name === 'xmlns') continue;
+						if (mxCellAttrs[attr.name]) continue;
 						el[attr.name] = attr.value;
 					}
 				}
