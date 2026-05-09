@@ -485,19 +485,21 @@ function main() {
 		if (mxUtils.isNode(cell.value)) {
 			if (cell.value.nodeName == "Link" && orig(cell).getAttribute("name") == "Link") {
 				return "";
-			} else {
+			} else if (cell.value.nodeName == "Text") {
 				var name = orig(cell).getAttribute("name");
-				if (cell.value.nodeName == "Text" && isTrue(cell.getAttribute("UseMathJax"))) {
-					return '<span class="mathjax-content">' + clean(name) + '</span>';
+				if (isTrue(cell.getAttribute("UseMathJax"))) {
+					return '<div style="word-wrap: break-word; white-space: normal; width: 100%; overflow: visible;"><span class="mathjax-content">' + clean(name) + '</span></div>';
 				}
-				return clean(name);
+				return '<div style="word-wrap: break-word; white-space: normal; width: 100%; overflow: visible;">' + clean(name) + '</div>';
+			} else {
+				return clean(orig(cell).getAttribute("name"));
 			}
 		}
 		return '';
 	};
 
 	graph.isHtmlLabel = function(cell) {
-		if (cell && cell.value && cell.value.nodeName == "Text" && isTrue(cell.getAttribute("UseMathJax"))) {
+		if (cell && cell.value && cell.value.nodeName == "Text") {
 			return true;
 		}
 		return false;
