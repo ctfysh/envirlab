@@ -1,0 +1,28 @@
+{
+  "name": "envirlab",
+  "version": "1.0.0",
+  "description": "基于 [Insight Maker](https://insightmaker.com) 二次开发的系统动力学建模与仿真平台，用于[南京大学](https://www.nju.edu.cn)环境虚拟仿真实验教学。",
+  "main": "index.js",
+  "directories": {
+    "example": "examples",
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ctfysh/envirlab.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/ctfysh/envirlab/issues"
+  },
+  "homepage": "https://github.com/ctfysh/envirlab#readme",
+  "dependencies": {
+    "@xmldom/xmldom": "^0.9.10"
+  }
+}
