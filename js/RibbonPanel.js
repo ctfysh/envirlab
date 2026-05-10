@@ -1107,27 +1107,27 @@ var RibbonPanel = function(graph, mainPanel, configPanel) {
                     itemId: "filegroup",
                     glyph: 0xf15b,
                     menu: [{
-                            glyph: 0xf016,
-                            text: getText('新建'),
-                            tooltip: getText('新建模型'),
-                            handler: FileManagerWeb.newModel,
-                            scope: this
-                        },
-                        {
-                            glyph: 0xf115,
-                            /*0xf115 alternative icon we could have used */
-                            text: getText('加载'),
-                            tooltip: getText('加载模型 (.evl / .json / .xmile)'),
-                            handler: FileManagerWeb.loadModel,
-                            scope: this
-                        },
-                        {
-                            glyph: 0xf0c7,
-                            text: getText('保存'),
-                            tooltip: getText('保存模型'),
-                            handler: FileManagerWeb.saveModel,
-                            scope: this
-                        }
+							glyph: 0xf016,
+							text: getText('新建'),
+							tooltip: getText('新建模型') + ' ' + cmdAlt("N"),
+							handler: FileManagerWeb.newModel,
+							scope: this
+						},
+						{
+							glyph: 0xf115,
+							/*0xf115 alternative icon we could have used */
+							text: getText('加载'),
+							tooltip: getText('加载模型 (.evl / .json / .xmile)') + ' ' + cmdAlt("O"),
+							handler: FileManagerWeb.loadModel,
+							scope: this
+						},
+						{
+							glyph: 0xf0c7,
+							text: getText('保存'),
+							tooltip: getText('保存模型') + ' ' + cmd("S"),
+							handler: FileManagerWeb.saveModel,
+							scope: this
+						}
                     ]
                 },'-'
                 ,{

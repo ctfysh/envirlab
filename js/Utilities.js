@@ -865,6 +865,14 @@ function cmd(key) {
 	}
 }
 
+function cmdAlt(key) {
+	if (mxClient.IS_MAC) {
+		return "<span style='color:grey'>(&#8997;&#8984;" + key + ")</span>";
+	} else {
+		return "<span style='color:grey'>(Ctrl-Alt-" + key + ")</span>";
+	}
+}
+
 function inAgent(cell) {
 	if ((!cell) || cell == null) {
 		return false;

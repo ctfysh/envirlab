@@ -1309,7 +1309,7 @@ function main() {
 		});
 
 		keyHandler.bindControlKey(83, function() {
-			saveModel();
+			FileManagerWeb.saveModel();
 		});
 
 		keyHandler.bindControlKey(86, function() {
@@ -1352,8 +1352,30 @@ function main() {
 
 	keyHandler.bindControlKey(80, printGraph);
 
+	// Ctrl+Alt+N / ⌥⌘N for New model (browser-safe alternative to Ctrl+N)
+	// Ctrl+Alt+O / ⌥⌘O for Load model (browser-safe alternative to Ctrl+O)
+	mxEvent.addListener(document, 'keydown', function(e) {
+		var isCtrl = mxClient.IS_MAC ? e.metaKey : e.ctrlKey;
+		if (isCtrl && e.altKey && !e.shiftKey) {
+			// Don't intercept when editing form fields
+			var c = Ext.get(Ext.Element.getActiveElement());
+			if (c && c.hasCls && c.hasCls('x-form-field')) return;
+			// Don't intercept when a modal window is open
+			var w = Ext.WindowManager.getActive();
+			if (w && w.modal) return;
 
-
+			switch (e.keyCode) {
+				case 78: // N
+					e.preventDefault();
+					FileManagerWeb.newModel();
+					break;
+				case 79: // O
+					e.preventDefault();
+					FileManagerWeb.loadModel();
+					break;
+			}
+		}
+	});
 
 	graph.getSelectionModel().addListener(mxEvent.CHANGE, function(sender, evt) {
 
