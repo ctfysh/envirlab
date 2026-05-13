@@ -1551,7 +1551,7 @@ function main() {
 			configPanel.setTitle("");
 		}
 
-		
+		var descBase = "<br/><div class = 'fa fa-question-circle' style='float:left; margin-right: 7px; font-size: xx-large; display: block; color: grey'></div>";
 
 		var topDesc = "",
 			bottomDesc = "";
@@ -1619,7 +1619,7 @@ function main() {
 		} else if (cellType == "Stock") {
 
 
-			bottomDesc = getText('库存（Stock）存储材料或资源。湖泊和银行账户都是库存的例子。一个储存水，另一个储存金钱。初始值（Initial Value）定义了库存中最初有多少物质。');
+			bottomDesc = descBase + getText('库存（Stock）存储材料或资源。湖泊和银行账户都是库存的例子。一个储存水，另一个储存金钱。初始值（Initial Value）定义了库存中最初有多少物质。');
 			properties.push({
 				'name': 'InitialValue',
 				'text': getText('值初始化') + ' =',
@@ -1660,7 +1660,7 @@ function main() {
 			});
 
 		} else if (cellType == "Variable") {
-			bottomDesc = "变量是模型中动态更新的对象，它合成可用数据或提供常量值以供方程式使用。 人口的出生率或湖泊中的最大水量都是变量的可能用途。";
+			bottomDesc = descBase + "变量是模型中动态更新的对象，它合成可用数据或提供常量值以供方程式使用。 人口的出生率或湖泊中的最大水量都是变量的可能用途。";
 			properties.push({
 				'name': 'Equation',
 				'text': getText('值/等式') + ' =',
@@ -1670,7 +1670,7 @@ function main() {
 				'renderer': equationRenderer
 			});
 		} else if (cell.value.nodeName == "Link") {
-			bottomDesc = "链接连接模型的不同部分。 如果模型中的一个图元在其等式中引用另一个图元，则两个图元必须直接连接或通过链接连接。 一旦与链接连接，方括号可用于引用其他图元的值。 因此，如果您有一个名为<i>银行余额</ i>的股票，您可以使用<i> [银行余额] </ i>在另一个图元的等式中引用它。";
+			bottomDesc = descBase + "链接连接模型的不同部分。 如果模型中的一个图元在其等式中引用另一个图元，则两个图元必须直接连接或通过链接连接。 一旦与链接连接，方括号可用于引用其他图元的值。 因此，如果您有一个名为<i>银行余额</ i>的股票，您可以使用<i> [银行余额] </ i>在另一个图元的等式中引用它。";
 			properties.push({
 				'name': 'BiDirectional',
 				'text': getText('双向'),
@@ -1679,7 +1679,7 @@ function main() {
 			});
 
 		} else if (cell.value.nodeName == "Folder") {
-			bottomDesc = "文件夹以逻辑方式将类似项目组合在一起。 您可以折叠和展开文件夹以隐藏或显示模型复杂性。";
+			bottomDesc = descBase + "文件夹以逻辑方式将类似项目组合在一起。 您可以折叠和展开文件夹以隐藏或显示模型复杂性。";
 			properties.push({
 				'name': 'Type',
 				'text': getText('行为'),
@@ -1723,7 +1723,7 @@ function main() {
 
 
 		} else if (cell.value.nodeName == "Button") {
-			bottomDesc = "按钮用于交互。 要在不触发其操作的情况下选择按钮，请在单击按钮时按住Shift键。 按钮目前处于测试阶段，其实施可能会在更高版本的Insight Maker中发生变化。";
+			bottomDesc = descBase + "按钮用于交互。 要在不触发其操作的情况下选择按钮，请在单击按钮时按住Shift键。 按钮目前处于测试阶段，其实施可能会在更高版本的Insight Maker中发生变化。";
 
 			properties.push({
 				'name': 'Function',
@@ -1734,7 +1734,7 @@ function main() {
 			});
 
 		} else if (cell.value.nodeName == "Flow") {
-			bottomDesc = "流量表示材料从一个库存转移到另一个库存。 例如，考虑到湖泊的情况，湖泊的流量可能是：河流入流，河流流出，降水和蒸发。 流量给定流量，并且它们在一个单位时间内操作; 实际上：每秒或每一分钟的流量。";
+			bottomDesc = descBase + "流量表示材料从一个库存转移到另一个库存。 例如，考虑到湖泊的情况，湖泊的流量可能是：河流入流，河流流出，降水和蒸发。 流量给定流量，并且它们在一个单位时间内操作; 实际上：每秒或每一分钟的流量。";
 			properties.push({
 				'name': 'FlowRate',
 				'text': getText('流速率') + ' =',
@@ -1751,7 +1751,7 @@ function main() {
 			});
 
 		} else if (cell.value.nodeName == "Transition") {
-			bottomDesc = "在各状态之间转换主体。 您可以根据某些条件，概率或超时触发转换。";
+			bottomDesc = descBase + "在各状态之间转换主体。 您可以根据某些条件，概率或超时触发转换。";
 			properties.push({
 				'name': 'Trigger',
 				'text': getText('触发'),
@@ -1786,7 +1786,7 @@ function main() {
 				'group': ' ' + getText('配置')
 			});
 		} else if (cell.value.nodeName == "Action") {
-			bottomDesc = "动作图元可用于执行某些操作，例如转换主体或动态创建它们之间的连接。";
+			bottomDesc = descBase + "动作图元可用于执行某些操作，例如转换主体或动态创建它们之间的连接。";
 			properties.push({
 				'name': 'Trigger',
 				'text': getText('触发'),
@@ -1839,7 +1839,7 @@ function main() {
 				'group': ' ' + getText('配置')
 			});
 		} else if (cell.value.nodeName == "State") {
-			bottomDesc = "图元代表一个主体的状态。布尔值yes / no属性。您可以将状态与过渡连接起来，从而让主体在状态之间移动。";
+			bottomDesc = descBase + "图元代表一个主体的状态。布尔值yes / no属性。您可以将状态与过渡连接起来，从而让主体在状态之间移动。";
 
 			properties.push({
 				'name': 'Active',
@@ -1862,7 +1862,7 @@ function main() {
 			});
 
 		} else if (cell.value.nodeName == "Agents") {
-			bottomDesc = "主体群表示主体的集合：单个用于模拟的互相交互的实体。";
+			bottomDesc = descBase + "主体群表示主体的集合：单个用于模拟的互相交互的实体。";
 
 
 			var dat = [];
@@ -2008,11 +2008,11 @@ function main() {
 
 
 		} else if (cellType == "Ghost") {
-			bottomDesc = "这个项目是另一个原始的'Ghost'。 它反映了源图元的值和属性。 您无法编辑Ghost的属性。 您需要编辑其源的属性。";
+				bottomDesc = descBase + "这个项目是另一个原始的'Ghost'。 它反映了源图元的值和属性。 您无法编辑Ghost的属性。 您需要编辑其源的属性。";
 			bottomDesc = bottomDesc + "<center style='padding-top: 6px'><a href='#' onclick='var x = findID(getSelected()[0].getAttribute(\"Source\"));highlight(x);'>Show Source <i class='fa fa-angle-right '></i></a></center>";
 
 		} else if (cellType == "Converter") {
-			bottomDesc = "转换器存储输入和输出数据表。 当输入源采用其中一个输入值时，转换器将采用相应的输出值。 如果当前输入源值不存在特定输入值，则对最近的输入邻居进行平均。";
+			bottomDesc = descBase + "转换器存储输入和输出数据表。 当输入源采用其中一个输入值时，转换器将采用相应的输出值。 如果当前输入源值不存在特定输入值，则对最近的输入邻居进行平均。";
 			var n = neighborhood(cell);
 			var dat = [
 				["Time", "Time"]
@@ -2068,9 +2068,9 @@ function main() {
 				})
 			});
 		} else if (cellType == "Picture") {
-			bottomDesc = "图片可以让你的模型图变得活跃起来。 使用主工具栏的“样式”菜单中的图片设置更改图片。";
+			bottomDesc = descBase + "图片可以让你的模型图变得活跃起来。 使用主工具栏的“样式”菜单中的图片设置更改图片。";
 		} else if (cellType == "Text") {
-			bottomDesc = "文本框用于注释模型。勾选“使用数学公式”后，标签内容将被MathJax渲染，支持LaTeX数学公式语法。";
+			bottomDesc = descBase + "文本框用于注释模型。勾选“使用数学公式”后，标签内容将被MathJax渲染，支持LaTeX数学公式语法。";
 			properties.push({
 				'name': 'UseMathJax',
 				'text': '使用数学公式',
