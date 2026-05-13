@@ -1576,10 +1576,6 @@ function main() {
 				if (topDesc != "") {
 					topDesc = "<div class='sidebar_description'>" + topDesc + "</div>";
 				}
-				if (cell == null) {
-					topDesc = topDesc + (is_editor ? '<div class="sidebar_edit"><a href="#" onclick="blockUnfold(updateProperties)()"><i class="fa fa-pencil-square"></i> ' + getText('编辑信息') + '</a></div>' : '');
-				}
-
 				if (graph_tags.trim() != "") {
 					var topTags = graph_tags.split(",").map(function(tag) {
 					var t = tag.trim();
