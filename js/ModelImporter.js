@@ -861,6 +861,7 @@ function exportModelJSON() {
 						if (h) el.geometry.height = parseFloat(h);
 
 						var pts = geoEl.getElementsByTagName('mxPoint');
+						var bendPoints = [];
 						for (var k = 0; k < pts.length; k++) {
 							var pt = pts[k];
 							var as = pt.getAttribute('as');
@@ -868,7 +869,11 @@ function exportModelJSON() {
 							var py = parseFloat(pt.getAttribute('y'));
 							if (as === 'sourcePoint') el.geometry.sourcePoint = { x: px, y: py };
 							else if (as === 'targetPoint') el.geometry.targetPoint = { x: px, y: py };
+							else if (!isNaN(px) && !isNaN(py)) {
+								bendPoints.push({ x: px, y: py });
+							}
 						}
+						if (bendPoints.length > 0) el.geometry.points = bendPoints;
 					}
 				}
 
