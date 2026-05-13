@@ -170,7 +170,8 @@ function modelJSONToInsightMakerXML(json) {
 		cellLine += '>';
 		lines.push(cellLine);
 
-		if (g.sourcePoint || g.targetPoint) {
+		var hasPoints = g.points && g.points.length > 0;
+		if (g.sourcePoint || g.targetPoint || hasPoints) {
 			lines.push('        <mxGeometry as="geometry">');
 			if (g.sourcePoint) {
 				lines.push('          <mxPoint x="' + (g.sourcePoint.x || 0) + '" y="' +
@@ -179,6 +180,14 @@ function modelJSONToInsightMakerXML(json) {
 			if (g.targetPoint) {
 				lines.push('          <mxPoint x="' + (g.targetPoint.x || 0) + '" y="' +
 					(g.targetPoint.y || 0) + '" as="targetPoint"/>');
+			}
+			if (hasPoints) {
+				lines.push('          <Array as="points">');
+				for (var pi = 0; pi < g.points.length; pi++) {
+					lines.push('            <mxPoint x="' + (g.points[pi].x || 0) + '" y="' +
+						(g.points[pi].y || 0) + '"/>');
+				}
+				lines.push('          </Array>');
 			}
 			lines.push('        </mxGeometry>');
 		} else if (g.x != null || g.y != null) {
