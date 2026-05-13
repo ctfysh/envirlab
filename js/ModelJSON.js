@@ -146,18 +146,44 @@ function wireUpMxCells(node) {
           node.geometry.y = parseFloat(g.y) || 0;
           node.geometry.width = parseFloat(g.width) || 40;
           node.geometry.height = parseFloat(g.height) || 40;
-        } else if (nn === "mxPoint") {
-          var as = gc.getAttribute("as");
-          if (as === "sourcePoint") {
-            node.geometry.sourcePoint = {
-              x: parseFloat(gc.getAttribute("x")) || 0,
-              y: parseFloat(gc.getAttribute("y")) || 0
-            };
-          } else if (as === "targetPoint") {
-            node.geometry.targetPoint = {
-              x: parseFloat(gc.getAttribute("x")) || 0,
-              y: parseFloat(gc.getAttribute("y")) || 0
-            };
+          // Process mxGeometry children: sourcePoint, targetPoint, bend points
+          if (gc.children) {
+            for (var gci = 0; gci < gc.children.length; gci++) {
+              var gchild = gc.children[gci];
+              if (!gchild.value) continue;
+              var gchildNN = gchild.value.nodeName;
+              if (gchildNN === "mxPoint") {
+                var as = gchild.getAttribute("as");
+                if (as === "sourcePoint") {
+                  node.geometry.sourcePoint = {
+                    x: parseFloat(gchild.getAttribute("x")) || 0,
+                    y: parseFloat(gchild.getAttribute("y")) || 0
+                  };
+                } else if (as === "targetPoint") {
+                  node.geometry.targetPoint = {
+                    x: parseFloat(gchild.getAttribute("x")) || 0,
+                    y: parseFloat(gchild.getAttribute("y")) || 0
+                  };
+                }
+              } else if (gchildNN === "Array") {
+                var arrayAs = gchild.getAttribute("as");
+                if (arrayAs === "points" && gchild.children) {
+                  var pts = [];
+                  for (var pi = 0; pi < gchild.children.length; pi++) {
+                    var pt = gchild.children[pi];
+                    if (pt.value && pt.value.nodeName === "mxPoint") {
+                      pts.push({
+                        x: parseFloat(pt.getAttribute("x")) || 0,
+                        y: parseFloat(pt.getAttribute("y")) || 0
+                      });
+                    }
+                  }
+                  if (pts.length > 0) {
+                    node.geometry.points = pts;
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -242,6 +268,58 @@ function findSetting(primitives) {
 // Model wrapper — provides the API surface the test expects
 // ========================================================================
 
+function loadSimulationEngine() {
+  if (typeof runSimulation === "function") return true;
+  if (typeof require === "undefined") return false;
+  try {
+    // Shim browser globals that the simulation engine expects
+    if (typeof global !== "undefined") {
+      if (typeof global.window === "undefined") {
+        global.window = {};
+      }
+      if (typeof global.document === "undefined") {
+        global.document = { location: { hostname: "node" } };
+      }
+      // Stub utility functions that are defined outside the engine
+      // (e.g. in Localization.js, Utilities.js) but used by it
+      if (typeof global.getText !== "function") {
+        global.getText = function(s) { return s; };
+      }
+      if (typeof global.isLocal !== "function") {
+        global.isLocal = function() { return false; };
+      }
+      if (typeof global.isUndefined !== "function") {
+        global.isUndefined = function(item) { return typeof(item) == "undefined"; };
+      }
+      if (typeof global.isDefined !== "function") {
+        global.isDefined = function(item) { return !global.isUndefined(item); };
+      }
+    }
+    var vm = require("vm");
+    var fs = require("fs");
+    var path = require("path");
+    var simDir = path.resolve(__dirname, "SimulationEngine");
+
+    var engineFiles = [
+      "OO.js", "calc/unitsStructure.js", "calc/units.js",
+      "SimpleCalc.js", "calc/antlr3-all-min.js",
+      "calc/output/FormulaLexer.js", "calc/output/FormulaParser.js",
+      "calc/rand.js", "calc/random.js", "calc/formula.js",
+      "calc/functions.js", "Functions.js", "Classes.js",
+      "Primitives.js", "TaskScheduler.js", "Simulator.js", "Modeler.js"
+    ];
+
+    for (var i = 0; i < engineFiles.length; i++) {
+      var code = fs.readFileSync(path.join(simDir, engineFiles[i]), "utf-8");
+      vm.runInThisContext(code, engineFiles[i]);
+    }
+    return typeof runSimulation === "function";
+  } catch (e) {
+    console.warn("Simulation engine not available:", e.message);
+    return false;
+  }
+}
+
 function createModelWrapper(graph, options) {
   options = options || {};
 
@@ -255,14 +333,18 @@ function createModelWrapper(graph, options) {
     },
 
     get: function (predicate) {
-      return allPrimitives.filter(predicate);
+      var matches = allPrimitives.filter(predicate);
+      return matches.length > 0 ? matches[0] : null;
     },
 
     simulate: function (config) {
-      // In headless/Node.js mode, simulation requires loading the full engine.
-      // If runSimulation is available globally, use it.
+      // The simulation engine requires a full mxGraph instance.
+      // SimpleNode graphs (from XML parsing) are incompatible.
+      if (graph instanceof SimpleNode) {
+        return { Time: [], data: [], error: "simulation requires mxGraph (browser only)", errorPrimitive: null };
+      }
+      loadSimulationEngine();
       if (typeof runSimulation === "function") {
-        // Ensure the global graph is set
         if (typeof global !== "undefined") {
           global.graph = graph;
         }
@@ -270,11 +352,7 @@ function createModelWrapper(graph, options) {
         if (config.silent === undefined) config.silent = true;
         return runSimulation(config);
       }
-      // Return a stub result if engine not loaded
-      var result = { Time: [], data: [], error: "none", errorPrimitive: null };
-      result.value = function () { return []; };
-      result.lastValue = function () { return undefined; };
-      return result;
+      return { Time: [], data: [], error: "engine not loaded", errorPrimitive: null };
     },
 
     toString: function () {
@@ -345,6 +423,7 @@ function toModelJSON(model) {
       if (p.geometry.height != null) el.geometry.height = p.geometry.height;
       if (p.geometry.sourcePoint) el.geometry.sourcePoint = p.geometry.sourcePoint;
       if (p.geometry.targetPoint) el.geometry.targetPoint = p.geometry.targetPoint;
+      if (p.geometry.points) el.geometry.points = p.geometry.points;
     }
 
     // Parent reference (by ID)
@@ -460,6 +539,7 @@ function loadModelJSON(json) {
       if (src.geometry.height != null) node.geometry.height = src.geometry.height;
       if (src.geometry.sourcePoint) node.geometry.sourcePoint = src.geometry.sourcePoint;
       if (src.geometry.targetPoint) node.geometry.targetPoint = src.geometry.targetPoint;
+      if (src.geometry.points) node.geometry.points = src.geometry.points;
     }
 
     // Stash source/target ID references for post-processing

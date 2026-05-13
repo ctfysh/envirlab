@@ -80,6 +80,13 @@ function serializeConnectorGeometry(geometry, parentOffsets) {
 	if (g.targetPoint) {
 		xml += '<mxPoint x="' + (g.targetPoint.x || 0) + '" y="' + (g.targetPoint.y || 0) + '" as="targetPoint"/>';
 	}
+	if (g.points && g.points.length > 0) {
+		xml += '<Array as="points">';
+		for (var pi = 0; pi < g.points.length; pi++) {
+			xml += '<mxPoint x="' + (g.points[pi].x || 0) + '" y="' + (g.points[pi].y || 0) + '"/>';
+		}
+		xml += '</Array>';
+	}
 	xml += '</mxGeometry>';
 	return xml;
 }

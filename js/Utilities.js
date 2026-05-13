@@ -799,31 +799,22 @@ function propogateGhosts(cell) {
 
 function propogateName(cell, oldName) {
 	if (isValued(cell)) {
-		//console.log(oldName)
 		var newValue = getName(cell);
 		var patt = new RegExp("\\[" + oldName + "\\]", "gi");
 
-		var connected = graph.getConnections(cell);
-		for (var i = 0; i < connected.length; i++) {
-			if((!connected[i].target) || (!connected[i].source)){
+		var allItems = primitives();
+		for (var i = 0; i < allItems.length; i++) {
+			var item = allItems[i];
+			if (item.id == cell.id) {
 				continue;
 			}
-			var neighbor;
-			if (connected[i].value.nodeName == "Flow" || connected[i].value.nodeName == "Transition") {
-				neighbor = connected[i];
-			} else if (connected[i].target.id == cell.id) {
-				neighbor = connected[i].source;
-			} else {
-				neighbor = connected[i].target;
-			}
-			//console.log(neighbor.getAttribute("name"))
-			if (isValued(neighbor) || (neighbor && neighbor.value.nodeName == "Action")) {
-				//console.log(getValue(neighbor))
-				setValue(neighbor, getValue(neighbor).replace(patt, "[" + newValue + "]"))
+			if (isValued(item) || item.value.nodeName == "Action") {
+				var val = getValue(item);
+				if (patt.test(val)) {
+					setValue(item, val.replace(patt, "[" + newValue + "]"));
+				}
 			}
 		}
-
-
 	}
 }
 
