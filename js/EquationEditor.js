@@ -572,12 +572,6 @@ function EquationWindow(config) {
 		tools: [
 
 			{
-				type: 'help',
-				tooltip: getText('关于公式'),
-				callback: function(panel, tool, event) {
-					showURL("/equations");
-				}
-			}, {
 				id: 'upButton',
 				type: 'up',
 				tooltip: getText('隐藏描述'),

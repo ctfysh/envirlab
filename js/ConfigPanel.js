@@ -321,15 +321,7 @@ var ConfigPanel = function()
     {
 		stateful: is_editor && (! is_embed),
 		collapseFirst: false,
-		tools:[
-			{
-			    type: 'help',
-			    tooltip: getText('帮助'),
-			    callback: function(panel, tool, event) {
-			        showURL("/help");
-			    }
-			}
-		],
+		tools: [],
 		stateId: "config_panel",
         region: 'east',
         width: viewConfig.sideBarWidth,

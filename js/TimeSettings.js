@@ -28,15 +28,7 @@ function showTimeSettings(config)
 		closeAction: 'destroy',
         modal: true,
 		/*animateTarget: ribbonPanelItems().down('#config').getEl(),*/
-		tools:[
-			{
-			    type: 'help',
-			    tooltip: getText('帮助'),
-			    callback: function(panel, tool, event) {
-			        showURL("/simulating");
-			    }
-			}
-		],
+		tools: [],
         title: getText("模拟时间设置"),
         width:  Math.min(Ext.getBody().getViewSize().width, 370),
         height:  Math.min(Ext.getBody().getViewSize().height, ((! config.cell)?550:280)),

@@ -237,15 +237,7 @@ function doOptimizer(){
         closeAction: 'destroy',
         border: false,
         modal: true,
-		tools:[
-			{
-			    type: 'help',
-			    tooltip: getText('帮助'),
-			    callback: function(panel, tool, event) {
-			        showURL("/optimization");
-			    }
-			}
-		],
+		tools: [],
         resizable: true,
 		maximizable: true,
         shadow: true,

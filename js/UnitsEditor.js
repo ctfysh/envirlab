@@ -185,13 +185,7 @@ function UnitsWindow(config) {
 			type: "vbox",
 			align: "stretch"
 		},
-		tools: [{
-			type: 'help',
-			tooltip: getText('帮助'),
-			callback: function(panel, tool, event) {
-				showURL("/units");
-			}
-		}],
+		tools: [],
 		closeAction: 'destroy',
 		border: false,
 		modal: true,

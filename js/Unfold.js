@@ -1051,13 +1051,7 @@ var revealUnfoldButtons = function(showUnfold) {
 		var win = new Ext.Window({
 			title: getText('讲述'),
 			layout: 'fit',
-			tools: [{
-				type: 'help',
-				tooltip: getText('帮助'),
-				callback: function(panel, tool, event) {
-					showURL("/storytelling")
-				}
-			}],
+			tools: [],
 			closeAction: 'destroy',
 			border: false,
 			modal: false,

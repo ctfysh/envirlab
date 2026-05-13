@@ -55,13 +55,7 @@ function JavaScriptWindow(config) {
 		layout: {
 			type: "fit"
 		},
-		tools: [{
-			type: 'help',
-			tooltip: getText('帮助'),
-			callback: function(panel, tool, event) {
-				showURL("/sites/default/files/API/files/API-js.html");
-			}
-		}],
+		tools: [],
 		closeAction: 'destroy',
 		border: false,
 		modal: true,

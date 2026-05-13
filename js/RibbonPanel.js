@@ -67,13 +67,7 @@ var showMacros = function(annotations) {
             type: 'vbox',
             align: 'stretch'
         },
-        tools: [{
-            type: 'help',
-            tooltip: getText('帮助'),
-            callback: function(panel, tool, event) {
-                showURL("/macros");
-            }
-        }],
+        tools: [],
         modal: true,
         stateful: is_editor && (!is_embed),
         stateId: "macros_window",
@@ -93,7 +87,7 @@ var showMacros = function(annotations) {
                 style: {
                     "border-top": "solid 1px lightgrey"
                 },
-                html: "<b>" + getText('示例宏') + "</b> (<a href='//insightmaker.com/macros' target='_blank'>更多</a>)<br>g <- {9.80665 meters/seconds^2} # 自定义变量<br/>TemperatureFtoC(f) <- (f+32)*5/9 # 自定义函数<br/>"
+                html: "<b>" + getText('示例宏') + "</b><br>g <- {9.80665 meters/seconds^2} # 自定义变量<br/>TemperatureFtoC(f) <- (f+32)*5/9 # 自定义函数<br/>"
             }
         ],
 

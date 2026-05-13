@@ -249,13 +249,7 @@ function ConverterWindow(config) {
 		title: getText('转换器数据确定'),
 		layout: 'border',
 		closeAction: 'destroy',
-		tools: [{
-			type: 'help',
-			tooltip: getText('帮助'),
-			callback: function(panel, tool, event) {
-				showURL("/converters");
-			}
-		}],
+		tools: [],
 		border: false,
 		stateful: is_editor && (!is_embed),
 		stateId: "converter_window",

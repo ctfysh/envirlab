@@ -96,15 +96,7 @@ var sensitivityController = {}
 			layout: 'fit',
 			closeAction: 'destroy',
 			border: false,
-			tools:[
-				{
-				    type: 'help',
-				    tooltip: getText('帮助'),
-				    callback: function(panel, tool, event) {
-				        showURL("/sensitivitytesting");
-				    }
-				}
-			],
+			tools: [],
 			modal: true,
 			resizable: false,
 			maximizable: false,
