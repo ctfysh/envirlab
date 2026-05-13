@@ -172,6 +172,25 @@ function getModelJSONData() {
 						if (as === 'sourcePoint') el.geometry.sourcePoint = { x: px, y: py };
 						else if (as === 'targetPoint') el.geometry.targetPoint = { x: px, y: py };
 					}
+
+					// Extract Array as="points" (waypoints/bend points for connectors)
+					var arrays = geoEl.getElementsByTagName('Array');
+					for (var ai = 0; ai < arrays.length; ai++) {
+						if (arrays[ai].getAttribute('as') === 'points') {
+							var ptEls = arrays[ai].getElementsByTagName('mxPoint');
+							if (ptEls.length > 0) {
+								el.geometry.points = [];
+								for (var pi = 0; pi < ptEls.length; pi++) {
+									var ptn = ptEls[pi];
+									var px = parseFloat(ptn.getAttribute('x'));
+									var py = parseFloat(ptn.getAttribute('y'));
+									if (!isNaN(px) && !isNaN(py)) {
+										el.geometry.points.push({ x: px, y: py });
+									}
+								}
+							}
+						}
+					}
 				}
 			}
 
