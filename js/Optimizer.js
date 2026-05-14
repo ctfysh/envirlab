@@ -781,7 +781,7 @@ function evaluateCurrentPoint(){
 		}
 		optimizerController.solutionSpace[0][optimizerController.evaluations-1] = sum;
 	}else{
-		alert("Unknonw optimizer goal type: " + optimizerController.goalType );
+		alert(getText("未知优化器目标类型: ") + optimizerController.goalType );
 	}
 	
 	for(var i=0; i<optimizerController.targets.length; i++){

@@ -28,7 +28,7 @@ function showInsertModelWindow(pt) {
 					var matches = txt.match(/var graph_source_data = (".*?");\n/);
 
 					if ((!matches) || matches[1].trim() == "") {
-						mxUtils.alert("Model could not be inserted. Please ensure the model URL is correct.");
+						mxUtils.alert(getText("无法插入模型。请确保模型 URL 正确。"));
 						progress.close();
 					} else {
 						var data = JSON.parse(matches[1]);
@@ -83,7 +83,7 @@ function showInsertModelWindow(pt) {
 					}
 				},
 				error: function() {
-					mxUtils.alert("Model could not be inserted. Please ensure the morel URL is correct.");
+					mxUtils.alert(getText("无法插入模型。请确保模型 URL 正确。"));
 					progress.close();
 				}
 			})
@@ -664,9 +664,9 @@ function importXMILE() {
 					for (var i = 0; i < result.length; i++) {
 						importXMILEFromContent(result[i].contents, result[i].name);
 					}
-					showNotification("XMILE import completed successfully. Some equations may require manual adjustment in order to work with Insight Maker.", "notice");
+					showNotification(getText("XMILE 导入成功。部分方程可能需要手动调整才能与 Insight Maker 配合使用。"), "notice");
 				} catch(err) {
-					showNotification("XMILE model could not be imported. Please ensure you have selected valid XMILE files.");
+					showNotification(getText("无法导入 XMILE 模型。请确保选择了有效的 XMILE 文件。"));
 					if(isLocal()){ console.log(err); throw(err); }
 				} finally {
 					importProgress.close();
