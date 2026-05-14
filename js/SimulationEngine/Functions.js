@@ -1045,7 +1045,8 @@ function isDefined(item) {
 }
 
 function constraintAlert(item, type, val) {
-	var msg = "The " + (type == "max" ? "maximum" : "minimum") + " constraint on the primitive <b>" + clean(getName(findID(item.id))) + "</b> has been violated. The primitive's value attempted to become " + val.value + " when the " + (type == "max" ? "maximum" : "minimum") + " allowed value is " + (type == "max" ? item.dna.maxConstraint : item.dna.minConstraint) + ".";
+	var bound = type == "max" ? "最大" : "最小";
+	var msg = getText("图元 <b>%s</b> 的%s约束已被违反。该图元的值试图变为 %s，而%s允许值为 %s。", clean(getName(findID(item.id))), bound, val.value, bound, (type == "max" ? item.dna.maxConstraint : item.dna.minConstraint));
 	error(msg, item, false);
 }
 

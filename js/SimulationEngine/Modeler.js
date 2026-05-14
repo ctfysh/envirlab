@@ -129,7 +129,7 @@ function innerRunSimulation(config) {
 				var newU = createUnitStore(us[2]);
 				if (isUndefined(newU)) {
 					throw {
-						msg: 'You cannot define a units synonym for "unitless".'
+						msg: getText('您不能为"无单位"定义单位同义词。')
 					};
 				} else {
 					newTargets.push(newU.toStringShort());
@@ -866,7 +866,7 @@ function handleErrorObject(err) {
 				showEditor(cell, [{
 					type: "error",
 					row: (err.line !== undefined) ? (err.line - 1) : (evaluatingLine - 1),
-					text: err.details ? err.details : "Error"
+					text: err.details ? err.details : getText("错误")
 				}]);
 			}
 		}
@@ -1240,7 +1240,7 @@ function linkPrimitive(primitive, dna) {
 				}
 
 				if(! sourceSet){
-					error("Converter source could not be found. Please redefine it.", dna.cell, false);
+					error(getText("找不到转换器来源。请重新定义。"), dna.cell, false);
 				}
 
 
@@ -1309,7 +1309,7 @@ function buildNetwork(submodel) {
 		//nothing to do
 	} else {
 		throw {
-			msg: "Unknown network type: " + submodel.network + ".",
+			msg: getText("未知网络类型: %s。", submodel.network),
 			primitive: submodel.cell,
 			showEditor: false
 		};
@@ -1445,7 +1445,7 @@ function buildPlacements(submodel, items) {
 
 	} else {
 		throw {
-			msg: "Unknown placement type: " + submodel.placement + ".",
+			msg: getText("未知放置类型: %s。", submodel.placement),
 			primitive: submodel.cell,
 			showEditor: false
 		};
