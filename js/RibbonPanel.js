@@ -1296,10 +1296,10 @@ var RibbonPanel = function(graph, mainPanel, configPanel) {
 					handler: function() {
 						var flow = (connectionType() == "Flow");
 						if (flow) {
-							Ext.getCmp("connect").setText("Using Information Links");
+							Ext.getCmp("connect").setText(getText("使用信息链接"));
 							Ext.getCmp("connect").setGlyph(0xf095);
 						} else {
-							Ext.getCmp("connect").setText("Using Flows/Transitions");
+							Ext.getCmp("connect").setText(getText("使用流/转换"));
 							Ext.getCmp("connect").setGlyph(0xf0d1);
 						}
 					},

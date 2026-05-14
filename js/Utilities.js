@@ -295,10 +295,10 @@ function setSaveEnabled(e) {
 		var b = ribbonPanelItems().getComponent('savebut');
 		if (e && unfoldingManager.unfolding == false) {
 			b.setDisabled(false);
-			b.setText('Save');
+			b.setText(getText('保存'));
 		} else {
 			b.setDisabled(true);
-			b.setText('Saved');
+			b.setText(getText('已保存'));
 		}
 	}
 }
@@ -570,7 +570,7 @@ function updateProperties() {
 			},
 			modal: true,
 			width: 550,
-			title: "Save Insight",
+			title: getText('保存 Insight'),
 			autoHeight: true,
 			minHeight: 300,
 			minWidth: 450,
@@ -625,7 +625,7 @@ function updateProperties() {
 			}, {
 				glyph: 0xf00c,
 				scale: "large",
-				text: 'Save',
+				text: getText('保存'),
 				handler: function() {
 					if (Ext.getCmp("sinsightTitle").validate()) {
 						propertiesWin.hide();

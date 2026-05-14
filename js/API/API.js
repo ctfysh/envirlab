@@ -369,7 +369,7 @@ function showData(title, tabs, size) {
 			tab.items = [textData];
 		} else if (tabs[i].type.toLowerCase() == "html") {
 			var htmlData = {
-				title: "Insight Equations",
+				title: getText('Insight 方程'),
 				xtype: "box",
 				html: tabs[i].data,
 				style: "background-color: white",

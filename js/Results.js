@@ -1114,7 +1114,7 @@ function renderDisplay(display, displayInformation) {
 			var id = primitives[j];
 			var a = displayInformation.agents[id];
 			if (isUndefined(a)) {
-				alert("Primitive is not an agent population!");
+				alert(getText("图元不是主体群！"));
 				return;
 			}
 			agents.push(a);
@@ -1451,7 +1451,7 @@ function createResultsWindow(displayInformation, config) {
 							simulate.sliders[cell.id][0].dna.equation = val;
 							simulate.valueChange = true;
 						} else {
-							mxUtils.alert("The simulation has finished and slider values cannot be changed.")
+							mxUtils.alert(getText("模拟已结束，无法更改滑块值。"))
 						}
 					}, function (slider, setValue, textField, newValue) {
 						setValue(slider.sliderCell, newValue)
@@ -1459,7 +1459,7 @@ function createResultsWindow(displayInformation, config) {
 					dock: "right",
 					width: 200,
 					autoScroll: true,
-					title: "Sliders",
+					title: getText('滑块'),
 					collapsible: true,
 					split: true,
 					border: true,

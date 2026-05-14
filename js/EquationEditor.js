@@ -340,7 +340,7 @@ function EquationWindow(config) {
 		margin: '0 0 0 4',
 		hideGroupedHeader: true,
 		columns: [{
-			header: 'References',
+			header: getText('引用'),
 			flex: 1,
 			dataIndex: 'display',
 			sortable: false
