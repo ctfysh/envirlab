@@ -1068,6 +1068,529 @@ var RibbonPanel = function(graph, mainPanel, configPanel) {
 
 
 
+    // === Responsive Ribbon Support ===
+    var ribbonCompactWidth = 768;
+
+    function isCompact() {
+        return window.innerWidth < ribbonCompactWidth;
+    }
+
+    // Extract menu arrays for reuse in compact mode
+    var primitiveMenuItems = [{
+        text: getText('文件'),
+        itemId: "filegroup",
+        glyph: 0xf15b,
+        menu: [{
+            glyph: 0xf016,
+            text: getText('新建'),
+            tooltip: getText('新建模型') + ' ' + cmdAlt("N"),
+            handler: FileManagerWeb.newModel,
+            scope: this
+        }, {
+            glyph: 0xf115,
+            text: getText('加载'),
+            tooltip: getText('加载模型 (.evl / .json / .xmile)') + ' ' + cmdAlt("O"),
+            handler: FileManagerWeb.loadModel,
+            scope: this
+        }, {
+            glyph: 0xf0c7,
+            text: getText('保存'),
+            tooltip: getText('保存模型') + ' ' + cmd("S"),
+            handler: FileManagerWeb.saveModel,
+            scope: this
+        }]
+    }, '-', {
+        xtype: "component",
+        indent: false,
+        html: "<b>" + getText('系统动力学模型') + "</b>",
+        disabled: true,
+        style: { "margin": "10px 5px 10px 5px" }
+    }, '-', {
+        itemId: 'stock',
+        text: getText('添加库'),
+        glyph: 0xf1b2,
+        tooltip: getText('库用来储存物质'),
+        handler: function() {
+            var x = createPrimitive("新库", "Stock", [240, 80], [100, 40]);
+            highlight(x);
+            graph.orderCells(false);
+        }
+    }, {
+        itemId: 'variable',
+        text: getText('添加变量'),
+        glyph: 0xf0e4,
+        tooltip: getText('变量可以是常数或动态更新的等式'),
+        handler: function() {
+            highlight(createPrimitive("新变量", "Variable", [240, 80], [120, 50]))
+            graph.orderCells(false);
+        }
+    }, {
+        itemId: 'converter',
+        text: getText('添加转换器'),
+        glyph: 0xf1fe,
+        tooltip: getText('转换器可以包含图形函数或输入/输出表'),
+        handler: function() {
+            highlight(createPrimitive("新转换器", "Converter", [240, 80], [120, 50]))
+            graph.orderCells(false);
+        }
+    }, '-', {
+        xtype: "component",
+        indent: false,
+        html: "<b>" + getText('多主体建模') + "</b>",
+        disabled: true,
+        style: { "margin": "10px 5px 10px 5px" }
+    }, '-', {
+        itemId: 'population',
+        glyph: 0xf0c0,
+        text: getText('添加主体群'),
+        tooltip: getText('主体群是主体的集合'),
+        handler: function() {
+            highlight(createPrimitive("主体群", "Agents", [240, 80], [170, 80]))
+            graph.orderCells(false);
+        }
+    }, {
+        itemId: 'state',
+        glyph: 0xf046,
+        text: getText('添加状态'),
+        tooltip: getText('状态是二进制，真/假变量'),
+        handler: function() {
+            highlight(createPrimitive("新状态", "State", [240, 80], [100, 40]))
+        }
+    }, {
+        itemId: 'action',
+        glyph: 0xf0e7,
+        text: getText('添加动作'),
+        tooltip: getText('动作可以触发模型状态的更改'),
+        handler: function() {
+            highlight(createPrimitive("新动作", "Action", [240, 80], [120, 50]))
+            graph.orderCells(false);
+        }
+    }, '-', {
+        xtype: "component",
+        indent: false,
+        html: "<b>" + getText('用户接口') + "</b>",
+        disabled: true,
+        style: { "margin": "10px 5px 10px 5px" }
+    }, '-', {
+        itemId: 'text',
+        text: getText('添加文本框'),
+        glyph: 0xf035,
+        tooltip: getText('注释你的模型'),
+        handler: function() {
+            highlight(createPrimitive("新文本框", "Text", [240, 80], [200, 50]))
+            graph.orderCells(false);
+        }
+    }, {
+        itemId: 'picture',
+        text: getText('添加图片'),
+        glyph: 0xf03e,
+        tooltip: getText('展示你的模型'),
+        handler: function() {
+            var x = createPrimitive("", "Picture", [240, 80], [64, 64]);
+            setPicture(x);
+            highlight(x);
+            graph.orderCells(false);
+        }
+    }, {
+        itemId: 'buttonBut',
+        text: getText('添加互动按钮'),
+        glyph: 0xf196,
+        tooltip: getText('为模型图添加交互性'),
+        handler: function() {
+            highlight(createPrimitive("新按钮", "Button", [240, 80], [120, 40]))
+            graph.orderCells(false);
+        }
+    }, '-', {
+        itemId: 'ghostBut',
+        text: getText('影子图元'),
+        glyph: 0xf0c5,
+        tooltip: getText('创建所选图元的链接别名，可以帮助您组织模型'),
+        scope: this,
+        handler: makeGhost
+    }, {
+        itemId: 'folder',
+        text: getText('创建文件夹'),
+        glyph: 0xf114,
+        tooltip: getText('创建一个包含所选图元的新文件夹'),
+        scope: this,
+        handler: makeFolder
+    }];
+
+    var actionsMenuItems = [{
+        hidden: !viewConfig.actionsGroup,
+        itemId: 'undo',
+        text: "撤销",
+        glyph: 0xf0e2,
+        tooltip: getText('撤销') + ' ' + cmd("Z"),
+        handler: function() { undoHistory.undo(); },
+        scope: this
+    }, {
+        hidden: !viewConfig.actionsGroup,
+        itemId: 'redo',
+        text: "重做",
+        glyph: 0xf01e,
+        tooltip: getText('重做') + ' ' + cmd("Y"),
+        handler: function() { undoHistory.redo(); },
+        scope: this
+    }, '-', editActions.copy, editActions.cut, editActions.paste, '-', editActions["delete"], '-', {
+        text: getText('查找/替换...'),
+        tooltip: getText('在模型中查找文本') + ' ' + cmd("F"),
+        handler: showFindAndReplace
+    }, {
+        text: getText('查找文本'),
+        tooltip: getText('在模型中查找下一个文本') + ' ' + cmd("G"),
+        handler: function() {
+            var but = Ext.getCmp('findNextBut');
+            if (but && (!but.disabled)) { findNext(); }
+        }
+    }, '-', {
+        text: getText("打印..."),
+        glyph: 0xf02f,
+        handler: printGraph
+    }, '-', {
+        itemId: "zoomMenuButton",
+        text: getText('缩放'),
+        glyph: 0xf002,
+        menu: zoomMenu
+    }, {
+        text: getText('布局图'),
+        glyph: 0xf0e8,
+        menu: [{
+            text: getText('垂直分层布局'),
+            scope: this,
+            handler: function(item) {
+                var layout = new mxHierarchicalLayout(graph);
+                executeLayout(layout, true);
+            }
+        }, {
+            text: getText('水平分层布局'),
+            scope: this,
+            handler: function(item) {
+                var layout = new mxHierarchicalLayout(graph, mxConstants.DIRECTION_WEST);
+                executeLayout(layout, true);
+            }
+        }, '-', {
+            text: getText('有机布局'),
+            scope: this,
+            handler: function(item) { layoutModel("organic"); }
+        }, {
+            text: getText('圆形布局'),
+            scope: this,
+            handler: function(item) { layoutModel("circular"); }
+        }]
+    }];
+
+    var shareMenuItems = [{
+        hidden: (!is_editor) || is_ebook,
+        text: getText('讲述') + "...",
+        glyph: 0xf0e6,
+        tooltip: getText('逐步显示模型以讲述故事'),
+        handler: blockUnfold(showUnfoldingWin),
+        scope: this
+    }, '-', {
+        itemId: 'embed_but',
+        text: getText('嵌入网页') + "...",
+        hidden: (!is_editor) || is_ebook,
+        glyph: 0xf0ac,
+        tooltip: getText('将此模型嵌入另一个网页'),
+        handler: function() {
+            Ext.MessageBox.show({
+                title: getText('嵌入'),
+                msg: getText('嵌入功能在离线模式下不可用。请部署到支持 InsightMaker 嵌入的服务后使用。'),
+                buttons: Ext.MessageBox.OK,
+                icon: Ext.MessageBox.INFO
+            });
+        },
+        scope: this
+    }, '-', {
+        hidden: (!is_editor),
+        itemId: 'textBut',
+        text: getText('完整的公式列表'),
+        tooltip: getText('模型中所有方程的列表'),
+        handler: textEquations,
+        scope: this
+    }, {
+        hidden: (!is_editor),
+        glyph: 0xf1c5,
+        text: getText("导出SVG"),
+        handler: function() { exportSvg(); }
+    }];
+
+    var toolsMenuItems = [{
+        itemId: 'scratchpad',
+        text: getText('便笺'),
+        glyph: 0xf040,
+        tooltip: getText('在图表上绘制注释') + ' ' + cmd("K"),
+        enableToggle: true,
+        handler: scratchpadFn,
+        xtype: 'menucheckitem',
+        scope: this
+    }, {
+        xtype: 'menuseparator',
+        hidden: (!is_editor) || is_ebook
+    }, {
+        text: getText('识别循环') + "...",
+        glyph: 0xf1ce,
+        tooltip: getText('识别图中的循环'),
+        handler: doLoops,
+        scope: this
+    }, {
+        text: getText('比较结果') + "...",
+        glyph: 0xf02c,
+        tooltip: getText('比较模拟结果'),
+        handler: function() {
+            var sum = 0;
+            Ext.WindowMgr.each(function(win) {
+                var t = win.down("#pinTool");
+                if (t) { sum++; }
+            });
+            if (sum < 2) {
+                showNotification(getText("您必须至少有两个打开的模拟结果窗口才能进行比较。"), "notice", true);
+            } else { doCompare(); }
+        },
+        scope: this
+    }, {
+        xtype: 'menuseparator',
+        hidden: (!is_editor) || is_ebook
+    }, {
+        itemId: 'sensitivityBut',
+        text: getText('灵敏度测试') + "...",
+        glyph: 0xf201,
+        tooltip: getText('模型灵敏度测试'),
+        handler: doSensitivity,
+        scope: this
+    }, {
+        itemId: 'optimizeBut',
+        text: getText('优化和目标寻求') + "...",
+        glyph: 0xf140,
+        tooltip: getText('优化模型参数'),
+        handler: doOptimizer,
+        scope: this
+    }, {
+        xtype: 'menuseparator',
+        hidden: (!is_editor) || is_ebook
+    }, {
+        hidden: (!is_editor) || is_embed || is_ebook,
+        itemId: 'macroBut',
+        text: getText('宏和变量') + "...",
+        glyph: 0xf1c9,
+        tooltip: getText('编辑宏函数和常量，以便在等式中的任何位置使用'),
+        handler: showMacros,
+        scope: this
+    }];
+
+    // Build full (desktop) toolbar items
+    var fullItems = FileMenu.concat([{
+        hidden: is_ebook,
+        cls: 'button',
+        iconCls: 'icon-icon',
+        tooltip: getText('主页')
+    }, '->', {
+        hidden: (!viewConfig.primitiveGroup),
+        text: getText('开始'),
+        itemId: 'valued',
+        iconCls: 'green-icon',
+        glyph: 0xf055,
+        menu: primitiveMenuItems
+    }, {
+        xtype: 'tbseparator',
+        hidden: (!is_editor) || is_embed
+    }, {
+        hidden: (!viewConfig.connectionsGroup),
+        xtype: "segmentedbutton",
+        items: [{
+            text: '流/转换',
+            id: "connect",
+            pressed: true,
+            tooltip: "使用流或转换来连接图元。 选择一个图元并拖动图元上显示的箭头以建立连接。 流转移物质，转换切换状态。"
+        }, {
+            text: '链接',
+            tooltip: "使用链接连接图元。 选择一个图元并拖动图元上显示的箭头以建立连接。 链接传输信息。"
+        }]
+    }, {
+        itemId: 'reverse',
+        hidden: (!viewConfig.connectionsGroup),
+        glyph: 0xf0ec,
+        tooltip: getText('反转箭头方向'),
+        handler: reverseDirection,
+        scope: this
+    }, {
+        xtype: 'tbseparator',
+        hidden: (!is_editor) || is_embed
+    }, {
+        itemId: 'config',
+        text: getText('设置'),
+        glyph: 0xf017,
+        tooltip: getText('配置开始和截止时间') + ' ' + cmd("L"),
+        handler: timeSettingsFn,
+        scope: this
+    }, '-', {
+        hidden: (!viewConfig.saveEnabled),
+        text: getText('保存'),
+        glyph: 0xf0c7,
+        tooltip: getText('保存模型') + ' ' + cmd("S"),
+        itemId: 'savebut',
+        handler: function() { saveModel(); },
+        scope: this
+    }, {
+        itemId: 'run',
+        text: getText('模拟'),
+        iconCls: 'blue-icon',
+        glyph: 0xf01d,
+        tooltip: getText('模拟') + ' ' + cmd("Enter"),
+        handler: function(me, evt) { runModel(); },
+        scope: this
+    }, {
+        xtype: 'tbseparator',
+        hidden: (!is_editor) || is_embed
+    }, {
+        hidden: (!viewConfig.actionsGroup),
+        text: getText('编辑'),
+        itemId: 'actions',
+        menu: actionsMenuItems
+    }, {
+        hidden: (!viewConfig.styleGroup),
+        text: getText('风格'),
+        itemId: 'style',
+        menu: styleMenu
+    }, {
+        xtype: 'tbseparator',
+        hidden: !viewConfig.actionsGroup
+    }, {
+        hidden: (!viewConfig.styleGroup),
+        text: getText('分享'),
+        itemId: 'share',
+        menu: shareMenuItems,
+        glyph: 0xf1e0
+    }, {
+        hidden: (!viewConfig.toolsGroup),
+        text: getText('工具'),
+        itemId: "configgroup",
+        glyph: 0xf0ad,
+        menu: toolsMenuItems
+    }, {
+        hidden: is_editor,
+        cls: 'button',
+        text: getText('缩放'),
+        glyph: 0xf002,
+        tooltip: getText('缩放图表'),
+        itemId: 'zoomlargebutgrouped',
+        handler: function(menu) {},
+        menu: zoomMenu
+    }]);
+
+    // Build compact (mobile/tablet) toolbar items — icon-only group menus
+    var compactItems = [{
+        // File
+        glyph: 0xf15b,
+        tooltip: getText('文件'),
+        menu: [{
+            glyph: 0xf016,
+            text: getText('新建'),
+            handler: FileManagerWeb.newModel
+        }, {
+            glyph: 0xf115,
+            text: getText('加载'),
+            handler: FileManagerWeb.loadModel
+        }, {
+            glyph: 0xf0c7,
+            text: getText('保存'),
+            handler: FileManagerWeb.saveModel
+        }]
+    }, {
+        // Primitive group
+        glyph: 0xf055,
+        tooltip: getText('开始'),
+        hidden: (!viewConfig.primitiveGroup),
+        menu: primitiveMenuItems
+    }, {
+        // Connections (inline items wrapped into menu)
+        glyph: 0xf0c1,
+        tooltip: getText('连接'),
+        hidden: (!viewConfig.connectionsGroup),
+        menu: [{
+            text: getText('使用流/转换'),
+            handler: function() {
+                var b = Ext.getCmp("connect");
+                if (b) { b.setPressed(0); }
+            }
+        }, {
+            text: getText('使用信息链接'),
+            handler: function() {
+                var b = Ext.getCmp("connect");
+                if (b) { b.setPressed(1); }
+            }
+        }, '-', {
+            text: getText('反转箭头方向'),
+            glyph: 0xf0ec,
+            handler: reverseDirection
+        }]
+    }, {
+        // Simulate group (settings + save + run)
+        glyph: 0xf01d,
+        tooltip: getText('模拟'),
+        menu: [{
+            text: getText('设置'),
+            glyph: 0xf017,
+            handler: timeSettingsFn
+        }, {
+            text: getText('保存'),
+            glyph: 0xf0c7,
+            hidden: (!viewConfig.saveEnabled),
+            handler: function() { saveModel(); }
+        }, {
+            text: getText('模拟'),
+            glyph: 0xf01d,
+            handler: function() { runModel(); }
+        }]
+    }, {
+        // Actions group
+        glyph: 0xf0b0,
+        tooltip: getText('编辑'),
+        hidden: (!viewConfig.actionsGroup),
+        menu: actionsMenuItems
+    }, {
+        // Style group
+        glyph: 0xf1fc,
+        tooltip: getText('风格'),
+        hidden: (!viewConfig.styleGroup),
+        menu: styleMenu
+    }, {
+        // Share group
+        glyph: 0xf1e0,
+        tooltip: getText('分享'),
+        hidden: (!viewConfig.styleGroup),
+        menu: shareMenuItems
+    }, {
+        // Tools group
+        glyph: 0xf0ad,
+        tooltip: getText('工具'),
+        hidden: (!viewConfig.toolsGroup),
+        menu: toolsMenuItems
+    }, '->', {
+        // Zoom (non-editor mode)
+        hidden: is_editor,
+        glyph: 0xf002,
+        tooltip: getText('缩放'),
+        menu: zoomMenu
+    }];
+
+    var ribbonToolbar = Ext.create('Ext.toolbar.Toolbar', {
+        enableOverflow: true,
+        items: isCompact() ? compactItems : fullItems
+    });
+
+    // Responsive: switch between full and compact modes on resize
+    var ribbonWasCompact = isCompact();
+    Ext.EventManager.onWindowResize(function(w, h) {
+        var nowCompact = w < ribbonCompactWidth;
+        if (nowCompact !== ribbonWasCompact) {
+            ribbonWasCompact = nowCompact;
+            ribbonToolbar.removeAll();
+            ribbonToolbar.add(nowCompact ? compactItems : fullItems);
+        }
+    });
+
     return ({
         id: 'ribbonPanel',
         xtype: 'panel',
@@ -1077,548 +1600,6 @@ var RibbonPanel = function(graph, mainPanel, configPanel) {
         border: false,
         items: [mainPanel, configPanel],
         collapsible: false,
-        tbar: new Ext.toolbar.Toolbar({
-            enableOverflow: true,
-            items: FileMenu.concat([{
-                    hidden: is_ebook,
-                    cls: 'button',
-                    //glyph: 0xf015,
-                    iconCls: 'icon-icon',
-
-                    //href: '//',
-                    tooltip: getText('主页')
-                },
-                '->',
-                
-                {
-                    hidden: (!viewConfig.primitiveGroup),
-                    text: getText('开始'),
-                    itemId: 'valued',
-                    iconCls: 'green-icon',
-                    glyph: 0xf055,
-                    menu: [{
-                    text: getText('文件'),
-                    itemId: "filegroup",
-                    glyph: 0xf15b,
-                    menu: [{
-							glyph: 0xf016,
-							text: getText('新建'),
-							tooltip: getText('新建模型') + ' ' + cmdAlt("N"),
-							handler: FileManagerWeb.newModel,
-							scope: this
-						},
-						{
-							glyph: 0xf115,
-							/*0xf115 alternative icon we could have used */
-							text: getText('加载'),
-							tooltip: getText('加载模型 (.evl / .json / .xmile)') + ' ' + cmdAlt("O"),
-							handler: FileManagerWeb.loadModel,
-							scope: this
-						},
-						{
-							glyph: 0xf0c7,
-							text: getText('保存'),
-							tooltip: getText('保存模型') + ' ' + cmd("S"),
-							handler: FileManagerWeb.saveModel,
-							scope: this
-						}
-                    ]
-                },'-'
-                ,{
-                            xtype: "component",
-                            indent: false,
-                            html: "<b>" + getText('系统动力学模型') + "</b>",
-                            disabled: true,
-                            style: {
-                                "margin": "10px 5px 10px 5px"
-                            }
-                        }, '-', {
-                            itemId: 'stock',
-                            text: getText('添加库'),
-                            glyph: 0xf1b2,
-                            tooltip: getText('库用来储存物质'),
-                            handler: function() {
-                                var x = createPrimitive("新库", "Stock", [240, 80], [100, 40]);
-                                highlight(x);
-
-                                graph.orderCells(false);
-
-                                //setTimeout(function(){graph.cellEditor.startEditing(x)},20);
-                            }
-                        }, {
-                            itemId: 'variable',
-                            text: getText('添加变量'),
-                            glyph: 0xf0e4,
-                            tooltip: getText('变量可以是常数或动态更新的等式'),
-                            handler: function() {
-                                highlight(createPrimitive("新变量", "Variable", [240, 80], [120, 50]))
-
-                                graph.orderCells(false);
-                            }
-                        }, {
-                            itemId: 'converter',
-                            text: getText('添加转换器'),
-                            glyph: 0xf1fe,
-                            tooltip: getText('转换器可以包含图形函数或输入/输出表'),
-                            handler: function() {
-                                highlight(createPrimitive("新转换器", "Converter", [240, 80], [120, 50]))
-
-                                graph.orderCells(false);
-                            }
-                        }, '-', {
-                            xtype: "component",
-                            indent: false,
-                            html: "<b>" + getText('多主体建模') + "</b>",
-                            disabled: true,
-                            style: {
-                                "margin": "10px 5px 10px 5px"
-                            }
-                        }, '-', {
-                            itemId: 'population',
-                            glyph: 0xf0c0,
-                            text: getText('添加主体群'),
-                            tooltip: getText('主体群是主体的集合'),
-                            handler: function() {
-                                highlight(createPrimitive("主体群", "Agents", [240, 80], [170, 80]))
-
-                                graph.orderCells(false);
-                            }
-                        }, {
-                            itemId: 'state',
-                            glyph: 0xf046,
-                            text: getText('添加状态'),
-                            tooltip: getText('状态是二进制，真/假变量'),
-                            handler: function() {
-                                highlight(createPrimitive("新状态", "State", [240, 80], [100, 40]))
-                            }
-                        }, {
-                            itemId: 'action',
-                            glyph: 0xf0e7,
-                            text: getText('添加动作'),
-                            tooltip: getText('动作可以触发模型状态的更改'),
-                            handler: function() {
-                                highlight(createPrimitive("新动作", "Action", [240, 80], [120, 50]))
-
-                                graph.orderCells(false);
-                            }
-                        },
-                        '-', {
-
-                            xtype: "component",
-                            indent: false,
-                            html: "<b>" + getText('用户接口') + "</b>",
-                            disabled: true,
-                            style: {
-                                "margin": "10px 5px 10px 5px"
-                            }
-                        },
-                        '-', {
-                            itemId: 'text',
-                            text: getText('添加文本框'),
-                            glyph: 0xf035,
-                            tooltip: getText('注释你的模型'),
-                            handler: function() {
-                                highlight(createPrimitive("新文本框", "Text", [240, 80], [200, 50]))
-
-                                graph.orderCells(false);
-                            }
-                        }, {
-                            itemId: 'picture',
-                            text: getText('添加图片'),
-                            glyph: 0xf03e,
-                            tooltip: getText('展示你的模型'),
-                            handler: function() {
-                                var x = createPrimitive("", "Picture", [240, 80], [64, 64]);
-                                setPicture(x);
-                                highlight(x);
-
-                                graph.orderCells(false);
-                            }
-                        }, {
-                            itemId: 'buttonBut',
-                            text: getText('添加互动按钮'),
-                            glyph: 0xf196,
-                            tooltip: getText('为模型图添加交互性'),
-                            handler: function() {
-                                highlight(createPrimitive("新按钮", "Button", [240, 80], [120, 40]))
-
-                                graph.orderCells(false);
-                            }
-
-                        }, '-', {
-                            itemId: 'ghostBut',
-                            text: getText('影子图元'),
-                            glyph: 0xf0c5,
-                            tooltip: getText('创建所选图元的链接别名，可以帮助您组织模型'),
-                            scope: this,
-                            handler: makeGhost
-                        }, {
-                            itemId: 'folder',
-                            text: getText('创建文件夹'),
-                            glyph: 0xf114,
-                            tooltip: getText('创建一个包含所选图元的新文件夹'),
-                            scope: this,
-                            handler: makeFolder
-                        }
-
-                    ]
-                }, {
-                    xtype: 'tbseparator',
-                    hidden: (!is_editor) || is_embed
-                },
-                {
-                    hidden: (!viewConfig.connectionsGroup),
-                    xtype: "segmentedbutton",
-                    items: [{
-                            //glyph: 0xf0d1,
-                            //iconCls: 'green-icon',
-                            text: '流/转换',
-                            id: "connect",
-                            pressed: true,
-                            tooltip: "使用流或转换来连接图元。 选择一个图元并拖动图元上显示的箭头以建立连接。 流转移物质，转换切换状态。"
-                        },
-                        {
-                            //glyph: 0xf095,
-                            //iconCls: 'green-icon',
-                            text: '链接',
-                            tooltip: "使用链接连接图元。 选择一个图元并拖动图元上显示的箭头以建立连接。 链接传输信息。"
-                        }
-                    ]
-                },
-                /*{
-					hidden: (!viewConfig.connectionsGroup),
-					text: getText('使用流/转换'),
-					id: 'connect',
-					iconCls: 'green-icon',
-					glyph: 0xf0d1,
-					//iconCls: 'flow-small-icon',//f043
-					tooltip: getText("新建连接时连接图元的方法。选择一个图元，拖动图元上出现的箭头来建立连接。流传输物质，链接传输信息。"),
-					handler: function() {
-						var flow = (connectionType() == "Flow");
-						if (flow) {
-							Ext.getCmp("connect").setText(getText("使用信息链接"));
-							Ext.getCmp("connect").setGlyph(0xf095);
-						} else {
-							Ext.getCmp("connect").setText(getText("使用流/转换"));
-							Ext.getCmp("connect").setGlyph(0xf0d1);
-						}
-					},
-					scope: this
-
-				}*/
-                , {
-                    itemId: 'reverse',
-                    hidden: (!viewConfig.connectionsGroup),
-                    glyph: 0xf0ec,
-                    tooltip: getText('反转箭头方向'),
-                    handler: reverseDirection,
-                    scope: this
-                }, {
-                    xtype: 'tbseparator',
-                    hidden: (!is_editor) || is_embed
-                },
-                {
-                    itemId: 'config',
-                    text: getText('设置'),
-                    glyph: 0xf017,
-                    tooltip: getText('配置开始和截止时间') + ' ' + cmd("L"),
-                    handler: timeSettingsFn,
-                    scope: this
-                },
-                '-', {
-                    hidden: (!viewConfig.saveEnabled),
-                    text: getText('保存'),
-                    glyph: 0xf0c7,
-                    tooltip: getText('保存模型') + ' ' + cmd("S"),
-                    itemId: 'savebut',
-                    handler: function() {
-                        saveModel();
-                    },
-                    scope: this
-
-                }, {
-
-                    itemId: 'run',
-                    text: getText('模拟'),
-                    iconCls: 'blue-icon',
-                    glyph: 0xf01d,
-                    tooltip: getText('模拟') + ' ' + cmd("Enter"),
-                    handler: function(me, evt) {
-                        runModel();
-                    },
-                    scope: this
-                }, /*{
-                    itemId: '3Drun',
-                    text: getText('仿真'),
-                    iconCls: 'blue-icon',
-                    glyph: 0xf1b2,
-                    tooltip: getText('虚拟仿真') + ' ' + cmd("Enter"),
-                    handler: ThreeDManager
-                    
-                }, */{
-                    xtype: 'tbseparator',
-                    hidden: (!is_editor) || is_embed
-                },
-
-                // '->',
-
-                /*{
-                	hidden: (!is_editor) || is_embed || is_ebook,
-                	text: getText(''),
-                	glyph: 0xf059,
-                	tooltip: getText("帮助"),
-                	handler: function() {
-                		showURL("//insightmaker.com/help")
-                	},
-                	scope: this
-                }, {
-                	xtype: 'tbseparator',
-                	hidden: !viewConfig.actionsGroup
-                },*/
-
-                {
-                    hidden: (!viewConfig.actionsGroup),
-                    text: getText('编辑'),
-                    itemId: 'actions',
-                    menu: [{
-                            hidden: !viewConfig.actionsGroup,
-                            itemId: 'undo',
-                            text: "撤销",
-                            glyph: 0xf0e2,
-                            tooltip: getText('撤销') + ' ' + cmd("Z"),
-                            handler: function() {
-                                undoHistory.undo();
-                            },
-                            scope: this
-                        }, {
-                            hidden: !viewConfig.actionsGroup,
-                            itemId: 'redo',
-                            text: "重做",
-                            glyph: 0xf01e,
-                            tooltip: getText('重做') + ' ' + cmd("Y"),
-                            handler: function() {
-                                undoHistory.redo();
-                            },
-                            scope: this
-                        },
-                        '-',
-                        editActions.copy,
-                        editActions.cut,
-                        editActions.paste,
-                        '-',
-                        editActions["delete"],
-                        '-', {
-                            text: getText('查找/替换...'),
-                            tooltip: getText('在模型中查找文本') + ' ' + cmd("F"),
-                            handler: showFindAndReplace
-                        }, {
-                            text: getText('查找文本'),
-                            tooltip: getText('在模型中查找下一个文本') + ' ' + cmd("G"),
-                            handler: function() {
-                                var but = Ext.getCmp('findNextBut');
-                                if (but && (!but.disabled)) {
-                                    findNext();
-                                }
-                            }
-                        }, '-', {
-                            text: getText("打印..."),
-                            glyph: 0xf02f,
-                            handler: printGraph
-                        },
-                        '-', {
-                            itemId: "zoomMenuButton",
-                            text: getText('缩放'),
-                            glyph: 0xf002,
-                            menu: zoomMenu
-                        },
-                        {
-                            text: getText('布局图'),
-                            glyph: 0xf0e8,
-                            menu: [{
-                                    text: getText('垂直分层布局'),
-                                    scope: this,
-                                    handler: function(item) {
-                                        var layout = new mxHierarchicalLayout(graph);
-                                        executeLayout(layout, true);
-                                    }
-                                },
-                                {
-                                    text: getText('水平分层布局'),
-                                    scope: this,
-                                    handler: function(item) {
-                                        var layout = new mxHierarchicalLayout(graph,
-                                            mxConstants.DIRECTION_WEST);
-                                        executeLayout(layout, true);
-                                    }
-                                }, '-', {
-                                    text: getText('有机布局'),
-                                    scope: this,
-                                    handler: function(item) {
-                                        layoutModel("organic");
-                                    }
-                                }, {
-                                    text: getText('圆形布局'),
-                                    scope: this,
-                                    handler: function(item) {
-                                        layoutModel("circular");
-                                    }
-                                }
-                            ]
-                        }
-                    ]
-                }, {
-                    hidden: (!viewConfig.styleGroup),
-                    text: getText('风格'),
-                    itemId: 'style',
-                    menu: styleMenu
-                    /*,
-                    					glyph: 0xf0d0*/
-                }, {
-                    xtype: 'tbseparator',
-                    hidden: !viewConfig.actionsGroup
-                },
-                {
-                    hidden: (!viewConfig.styleGroup),
-                    text: getText('分享'),
-                    itemId: 'share',
-                    menu: [{
-                            hidden: (!is_editor) || is_ebook,
-                            text: getText('讲述') + "...",
-                            glyph: 0xf0e6,
-                            tooltip: getText('逐步显示模型以讲述故事'),
-                            handler: blockUnfold(showUnfoldingWin),
-                            scope: this
-                        },
-                        '-', {
-                            itemId: 'embed_but',
-                            text: getText('嵌入网页') + "...",
-                            hidden: (!is_editor) || is_ebook,
-                            glyph: 0xf0ac,
-                            tooltip: getText('将此模型嵌入另一个网页'),
-                            handler: function() {
-                                Ext.MessageBox.show({
-                                    title: getText('嵌入'),
-                                    msg: getText('嵌入功能在离线模式下不可用。请部署到支持 InsightMaker 嵌入的服务后使用。'),
-                                    buttons: Ext.MessageBox.OK,
-                                    icon: Ext.MessageBox.INFO
-                                });
-                            },
-                            scope: this
-                        },
-                        '-', {
-                            hidden: (!is_editor),
-                            itemId: 'textBut',
-                            text: getText('完整的公式列表'),
-                            tooltip: getText('模型中所有方程的列表'),
-                            handler: textEquations,
-                            scope: this
-                        },
-                        {
-                            hidden: (!is_editor),
-                            glyph: 0xf1c5,
-                            text: getText("导出SVG"),
-                            handler: function() {
-                                exportSvg();
-                            }
-                        }
-                    ],
-                    glyph: 0xf1e0
-                },
-                {
-
-                    hidden: (!viewConfig.toolsGroup),
-                    text: getText('工具'),
-                    itemId: "configgroup",
-                    glyph: 0xf0ad,
-                    menu: [{
-                            itemId: 'scratchpad',
-                            text: getText('便笺'),
-                            glyph: 0xf040,
-                            tooltip: getText('在图表上绘制注释') + ' ' + cmd("K"),
-                            enableToggle: true,
-                            handler: scratchpadFn,
-                            xtype: 'menucheckitem',
-                            scope: this
-                        },
-                        {
-                            xtype: 'menuseparator',
-                            hidden: (!is_editor) || is_ebook
-                        }, {
-                            text: getText('识别循环') + "...",
-                            glyph: 0xf1ce,
-                            tooltip: getText('识别图中的循环'),
-                            handler: doLoops,
-                            scope: this
-                        }, {
-                            text: getText('比较结果') + "...",
-                            glyph: 0xf02c,
-                            tooltip: getText('比较模拟结果'),
-                            handler: function() {
-                                var sum = 0;
-
-                                Ext.WindowMgr.each(
-                                    function(win) {
-                                        var t = win.down("#pinTool");
-                                        if (t) {
-                                            sum++;
-                                        }
-                                    }
-                                );
-                                if (sum < 2) {
-                                    showNotification(getText("您必须至少有两个打开的模拟结果窗口才能进行比较。"), "notice", true);
-                                } else {
-                                    doCompare();
-                                }
-                            },
-                            scope: this
-                        }, {
-                            xtype: 'menuseparator',
-                            hidden: (!is_editor) || is_ebook
-                        }, {
-                            itemId: 'sensitivityBut',
-                            text: getText('灵敏度测试') + "...",
-                            glyph: 0xf201,
-                            tooltip: getText('模型灵敏度测试'),
-                            handler: doSensitivity,
-                            scope: this
-                        }, {
-                            itemId: 'optimizeBut',
-                            text: getText('优化和目标寻求') + "...",
-                            glyph: 0xf140,
-                            tooltip: getText('优化模型参数'),
-                            handler: doOptimizer,
-                            scope: this
-
-                        }, {
-                            xtype: 'menuseparator',
-                            hidden: (!is_editor) || is_ebook
-                        }, {
-                            hidden: (!is_editor) || is_embed || is_ebook,
-                            itemId: 'macroBut',
-                            text: getText('宏和变量') + "...",
-                            glyph: 0xf1c9,
-                            tooltip: getText('编辑宏函数和常量，以便在等式中的任何位置使用'),
-                            handler: showMacros,
-                            scope: this
-                        }
-
-
-
-                    ]
-                }, {
-                    hidden: is_editor,
-                    cls: 'button',
-                    text: getText('缩放'),
-                    glyph: 0xf002,
-                    tooltip: getText('缩放图表'),
-                    itemId: 'zoomlargebutgrouped',
-                    handler: function(menu) {},
-                    menu: zoomMenu
-                }
-
-
-            ])
-        })
-
+        tbar: ribbonToolbar
     });
 };
