@@ -663,6 +663,18 @@ function main() {
 		}
     });
 
+	// Responsive: auto-hide sidebar on narrow screens
+	Ext.EventManager.onWindowResize(function(w, h) {
+		if (w < viewConfig.sideBarCollapseWidth) {
+			if (!configPanel.hidden) {
+				configPanel.hide();
+			}
+		} else {
+			if (configPanel.hidden) {
+				configPanel.show();
+			}
+		}
+	});
 
 	var connectionChangeHandler = function(sender, evt) {
 		var item = evt.getProperty("edge");

@@ -331,7 +331,7 @@ var ConfigPanel = function()
 			//grid.destroy();
 			//configPanel.removeAll();
 		}},
-        collapsible: ! mxClient.IS_TOUCH, /*XXX SFR FIXME TODO: Bug on mobile devices with collapsing when the grid has been created */
+        collapsible: ! mxClient.IS_TOUCH, /* touch collapsible disabled due to ExtJS 4 grid + collapse bug */
 		header: ! is_embed,
         title: getText("配置"),
         border: false,
