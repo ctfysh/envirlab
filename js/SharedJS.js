@@ -19,8 +19,7 @@ var viewConfig = {
 	environment: environment.AutoDetect,
 	showTopLinks: true,
 	sideBarWidth: 330,
-	sideBarCollapseWidth: 768,
-	sideBarMobileWidth: 280,
+
 	referenceBarWidth: 240,
 	enableContextMenu: true,
 	focusDiagram: true,

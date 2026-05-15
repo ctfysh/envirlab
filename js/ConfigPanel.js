@@ -331,7 +331,12 @@ var ConfigPanel = function()
 			//grid.destroy();
 			//configPanel.removeAll();
 		}},
-        collapsible: ! mxClient.IS_TOUCH, /* touch collapsible disabled due to ExtJS 4 grid + collapse bug */
+        collapsible: true,
+		collapseDirection: 'left',
+		animCollapse: false,
+		titleCollapse: true,
+		floatCollapse: false,
+		collapseToolText: getText('收起侧边栏'),
 		header: ! is_embed,
         title: getText("配置"),
         border: false,

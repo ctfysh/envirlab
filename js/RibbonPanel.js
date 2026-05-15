@@ -1068,38 +1068,7 @@ var RibbonPanel = function(graph, mainPanel, configPanel) {
 
 
 
-    // === Responsive Ribbon Support ===
-    var ribbonCompactWidth = 768;
-
-    function isCompact() {
-        return window.innerWidth < ribbonCompactWidth;
-    }
-
-    // Extract menu arrays for reuse in compact mode
     var primitiveMenuItems = [{
-        text: getText('文件'),
-        itemId: "filegroup",
-        glyph: 0xf15b,
-        menu: [{
-            glyph: 0xf016,
-            text: getText('新建'),
-            tooltip: getText('新建模型') + ' ' + cmdAlt("N"),
-            handler: FileManagerWeb.newModel,
-            scope: this
-        }, {
-            glyph: 0xf115,
-            text: getText('加载'),
-            tooltip: getText('加载模型 (.evl / .json / .xmile)') + ' ' + cmdAlt("O"),
-            handler: FileManagerWeb.loadModel,
-            scope: this
-        }, {
-            glyph: 0xf0c7,
-            text: getText('保存'),
-            tooltip: getText('保存模型') + ' ' + cmd("S"),
-            handler: FileManagerWeb.saveModel,
-            scope: this
-        }]
-    }, '-', {
         xtype: "component",
         indent: false,
         html: "<b>" + getText('系统动力学模型') + "</b>",
@@ -1379,13 +1348,42 @@ var RibbonPanel = function(graph, mainPanel, configPanel) {
         scope: this
     }];
 
-    // Build full (desktop) toolbar items
-    var fullItems = FileMenu.concat([{
+    // Build desktop toolbar items
+    var fullItems = [
+    // Left: Home only
+    {
         hidden: is_ebook,
         cls: 'button',
         iconCls: 'icon-icon',
         tooltip: getText('主页')
-    }, '->', {
+    }, '->',
+    // Right: File | Start + model buttons
+    {
+        text: getText('文件'),
+        itemId: "filegroup",
+        glyph: 0xf15b,
+        menu: [{
+            glyph: 0xf016,
+            text: getText('新建'),
+            tooltip: getText('新建模型') + ' ' + cmdAlt("N"),
+            handler: FileManagerWeb.newModel,
+            scope: this
+        }, {
+            glyph: 0xf115,
+            text: getText('加载'),
+            tooltip: getText('加载模型 (.evl / .json / .xmile)') + ' ' + cmdAlt("O"),
+            handler: FileManagerWeb.loadModel,
+            scope: this
+        }, {
+            glyph: 0xf0c7,
+            text: getText('保存'),
+            tooltip: getText('保存模型') + ' ' + cmd("S"),
+            handler: FileManagerWeb.saveModel,
+            scope: this
+        }]
+    }, {
+        xtype: 'tbseparator'
+    }, {
         hidden: (!viewConfig.primitiveGroup),
         text: getText('开始'),
         itemId: 'valued',
@@ -1477,118 +1475,13 @@ var RibbonPanel = function(graph, mainPanel, configPanel) {
         itemId: 'zoomlargebutgrouped',
         handler: function(menu) {},
         menu: zoomMenu
-    }]);
-
-    // Build compact (mobile/tablet) toolbar items — icon-only group menus
-    var compactItems = [{
-        // File
-        glyph: 0xf15b,
-        tooltip: getText('文件'),
-        menu: [{
-            glyph: 0xf016,
-            text: getText('新建'),
-            handler: FileManagerWeb.newModel
-        }, {
-            glyph: 0xf115,
-            text: getText('加载'),
-            handler: FileManagerWeb.loadModel
-        }, {
-            glyph: 0xf0c7,
-            text: getText('保存'),
-            handler: FileManagerWeb.saveModel
-        }]
-    }, {
-        // Primitive group
-        glyph: 0xf055,
-        tooltip: getText('开始'),
-        hidden: (!viewConfig.primitiveGroup),
-        menu: primitiveMenuItems
-    }, {
-        // Connections (inline items wrapped into menu)
-        glyph: 0xf0c1,
-        tooltip: getText('连接'),
-        hidden: (!viewConfig.connectionsGroup),
-        menu: [{
-            text: getText('使用流/转换'),
-            handler: function() {
-                var b = Ext.getCmp("connect");
-                if (b) { b.setPressed(0); }
-            }
-        }, {
-            text: getText('使用信息链接'),
-            handler: function() {
-                var b = Ext.getCmp("connect");
-                if (b) { b.setPressed(1); }
-            }
-        }, '-', {
-            text: getText('反转箭头方向'),
-            glyph: 0xf0ec,
-            handler: reverseDirection
-        }]
-    }, {
-        // Simulate group (settings + save + run)
-        glyph: 0xf01d,
-        tooltip: getText('模拟'),
-        menu: [{
-            text: getText('设置'),
-            glyph: 0xf017,
-            handler: timeSettingsFn
-        }, {
-            text: getText('保存'),
-            glyph: 0xf0c7,
-            hidden: (!viewConfig.saveEnabled),
-            handler: function() { saveModel(); }
-        }, {
-            text: getText('模拟'),
-            glyph: 0xf01d,
-            handler: function() { runModel(); }
-        }]
-    }, {
-        // Actions group
-        glyph: 0xf0b0,
-        tooltip: getText('编辑'),
-        hidden: (!viewConfig.actionsGroup),
-        menu: actionsMenuItems
-    }, {
-        // Style group
-        glyph: 0xf1fc,
-        tooltip: getText('风格'),
-        hidden: (!viewConfig.styleGroup),
-        menu: styleMenu
-    }, {
-        // Share group
-        glyph: 0xf1e0,
-        tooltip: getText('分享'),
-        hidden: (!viewConfig.styleGroup),
-        menu: shareMenuItems
-    }, {
-        // Tools group
-        glyph: 0xf0ad,
-        tooltip: getText('工具'),
-        hidden: (!viewConfig.toolsGroup),
-        menu: toolsMenuItems
-    }, '->', {
-        // Zoom (non-editor mode)
-        hidden: is_editor,
-        glyph: 0xf002,
-        tooltip: getText('缩放'),
-        menu: zoomMenu
     }];
+
+
 
     var ribbonToolbar = Ext.create('Ext.toolbar.Toolbar', {
         enableOverflow: true,
-        items: isCompact() ? compactItems : fullItems
-    });
-
-    // Responsive: switch between full and compact modes on resize
-    var ribbonWasCompact = isCompact();
-    Ext.EventManager.onWindowResize(function(w, h) {
-        var nowCompact = w < ribbonCompactWidth;
-        if (nowCompact !== ribbonWasCompact) {
-            ribbonWasCompact = nowCompact;
-            ribbonToolbar.removeAll();
-            ribbonToolbar.add(nowCompact ? compactItems : fullItems);
-        }
+        items: fullItems
     });
 
     return ({

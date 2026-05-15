@@ -63,12 +63,12 @@ function cellsContainNodename(myCells, name) {
 
 
 function connectionType() {
-	if (ribbonPanelItems().down('#connect').pressed) {
+	var connectBtn = ribbonPanelItems().down('#connect');
+	if (connectBtn && connectBtn.pressed) {
 		return "Flow";
 	} else {
 		return "Link";
 	}
-	return "None";
 }
 
 function setAllConnectable() {
@@ -293,6 +293,7 @@ function isValued(cell) {
 function setSaveEnabled(e) {
 	if (is_editor && (!is_embed)) {
 		var b = ribbonPanelItems().getComponent('savebut');
+		if (!b) return;
 		if (e && unfoldingManager.unfolding == false) {
 			b.setDisabled(false);
 			b.setText(getText('保存'));

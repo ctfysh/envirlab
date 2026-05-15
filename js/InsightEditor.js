@@ -663,19 +663,6 @@ function main() {
 		}
     });
 
-	// Responsive: auto-hide sidebar on narrow screens
-	Ext.EventManager.onWindowResize(function(w, h) {
-		if (w < viewConfig.sideBarCollapseWidth) {
-			if (!configPanel.hidden) {
-				configPanel.hide();
-			}
-		} else {
-			if (configPanel.hidden) {
-				configPanel.show();
-			}
-		}
-	});
-
 	var connectionChangeHandler = function(sender, evt) {
 		var item = evt.getProperty("edge");
 		if (item.value.nodeName == "Link") {
@@ -931,7 +918,8 @@ function main() {
 		toolbarItems.down('#movemenu').setDisabled(!selected);
 		toolbarItems.down('#picturemenu').setDisabled(!selected);
 		toolbarItems.down('#useAsDefaultStyle').setDisabled(!selectedNonGhost);
-		toolbarItems.down('#reverse').setDisabled(!(selected && (cellsContainNodename(graph.getSelectionCells(), "Link") || cellsContainNodename(graph.getSelectionCells(), "Flow") || cellsContainNodename(graph.getSelectionCells(), "Transition"))));
+		var reverseBtn = toolbarItems.down('#reverse');
+		if (reverseBtn) reverseBtn.setDisabled(!(selected && (cellsContainNodename(graph.getSelectionCells(), "Link") || cellsContainNodename(graph.getSelectionCells(), "Flow") || cellsContainNodename(graph.getSelectionCells(), "Transition"))));
 
 		setStyles();
 	};
@@ -941,15 +929,18 @@ function main() {
 
 
 	clipboardListener = function() {
-		toolbarItems.down('#paste').setDisabled(mxClipboard.isEmpty());
+		var pasteBtn = toolbarItems.down('#paste');
+		if (pasteBtn) pasteBtn.setDisabled(mxClipboard.isEmpty());
 	};
 	clipboardListener();
 
 
 	// Updates the states of the undo/redo buttons in the toolbar
 	var historyListener = function() {
-		toolbarItems.down('#undo').setDisabled(!undoHistory.canUndo());
-		toolbarItems.down('#redo').setDisabled(!undoHistory.canRedo());
+		var undoBtn = toolbarItems.down('#undo');
+		var redoBtn = toolbarItems.down('#redo');
+		if (undoBtn) undoBtn.setDisabled(!undoHistory.canUndo());
+		if (redoBtn) redoBtn.setDisabled(!undoHistory.canRedo());
 	};
 
 	undoHistory.addListener(mxEvent.ADD, historyListener);
@@ -2294,7 +2285,9 @@ var surpressCloseWarning = false;
 
 function confirmClose() {
 	if (!surpressCloseWarning) {
-		if ((!saved_enabled) || ribbonPanelItems().down('#savebut').disabled || (!undoHistory.canUndo())) {
+		var saveBut = ribbonPanelItems().down('#savebut');
+		var saveDisabled = saveBut ? saveBut.disabled : true;
+		if ((!saved_enabled) || saveDisabled || (!undoHistory.canUndo())) {
 
 		} else {
 			return getText("您已对此模型进行了未保存的更改。 如果您在保存之前离开，他们将会丢失。");

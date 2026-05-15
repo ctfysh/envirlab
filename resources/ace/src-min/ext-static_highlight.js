@@ -1,5 +1,194 @@
-define("ace/ext/static_highlight",["require","exports","module","ace/edit_session","ace/layer/text","ace/config","ace/lib/dom"],function(e,t,n){"use strict";var r=e("../edit_session").EditSession,i=e("../layer/text").Text,s=".ace_static_highlight {font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', 'Droid Sans Mono', monospace;font-size: 12px;}.ace_static_highlight .ace_gutter {width: 25px !important;display: block;float: left;text-align: right;padding: 0 3px 0 0;margin-right: 3px;position: static !important;}.ace_static_highlight .ace_line { clear: both; }.ace_static_highlight .ace_gutter-cell {-moz-user-select: -moz-none;-khtml-user-select: none;-webkit-user-select: none;user-select: none;}.ace_static_highlight .ace_gutter-cell:before {content: counter(ace_line, decimal);counter-increment: ace_line;}.ace_static_highlight {counter-reset: ace_line;}",o=e("../config"),u=e("../lib/dom"),a=function(e,t,n){var r=e.className.match(/lang-(\w+)/),i=t.mode||r&&"ace/mode/"+r[1];if(!i)return!1;var s=t.theme||"ace/theme/textmate",o="",f=[];if(e.firstElementChild){var l=0;for(var c=0;c<e.childNodes.length;c++){var h=e.childNodes[c];h.nodeType==3?(l+=h.data.length,o+=h.data):f.push(l,h)}}else o=u.getInnerText(e),t.trim&&(o=o.trim());a.render(o,i,s,t.firstLineNumber,!t.showGutter,function(t){u.importCssString(t.css,"ace_highlight"),e.innerHTML=t.html;var r=e.firstChild.firstChild;for(var i=0;i<f.length;i+=2){var s=t.session.doc.indexToPosition(f[i]),o=f[i+1],a=r.children[s.row];a&&a.appendChild(o)}n&&n()})};a.render=function(e,t,n,i,s,u){function h(){var r=a.renderSync(e,t,n,i,s);return u?u(r):r}var f=1,l=r.prototype.$modes;typeof n=="string"&&(f++,o.loadModule(["theme",n],function(e){n=e,--f||h()}));var c;return t&&typeof t=="object"&&!t.getTokenizer&&(c=t,t=c.path),typeof t=="string"&&(f++,o.loadModule(["mode",t],function(e){if(!l[t]||c)l[t]=new e.Mode(c);t=l[t],--f||h()})),--f||h()},a.renderSync=function(e,t,n,o,u){o=parseInt(o||1,10);var a=new r("");a.setUseWorker(!1),a.setMode(t);var f=new i(document.createElement("div"));f.setSession(a),f.config={characterWidth:10,lineHeight:20},a.setValue(e);var l=[],c=a.getLength();for(var h=0;h<c;h++)l.push("<div class='ace_line'>"),u||l.push("<span class='ace_gutter ace_gutter-cell' unselectable='on'></span>"),f.$renderLine(l,h,!0,!1),l.push("\n</div>");var p="<div class='"+n.cssClass+"'>"+"<div class='ace_static_highlight' style='counter-reset:ace_line "+(o-1)+"'>"+l.join("")+"</div>"+"</div>";return f.destroy(),{css:s+n.cssText,html:p,session:a}},n.exports=a,n.exports.highlight=a});
-                (function() {
-                    window.require(["ace/ext/static_highlight"], function() {});
+define("ace/ext/static-css",["require","exports","module"], function(require, exports, module){module.exports = ".ace_static_highlight {\n    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'Source Code Pro', 'source-code-pro', 'Droid Sans Mono', monospace;\n    font-size: 12px;\n    white-space: pre-wrap\n}\n\n.ace_static_highlight .ace_gutter {\n    width: 2em;\n    text-align: right;\n    padding: 0 3px 0 0;\n    margin-right: 3px;\n    contain: none;\n}\n\n.ace_static_highlight.ace_show_gutter .ace_line {\n    padding-left: 2.6em;\n}\n\n.ace_static_highlight .ace_line { position: relative; }\n\n.ace_static_highlight .ace_gutter-cell {\n    -moz-user-select: -moz-none;\n    -khtml-user-select: none;\n    -webkit-user-select: none;\n    user-select: none;\n    top: 0;\n    bottom: 0;\n    left: 0;\n    position: absolute;\n}\n\n\n.ace_static_highlight .ace_gutter-cell:before {\n    content: counter(ace_line, decimal);\n    counter-increment: ace_line;\n}\n.ace_static_highlight {\n    counter-reset: ace_line;\n}\n";
+
+});
+
+define("ace/ext/static_highlight",["require","exports","module","ace/edit_session","ace/layer/text","ace/ext/static-css","ace/config","ace/lib/dom","ace/lib/lang"], function(require, exports, module){/**
+ * ## Static syntax highlighting extension for code-to-HTML conversion
+ *
+ * Transforms code snippets into syntax-highlighted HTML with CSS styling without requiring a live editor instance.
+ * Uses a simplified DOM implementation to generate standalone HTML output suitable for static content generation,
+ * documentation, code export, and embedding highlighted code in web pages. Supports automatic language detection
+ * from CSS classes and custom modes/themes.
+ *
+ * @module
+ */
+"use strict";
+var EditSession = require("../edit_session").EditSession;
+var TextLayer = require("../layer/text").Text;
+var baseStyles = require("./static-css");
+var config = require("../config");
+var dom = require("../lib/dom");
+var escapeHTML = require("../lib/lang").escapeHTML;
+var Element = /** @class */ (function () {
+    function Element(type) { this.className;
+        this.type = type;
+        this.style = {};
+        this.textContent = "";
+    }
+    Element.prototype.cloneNode = function () {
+        return this;
+    };
+    Element.prototype.appendChild = function (child) {
+        this.textContent += child.toString();
+    };
+    Element.prototype.toString = function () {
+        var stringBuilder = [];
+        if (this.type != "fragment") {
+            stringBuilder.push("<", this.type);
+            if (this.className)
+                stringBuilder.push(" class='", this.className, "'");
+            var styleStr = [];
+            for (var key in this.style) {
+                styleStr.push(key, ":", this.style[key]);
+            }
+            if (styleStr.length)
+                stringBuilder.push(" style='", styleStr.join(""), "'");
+            stringBuilder.push(">");
+        }
+        if (this.textContent) {
+            stringBuilder.push(this.textContent);
+        }
+        if (this.type != "fragment") {
+            stringBuilder.push("</", this.type, ">");
+        }
+        return stringBuilder.join("");
+    };
+    return Element;
+}());
+var simpleDom = {
+    createTextNode: function (/** @type {string} */ textContent, /** @type {any} */ element) {
+        return escapeHTML(textContent);
+    },
+    createElement: function (/** @type {string} */ type) {
+        return new Element(type);
+    },
+    createFragment: function () {
+        return new Element("fragment");
+    }
+};
+var SimpleTextLayer = function () {
+    this.config = {};
+    this.dom = simpleDom;
+};
+SimpleTextLayer.prototype = TextLayer.prototype;
+var highlight = function (el, opts, callback) {
+    var m = el.className.match(/lang-(\w+)/);
+    var mode = opts.mode || m && ("ace/mode/" + m[1]);
+    if (!mode)
+        return false;
+    var theme = opts.theme || "ace/theme/textmate";
+    var data = "";
+    var nodes = [];
+    if (el.firstElementChild) {
+        var textLen = 0;
+        for (var i = 0; i < el.childNodes.length; i++) {
+            var ch = el.childNodes[i];
+            if (ch.nodeType == 3) {
+                textLen += ch.data.length;
+                data += ch.data;
+            }
+            else {
+                nodes.push(textLen, ch);
+            }
+        }
+    }
+    else {
+        data = el.textContent;
+        if (opts.trim)
+            data = data.trim();
+    }
+    highlight.render(data, mode, theme, opts.firstLineNumber, !opts.showGutter, function (highlighted) {
+        dom.importCssString(highlighted.css, "ace_highlight", true);
+        el.innerHTML = highlighted.html;
+        var container = el.firstChild.firstChild;
+        for (var i = 0; i < nodes.length; i += 2) {
+            var pos = highlighted.session.doc.indexToPosition(nodes[i]);
+            var node = nodes[i + 1];
+            var lineEl = container.children[pos.row];
+            lineEl && lineEl.appendChild(node);
+        }
+        callback && callback();
+    });
+};
+highlight.render = function (input, mode, theme, lineStart, disableGutter, callback) {
+    var waiting = 1;
+    var modeCache = EditSession.prototype.$modes;
+    if (typeof theme == "string") {
+        waiting++;
+        config.loadModule(['theme', theme], function (m) {
+            theme = m;
+            --waiting || done();
+        });
+    }
+    var modeOptions;
+    if (mode && typeof mode === "object" && !mode.getTokenizer) {
+        modeOptions = mode;
+        mode = modeOptions.path;
+    }
+    if (typeof mode == "string") {
+        waiting++;
+        config.loadModule(['mode', mode], function (m) {
+            if (!modeCache[ /**@type{string}*/(mode)] || modeOptions)
+                modeCache[ /**@type{string}*/(mode)] = new m.Mode(modeOptions);
+            mode = modeCache[ /**@type{string}*/(mode)];
+            --waiting || done();
+        });
+    }
+    function done() {
+        var result = highlight.renderSync(input, mode, /**@type{Theme}*/ (theme), lineStart, disableGutter);
+        return callback ? callback(result) : result;
+    }
+    return --waiting || done();
+};
+highlight.renderSync = function (input, mode, theme, lineStart, disableGutter) {
+    lineStart = parseInt(lineStart || 1, 10);
+    var session = new EditSession("");
+    session.setUseWorker(false);
+    session.setMode(mode);
+    var textLayer = new SimpleTextLayer();
+    textLayer.setSession(session);
+    Object.keys(textLayer.$tabStrings).forEach(function (k) {
+        if (typeof textLayer.$tabStrings[k] == "string") {
+            var el = simpleDom.createFragment();
+            el.textContent = textLayer.$tabStrings[k];
+            textLayer.$tabStrings[k] = el;
+        }
+    });
+    session.setValue(input);
+    var length = session.getLength();
+    var outerEl = simpleDom.createElement("div");
+    outerEl.className = theme.cssClass;
+    var innerEl = simpleDom.createElement("div");
+    innerEl.className = "ace_static_highlight" + (disableGutter ? "" : " ace_show_gutter");
+    innerEl.style["counter-reset"] = "ace_line " + (lineStart - 1);
+    for (var ix = 0; ix < length; ix++) {
+        var lineEl = simpleDom.createElement("div");
+        lineEl.className = "ace_line";
+        if (!disableGutter) {
+            var gutterEl = simpleDom.createElement("span");
+            gutterEl.className = "ace_gutter ace_gutter-cell";
+            gutterEl.textContent = "";
+            lineEl.appendChild(gutterEl);
+        }
+        textLayer.$renderLine(lineEl, ix, false);
+        lineEl.textContent += "\n";
+        innerEl.appendChild(lineEl);
+    }
+    outerEl.appendChild(innerEl);
+    return {
+        css: baseStyles + theme.cssText,
+        html: outerEl.toString(),
+        session: session
+    };
+};
+module.exports = highlight;
+module.exports.highlight = highlight;
+
+});                (function() {
+                    window.require(["ace/ext/static_highlight"], function(m) {
+                        if (typeof module == "object" && typeof exports == "object" && module) {
+                            module.exports = m;
+                        }
+                    });
                 })();
             
