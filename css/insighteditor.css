@@ -722,19 +722,50 @@ right: 0;
 }
 
 /* === Responsive: Mobile Adaptations === */
-@media (max-width: 767px) {
-  .x-window {
-    max-width: 100% !important;
-    max-height: 100% !important;
-  }
-  .x-window .x-window-body {
-    max-height: 80vh !important;
-    overflow-y: auto !important;
-  }
-}
-@media (max-width: 1023px) {
+
+/* Tablet landscape / small desktop: ≤1199px */
+@media (max-width: 1199px) {
   .x-toolbar {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
+  }
+  #overall-viewport {
+    min-width: 320px;
+  }
+}
+
+/* Tablet portrait: ≤767px */
+@media (max-width: 767px) {
+  /* Constrain all modal dialogs to viewport */
+  .x-window,
+  .x-message-box,
+  .x-window-default {
+    max-width: 100% !important;
+    max-height: 100% !important;
+  }
+  .x-window .x-window-body,
+  .x-message-box .x-window-body {
+    max-height: 80vh !important;
+    overflow-y: auto !important;
+  }
+  /* Prevent mxGraph overflow beyond viewport */
+  #mxPanelForModelGraph {
+    overflow: hidden !important;
+  }
+  /* Hide unfold toolbar on narrow screens (story mode too cramped) */
+  #unfoldToolbar {
+    display: none !important;
+  }
+}
+
+/* Phone: ≤480px */
+@media (max-width: 480px) {
+  /* Compact ExtJS toolbar items for very small screens */
+  .x-btn-inner {
+    font-size: 11px;
+  }
+  .x-toolbar .x-btn {
+    padding-left: 3px;
+    padding-right: 3px;
   }
 }
