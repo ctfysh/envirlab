@@ -269,8 +269,9 @@ div.mxRubberband {
   padding:  2px;
   z-index:  20001;
   height:   auto;
-  margin:   0px 0 0 -275px;
-  width:	550px;
+  width:    90%;
+  max-width: 550px;
+  transform: translateX(-50%);
 }
 
 #loading #loading-indicator {
@@ -718,4 +719,22 @@ right: 0;
     resize: none;
     padding: 0px;
     margin: 0px;
+}
+
+/* === Responsive: Mobile Adaptations === */
+@media (max-width: 767px) {
+  .x-window {
+    max-width: 100% !important;
+    max-height: 100% !important;
+  }
+  .x-window .x-window-body {
+    max-height: 80vh !important;
+    overflow-y: auto !important;
+  }
+}
+@media (max-width: 1023px) {
+  .x-toolbar {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
 }
