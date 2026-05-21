@@ -21,9 +21,9 @@ function getRenderer(item) {
     if (typeof val == 'boolean') {
         return function(bval) {
             if (isTrue(bval)) {
-                return 'Yes';
+                return getText('是');
             } else {
-                return 'No';
+                return getText('否');
             }
         };
     }

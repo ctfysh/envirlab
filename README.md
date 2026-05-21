@@ -112,6 +112,13 @@ XMILE 导入使用 xmldom（已内置于 `js/xmldom.js`）进行解析，输出�
 
 ## 修改记录
 
+### 2026-05-21
+
+- **深度汉化第二阶段**：翻译仿真引擎中约 149 处 `"MSG:"` 运行时错误字符串（涉及 `Functions.js`、`calc/functions.js`、`calc/formula.js`、`calc/rand.js`、`calc/units.js`、`Primitives.js`），使用 `getText()` 包裹确保 i18n 一致性；修复 `Primitives.js` 中因汉化导致的断言比较不一致。
+- **补译硬编码英文界面文本**：汉化 `ConfigPanel.js`、`UnitsEditor.js`、`InsightEditor.js`、`API/API.js`、`FileManager.js` 中残留的英文按钮/标签/提示文本；汉化 `EquationEditor.js` 中的分组标题"References"→"参考资料"及"Example:"→"示例"，并通过自定义 grouper `sortFn` 将"参考资料"分组置于引用面板顶部。
+- **修复 LSP 诊断超时**：全局安装 `typescript-language-server`，解决 `lsp_diagnostics` 返回 `-32001` MCP 超时问题。
+- **更新 `.gitignore`**：添加 AI 代理相关文件（`.omo/`、`.opencode/`、`.cursor/`、`.vscode/`、`CLAUDE.md`、`GEMINI.md`、`AGENTS.md`）及 macOS 系统文件（`.DS_Store`、`Icon`、`._*` 等）。
+
 ### 2026-05-14
 
 - **补译残留英文界面文本**：检查并汉化 9 个文件中残留的 21 处英文 UI 文本，覆盖按钮（保存/已保存）、面板标题（滑块/引用）、连接模式切换提示、错误提示及约束违例消息等。

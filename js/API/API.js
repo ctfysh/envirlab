@@ -210,7 +210,7 @@ url - The URL to show.
 function showURL(url) {
 	var win = window.open(url, '', 'scrollbars=yes,menubar=yes,height=500,width=700,resizable=yes,toolbar=yes,location=yes,status=yes');
 	if (open == win || typeof(win)=='undefined'){
-		Ext.Msg.alert('', "<big><big><center><a href='"+url+"' target='_blank'><i class='fa fa-external-link-square'></i> Open Link</a></center></big></big>")
+		Ext.Msg.alert('', "<big><big><center><a href='"+url+"' target='_blank'><i class='fa fa-external-link-square'></i> "+getText('打开链接')+"</a></center></big></big>")
 	}
 }
 
@@ -2281,7 +2281,13 @@ function showEditor(primitive, annotations) {
 		
 		var trigger = new Ext.form.ComboBox({
 			triggerAction: "all",
-			store: ['Timeout', 'Probability', 'Condition'],
+			store: [
+				['Timeout', '超时'],
+				['Probability', '概率'],
+				['Condition', '条件']
+			],
+			valueField: 'field1',
+			displayField: 'field2',
 			editable: false,
 			selectOnFocus: false,
 			value: getTriggerType(primitive),

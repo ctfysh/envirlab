@@ -121,7 +121,7 @@ functionLoaders.push(function () {
 		if (!z.units) {
 			return new Material(fn.sin(z.value));
 		} else {
-			throw "MSG: Non-angular units cannot be used in Sin().";
+			throw "MSG:" + getText("Sin() 中不能使用非角度单位。");
 		}
 	});
 	defineFunction("cos", { params: [{ name: "Number" }], recurse: true }, function (x) {
@@ -133,7 +133,7 @@ functionLoaders.push(function () {
 		if (!z.units) {
 			return new Material(fn.cos(z.value));
 		} else {
-			throw "MSG: Non-angular units cannot be used in Cos().";
+			throw "MSG:" + getText("Cos() 中不能使用非角度单位。");
 		}
 
 	});
@@ -146,7 +146,7 @@ functionLoaders.push(function () {
 		if (!z.units) {
 			return new Material(fn.tan(z.value));
 		} else {
-			throw "MSG: Non-angular units cannot be used in Tan().";
+			throw "MSG:" + getText("Tan() 中不能使用非角度单位。");
 		}
 
 	});
@@ -181,7 +181,7 @@ functionLoaders.push(function () {
 		} else if (r.value == 0) {
 			return new Material(0);
 		}
-		throw "MSG: Invalid value for Sign";
+		throw "MSG:" + getText("Sign 的值无效");
 	});
 
 	defineFunction("Sqrt", { params: [{ name: "Number" }], recurse: true }, function (x) {
@@ -298,7 +298,7 @@ functionLoaders.push(function () {
 			v = v.toNum();
 		}
 		if (!(v instanceof Vector)) {
-			throw "MSG: Map() requires a vector as its first argument.";
+			throw "MSG:" + getText("Map() 的第一个参数必须是向量。");
 		}
 		v = v.fullClone();
 
@@ -343,7 +343,7 @@ functionLoaders.push(function () {
 		var repeat = x[2] && trueValue(x[2].toNum());
 
 		if (length == 0) {
-			throw "MSG: Sample() requires a non-empty vector.";
+			throw "MSG:" + getText("Sample() 需要一个非空向量。");
 		}
 		var res = [];
 		if (repeat) {
@@ -352,7 +352,7 @@ functionLoaders.push(function () {
 			}
 		} else {
 			if (length < count) {
-				throw "MSG: Vector for Sample() is too small for the given sample size.";
+				throw "MSG:" + getText("Sample() 的向量对于指定的样本量太小。");
 			}
 
 			var shuffled = v.items.slice();
@@ -417,7 +417,7 @@ functionLoaders.push(function () {
 			v = v.toNum();
 		}
 		if (!(v instanceof Vector)) {
-			throw "MSG: Filter() requires a vector as its first argument.";
+			throw "MSG:" + getText("Filter() 的第一个参数必须是向量。");
 		}
 		v = v.fullClone();
 
@@ -494,7 +494,7 @@ functionLoaders.push(function () {
 				var res = [];
 				var names = x[0].names ? [] : undefined;
 				if (v.length() != x[0].length()) {
-					throw "MSG: Length of vector must be equal for boolean selection.";
+					throw "MSG:" + getText("布尔选择时向量的长度必须相等。");
 				}
 				for (var i = 0; i < v.length(); i++) {
 					if (trueValue(v.items[i])) {
@@ -512,7 +512,7 @@ functionLoaders.push(function () {
 				for (var i = 0; i < v.length(); i++) {
 					var q = v.items[i].value
 					if (q <= 0 || q > x[0].length()) {
-						throw "MSG: Selected element out of range.";
+						throw "MSG:" + getText("选中的元素超出范围。");
 					}
 					res.push(x[0].items[q - 1]);
 
@@ -526,7 +526,7 @@ functionLoaders.push(function () {
 			if (x[1].value > 0 && x[1].value <= x[0].length()) {
 				return x[0].items[x[1].value - 1];
 			} else {
-				throw "MSG: Selected element out of range.";
+				throw "MSG:" + getText("选中的元素超出范围。");
 			}
 		}
 	});
@@ -692,7 +692,7 @@ functionLoaders.push(function () {
 				}
 				return max;
 			} else {
-				throw "MSG: You must have at least one element to calculate a max.";
+				throw "MSG:" + getText("计算最大值至少需要一个元素。");
 			}
 		});
 
@@ -769,11 +769,11 @@ functionLoaders.push(function () {
 		var yVec = x[2].toNum();
 
 		if (xVec.items.length != yVec.items.length) {
-			throw "MSG: The value and results vectors must be the same length";
+			throw "MSG:" + getText("值向量和结果向量长度必须相同");
 		}
 
 		if (xVec.items.length < 1) {
-			throw "MSG: You must have at least one element in your vectors";
+			throw "MSG:" + getText("向量中至少需要一个元素");
 		}
 
 		var vec = [];
@@ -828,7 +828,7 @@ functionLoaders.push(function () {
 				return min;
 
 			} else {
-				throw "MSG: You must have at least one element to calculate a median.";
+				throw "MSG:" + getText("计算中位数至少需要一个元素。");
 			}
 		});
 
@@ -878,7 +878,7 @@ functionLoaders.push(function () {
 					return div(plus(x[Math.floor(((x.length - 1) / 2))], x[Math.ceil(((x.length - 1) / 2))]), new Material(2));
 				}
 			} else {
-				throw "MSG: You must have at least one element to calculate a median.";
+				throw "MSG:" + getText("计算中位数至少需要一个元素。");
 			}
 		});
 		return res;
@@ -902,7 +902,7 @@ functionLoaders.push(function () {
 
 				return functionBank["real"]([r]);
 			} else {
-				throw "MSG: You must have at least two elements to calculate the standard deviation.";
+				throw "MSG:" + getText("计算标准差至少需要两个元素。");
 			}
 		});
 		return res;
@@ -915,10 +915,10 @@ functionLoaders.push(function () {
 		var v2 = x[1].toNum();
 
 		if (v1.length() <= 1) {
-			throw "MSG: You must have at least two elements in your vectors to calculate their correlation.";
+			throw "MSG:" + getText("计算相关系数时向量中至少需要两个元素。");
 		}
 		if (v1.length() != v2.length()) {
-			throw "MSG: The vectors for Correlation() must be of the same size.";
+			throw "MSG:" + getText("Correlation() 的向量大小必须相同。");
 		}
 
 
@@ -1008,7 +1008,7 @@ functionLoaders.push(function () {
 	defineFunction("InvNormal", { params: [{ name: "p", noUnits: true, noVector: true }, { name: "Mean", defaultVal: 0, noUnits: true, noVector: true }, { name: "Standard Deviation", defaultVal: 1, noUnits: true, noVector: true }] }, function (x) {
 		var val = x[0].toNum().value;
 		if (val < 0 || val > 1) {
-			throw "MSG: p is a probability and must be between 0 and 1 inclusive."
+			throw "MSG:" + getText("p 是概率，必须介于 0 和 1 之间（含）。")
 		}
 		var mu = x[1] ? x[1].toNum().value : 0;
 		var sd = x[2] ? x[2].toNum().value : 1;
@@ -1035,7 +1035,7 @@ functionLoaders.push(function () {
 	defineFunction("InvLogNormal", { params: [{ name: "p", noUnits: true, noVector: true }, { name: "Mean", defaultVal: 0, noUnits: true, noVector: true }, { name: "Standard Deviation", defaultVal: 1, noUnits: true, noVector: true }] }, function (x) {
 		var val = x[0].toNum().value;
 		if (val < 0 || val > 1) {
-			throw "MSG: p is a probability and must be between 0 and 1 inclusive."
+			throw "MSG:" + getText("p 是概率，必须介于 0 和 1 之间（含）。")
 		}
 		var mu = x[1] ? x[1].toNum().value : 0;
 		var sd = x[2] ? x[2].toNum().value : 1;
@@ -1047,7 +1047,7 @@ functionLoaders.push(function () {
 		var val = x[0].toNum().value;
 		var dof = x[1].toNum().value;
 		if (dof <= 0) {
-			throw "MSG: Degrees of Freedom must be greater than 0."
+			throw "MSG:" + getText("自由度必须大于 0。")
 		}
 
 		return new Material(jStat.studentt.cdf(val, dof));
@@ -1057,7 +1057,7 @@ functionLoaders.push(function () {
 		var val = x[0].toNum().value;
 		var dof = x[1].toNum().value;
 		if (dof <= 0) {
-			throw "MSG: Degrees of Freedom must be greater than 0."
+			throw "MSG:" + getText("自由度必须大于 0。")
 		}
 
 		return new Material(jStat.studentt.pdf(val, dof));
@@ -1066,11 +1066,11 @@ functionLoaders.push(function () {
 	defineFunction("Invt", { params: [{ name: "p", noUnits: true, noVector: true }, { name: "Degrees of Freedom", noUnits: true, noVector: true }] }, function (x) {
 		var val = x[0].toNum().value;
 		if (val < 0 || val > 1) {
-			throw "MSG: p is a probability and must be between 0 and 1 inclusive."
+			throw "MSG:" + getText("p 是概率，必须介于 0 和 1 之间（含）。")
 		}
 		var dof = x[1].toNum().value;
 		if (dof <= 0) {
-			throw "MSG: Degrees of Freedom must be greater than 0."
+			throw "MSG:" + getText("自由度必须大于 0。")
 		}
 
 		return new Material(jStat.studentt.inv(val, dof));
@@ -1080,11 +1080,11 @@ functionLoaders.push(function () {
 		var val = x[0].toNum().value;
 		var dof1 = x[1].toNum().value;
 		if (dof1 <= 0) {
-			throw "MSG: Degrees of Freedom must be greater than 0."
+			throw "MSG:" + getText("自由度必须大于 0。")
 		}
 		var dof2 = x[2].toNum().value;
 		if (dof2 <= 0) {
-			throw "MSG: Degrees of Freedom must be greater than 0."
+			throw "MSG:" + getText("自由度必须大于 0。")
 		}
 
 		return new Material(jStat.centralF.cdf(val, dof1, dof2));
@@ -1094,11 +1094,11 @@ functionLoaders.push(function () {
 		var val = x[0].toNum().value;
 		var dof1 = x[1].toNum().value;
 		if (dof1 <= 0) {
-			throw "MSG: Degrees of Freedom must be greater than 0."
+			throw "MSG:" + getText("自由度必须大于 0。")
 		}
 		var dof2 = x[2].toNum().value;
 		if (dof2 <= 0) {
-			throw "MSG: Degrees of Freedom must be greater than 0."
+			throw "MSG:" + getText("自由度必须大于 0。")
 		}
 
 		return new Material(jStat.centralF.pdf(val, dof1, dof2));
@@ -1107,15 +1107,15 @@ functionLoaders.push(function () {
 	defineFunction("InvF", { params: [{ name: "p", noUnits: true, noVector: true }, { name: "Degrees of Freedom 1", noUnits: true, noVector: true }, { name: "Degrees of Freedom 2", noUnits: true, noVector: true }] }, function (x) {
 		var val = x[0].toNum().value;
 		if (val < 0 || val > 1) {
-			throw "MSG: p is a probability and must be between 0 and 1 inclusive."
+			throw "MSG:" + getText("p 是概率，必须介于 0 和 1 之间（含）。")
 		}
 		var dof1 = x[1].toNum().value;
 		if (dof1 <= 0) {
-			throw "MSG: Degrees of Freedom must be greater than 0."
+			throw "MSG:" + getText("自由度必须大于 0。")
 		}
 		var dof2 = x[2].toNum().value;
 		if (dof2 <= 0) {
-			throw "MSG: Degrees of Freedom must be greater than 0."
+			throw "MSG:" + getText("自由度必须大于 0。")
 		}
 
 		return new Material(jStat.centralF.inv(val, dof1, dof2));
@@ -1125,7 +1125,7 @@ functionLoaders.push(function () {
 		var val = x[0].toNum().value;
 		var dof = x[1].toNum().value;
 		if (dof <= 0) {
-			throw "MSG: Degrees of Freedom must be greater than 0."
+			throw "MSG:" + getText("自由度必须大于 0。")
 		}
 
 		return new Material(jStat.chisquare.cdf(val, dof));
@@ -1135,7 +1135,7 @@ functionLoaders.push(function () {
 		var val = x[0].toNum().value;
 		var dof = x[1].toNum().value;
 		if (dof <= 0) {
-			throw "MSG: Degrees of Freedom must be greater than 0."
+			throw "MSG:" + getText("自由度必须大于 0。")
 		}
 
 		return new Material(jStat.chisquare.pdf(val, dof));
@@ -1144,11 +1144,11 @@ functionLoaders.push(function () {
 	defineFunction("InvChiSquared", { params: [{ name: "p", noUnits: true, noVector: true }, { name: "Degrees of Freedom", noUnits: true, noVector: true }] }, function (x) {
 		var val = x[0].toNum().value;
 		if (val < 0 || val > 1) {
-			throw "MSG: p is a probability and must be between 0 and 1 inclusive."
+			throw "MSG:" + getText("p 是概率，必须介于 0 和 1 之间（含）。")
 		}
 		var dof = x[1].toNum().value;
 		if (dof <= 0) {
-			throw "MSG: Degrees of Freedom must be greater than 0."
+			throw "MSG:" + getText("自由度必须大于 0。")
 		}
 
 		return new Material(jStat.chisquare.inv(val, dof));
@@ -1159,7 +1159,7 @@ functionLoaders.push(function () {
 		var val = x[0].toNum().value;
 		var rate = x[1].toNum().value;
 		if (rate <= 0) {
-			throw "MSG: Rate must be greater than 0."
+			throw "MSG:" + getText("速率必须大于 0。")
 		}
 
 		return new Material(jStat.exponential.cdf(val, rate));
@@ -1169,7 +1169,7 @@ functionLoaders.push(function () {
 		var val = x[0].toNum().value;
 		var rate = x[1].toNum().value;
 		if (rate <= 0) {
-			throw "MSG: Rate must be greater than 0."
+			throw "MSG:" + getText("速率必须大于 0。")
 		}
 
 		return new Material(jStat.exponential.pdf(val, rate));
@@ -1178,11 +1178,11 @@ functionLoaders.push(function () {
 	defineFunction("InvExponential", { params: [{ name: "p", noUnits: true, noVector: true }, { name: "DRate", noUnits: true, noVector: true }] }, function (x) {
 		var val = x[0].toNum().value;
 		if (val < 0 || val > 1) {
-			throw "MSG: p is a probability and must be between 0 and 1 inclusive."
+			throw "MSG:" + getText("p 是概率，必须介于 0 和 1 之间（含）。")
 		}
 		var rate = x[1].toNum().value;
 		if (rate <= 0) {
-			throw "MSG: Rate must be greater than 0."
+			throw "MSG:" + getText("速率必须大于 0。")
 		}
 
 		return new Material(jStat.exponential.inv(val, rate));
@@ -1192,7 +1192,7 @@ functionLoaders.push(function () {
 		var val = x[0].toNum().value;
 		var Lambda = x[1].toNum().value;
 		if (Lambda <= 0) {
-			throw "MSG: Lambda must be greater than 0."
+			throw "MSG:" + getText("Lambda 必须大于 0。")
 		}
 
 		return new Material(jStat.poisson.cdf(val, Lambda));
@@ -1202,7 +1202,7 @@ functionLoaders.push(function () {
 		var val = x[0].toNum().value;
 		var Lambda = x[1].toNum().value;
 		if (Lambda <= 0) {
-			throw "MSG: Rate must be greater than 0."
+			throw "MSG:" + getText("速率必须大于 0。")
 		}
 
 		return new Material(jStat.poisson.pdf(val, Lambda));
@@ -1342,7 +1342,7 @@ function defineFunction(name, definition, fn) {
 		if (configs[i].vectorize) {
 			vectorized.push(i);
 			if (configs[i].noVector) {
-				throw "MSG: Cannot have a non-vector vectorized parameter. Function '" + name + "', parameter '" + configs[i].name + "'.";
+				throw "MSG:" + getText("不能将非向量参数设为向量化。函数 '" + name + "', 参数 '" + configs[i].name + "'。");
 			}
 		}
 	}
@@ -1367,48 +1367,48 @@ function defineFunction(name, definition, fn) {
 		}
 
 		if (arr && (x.length > configs.length || x.length < requiredLength)) {
-			throw "MSG: Wrong number of parameters for " + fnName + ".";
+			throw "MSG:" + getText("参数数量错误：" + fnName + "。");
 		} else if ((!arr) && x.length == 0 && (!definition.allowEmpty)) {
-			throw "MSG: At least one parameter required for " + name + "().";
+			throw "MSG:" + getText("至少需要一个参数：" + name + "()。");
 		}
 
 		for (var i = 0; i < x.length; i++) {
 			var config = arr ? configs[i] : configs;
 
 			if (config.noUnits && (!((!(x[i].toNum() instanceof Material)) || !x[i].toNum().units))) {
-				throw "MSG: " + fnName + " does not except units for the argument '" + config.name + "'.";
+				throw "MSG:" + getText("" + fnName + " 不接受参数 '" + config.name + "' 的单位。");
 			}
 			if (config.noVector && (x[i] instanceof Vector)) {
-				throw "MSG: " + fnName + " does not except vectors for the argument '" + config.name + "'.";
+				throw "MSG:" + getText("" + fnName + " 不接受参数 '" + config.name + "' 的向量。");
 			}
 			if (config.vectorize && (x[i] instanceof Vector) && !x[i].names) {
-				throw "MSG: " + fnName + " does not accepted non-named vectors for the argument '" + config.name + "'.";
+				throw "MSG:" + getText("" + fnName + " 不接受参数 '" + config.name + "' 的未命名向量。");
 			}
 			if (config.needVector) {
 				if (x[i] instanceof Primitive) {
 					x[i] = x[i].toNum();
 				}
 				if (!(x[i] instanceof Vector)) {
-					throw "MSG: " + fnName + " requires a vector for the argument '" + config.name + "'.";
+					throw "MSG:" + getText("" + fnName + " 要求参数 '" + config.name + "' 为向量。");
 				}
 			}
 			if (config.needPrimitive && !(x[i] instanceof Primitive)) {
-				throw "MSG: " + fnName + " requires a primitive for the argument '" + config.name + "'.";
+				throw "MSG:" + getText("" + fnName + " 要求参数 '" + config.name + "' 为基础类型。");
 			}
 			if ((!config.allowBoolean) && (typeof x[i] == "boolean")) {
-				throw "MSG: " + fnName + " does not accept boolean values for the argument '" + config.name + "'.";
+				throw "MSG:" + getText("" + fnName + " 不接受参数 '" + config.name + "' 的布尔值。");
 			}
 			if (config.needAgent && (!(x[i] instanceof Agent))) {
 				x[i] = agent(x[i], fnName, config.name);
 			}
 			if (config.needString) {
 				if (!((typeof x[i] == "string") || (x[i] instanceof String))) {
-					throw "MSG: " + fnName + " requires a string for the argument '" + config.name + "'.";
+					throw "MSG:" + getText("" + fnName + " 要求参数 '" + config.name + "' 为字符串。");
 				}
 			}
 			if (((!config.allowString) && (!config.needString))
 				&& ((typeof x[i] == "string") || (x[i] instanceof String))) {
-				throw "MSG: " + fnName + " does not accept string values for the argument '" + config.name + "'.";
+				throw "MSG:" + getText("" + fnName + " 不接受参数 '" + config.name + "' 的字符串值。");
 			}
 			if (config.needAgents && (!(x[i] instanceof Agents))) {
 				x[i] = agents(x[i], fnName, config.name);
@@ -1417,7 +1417,7 @@ function defineFunction(name, definition, fn) {
 				x[i] = getPopulation(x[i], fnName, config.name);
 			}
 			if (config.needFunction && (!((x[i] instanceof Function) || (x[i] instanceof UserFunction)))) {
-				throw "MSG: " + fnName + " requires a function for the argument '" + config.name + "'.";
+				throw "MSG:" + getText("" + fnName + " 要求参数 '" + config.name + "' 为函数。");
 			}
 		}
 		if (definition.recurse) {
@@ -1439,7 +1439,7 @@ function defineFunction(name, definition, fn) {
 							baseI = vectorized[i];
 						} else {
 							if (!base.keysMatch(v.namesLC)) {
-								throw "MSG: Vector keys do not match between parameters '" + configs[baseI].name + "' and '" + configs[vectorized[i]].name + "' in " + fnName + ".";
+								throw "MSG:" + getText("参数 '" + configs[baseI].name + "' 和参数 '" + configs[vectorized[i]].name + "' 在 " + fnName + " 中的向量键不匹配。");
 							}
 						}
 					}
@@ -1473,7 +1473,7 @@ function defineFunction(name, definition, fn) {
 					var z = fn(newX, id);
 					if (z instanceof Vector) {
 						if (!base.keysMatch(z.namesLC)) {
-							throw "MSG: Vector keys do not match between parameter '" + configs[baseI].name + "' and calculation result.";
+							throw "MSG:" + getText("参数 '" + configs[baseI].name + "' 与计算结果中的向量键不匹配。");
 						}
 
 						res.push(z.select([keys[i]]));
@@ -1517,9 +1517,9 @@ function objectizeFunction(fn) {
 
 function factorial(x) {
 	if (Math.round(x) != x) {
-		throw "MSG: The factorial() function only accepts integers.";
+		throw "MSG:" + getText("factorial() 函数仅接受整数。");
 	} else if (x < 0) {
-		throw "MSG: The factorial() function is only defined for integers 0 or larger.";
+		throw "MSG:" + getText("factorial() 函数仅定义于 0 或更大的整数。");
 	}
 	if (x > 1) {
 		return x * factorial(x - 1);
@@ -1530,6 +1530,6 @@ function factorial(x) {
 
 function testArgumentsSize(x, name, min, max) {
 	if (x.length < min || x.length > max) {
-		throw "MSG: Wrong number of parameters for " + name + "()."
+		throw "MSG:" + getText("参数数量错误：" + name + "()。")
 	}
 }

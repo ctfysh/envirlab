@@ -1,1 +1,19 @@
 node_modules/
+
+# AI agent files
+.omo/
+.opencode/
+.cursor/
+.vscode/
+CLAUDE.md
+GEMINI.md
+AGENTS.md
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.Spotlight-V100
+.Trashes

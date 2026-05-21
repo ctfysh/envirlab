@@ -130,11 +130,11 @@ function RandTriangular(minimum, maximum, peak) {
 	var c = (0+peak);
 	
 	if(a == b){
-		throw "MSG: Maximum can't equal the minimum for the triangular distribution.";
+		throw "MSG:" + getText("三角分布的最大值不能等于最小值。");
 	}
 	
 	if(c<a || c>b){
-		throw "MSG: The peak must be within the maximum and minimum for the triangular distribution.";
+		throw "MSG:" + getText("峰值必须在三角分布的最大值和最小值之间。");
 	}
 	
 	var fc = (c-a)/(b-a);
@@ -152,17 +152,17 @@ function RandDist(x, y){
 	//console.log(x);
 	//console.log(y);
 	if(x.length != y.length){
-		throw "MSG: The lengths of the 'x' and 'y' vectors must be the same.";
+		throw "MSG:" + getText("'x'向量和'y'向量的长度必须相同。");
 	}
 	if(x.length < 2){
-		throw "MSG: There must be at least 2 points in a distribution to generate a random number."
+		throw "MSG:" + getText("分布中至少需要2个点才能生成随机数。")
 	}
 	var area = 0;
 	for(var i = 0; i < x.length - 1; i++){
 		area += (x[i+1]-x[i])*(y[i+1]+y[i])/2;
 	}
 	if(area == 0){
-		throw "MSG: The area of the distribution cannot be 0."
+		throw "MSG:" + getText("分布的面积不能为0。")
 	}
 	//console.log(area);
 	

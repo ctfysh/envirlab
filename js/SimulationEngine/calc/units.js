@@ -93,5 +93,5 @@ Material.prototype.forceUnits = function(newUnits){
 
 
 function unitAlert(lhs, rhs, type){
-	throw "MSG: Incompatible units for the "+type+" of "+(lhs?lhs.toString():"unitless")+" and "+(rhs?rhs.toString():"unitless")+".";
+	throw "MSG:" + getText(""+type+"操作中单位"+(lhs?lhs.toString():"无量纲")+"与"+(rhs?rhs.toString():"无量纲")+"不兼容。");
 }

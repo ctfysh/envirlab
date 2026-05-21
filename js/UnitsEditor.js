@@ -241,7 +241,7 @@ function UnitsWindow(config) {
 				});
 
 				var editor = new Ext.grid.plugin.RowEditing({
-					saveText: 'Apply'
+					saveText: getText('应用')
 				});
 
 

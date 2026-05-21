@@ -303,7 +303,7 @@ functionLoaders.push(function(){
 	defineFunction("Smooth", {object: [functionBank, PrimitiveObject], params: [{name: "[Primitive]",  noVector: true, needPrimitive: true}, {name: "Period",  vectorize: true}, {name: "Initial Value",  vectorize: true, defaultVal: "None"}]}, function(x) {
 
 		if (x[1].toNum().value <= 0) {
-			throw "MSG: The smoothing period must be greater than 0.";
+			throw "MSG: "+getText("平滑周期必须大于0。");
 		}
 
 
@@ -317,7 +317,7 @@ functionLoaders.push(function(){
 	defineFunction("Delay", {object: [functionBank, PrimitiveObject], params: [{name: "[Primitive]",  noVector: true, needPrimitive: true}, {name: "Delay", vectorize: true}, {name: "Initial Value",  defaultVal: "None", vectorize: true}]}, function(x) {
 
 		if (x[1].toNum().value < 0) {
-			throw "MSG: The delay must be greater than or equal to 0.";
+			throw "MSG: "+getText("延迟必须大于或等于0。");
 		}
 		if (x.length == 2) {
 			return x[0].pastValue(x[1].toNum());
@@ -330,7 +330,7 @@ functionLoaders.push(function(){
 	defineFunction("Delay1", {object: [functionBank, PrimitiveObject], params: [{name: "[Primitive]",  noVector: true, needPrimitive: true}, {name: "Delay",  vectorize: true}, {name: "Initial Value",  vectorize: true, defaultVal: "None"}]}, function(x) {
 
 		if (x[1].toNum().value <= 0) {
-			throw "MSG: The delay must be greater than 0.";
+			throw "MSG: "+getText("延迟必须大于0。");
 		}
 
 
@@ -344,7 +344,7 @@ functionLoaders.push(function(){
 	defineFunction("Delay3", {object: [functionBank, PrimitiveObject], params: [{name: "[Primitive]",  noVector: true, needPrimitive: true}, {name: "Delay",  vectorize: true}, {name: "Initial Value",  vectorize: true, defaultVal: "None"}]}, function(x) {
 
 		if (x[1].toNum().value <= 0) {
-			throw "MSG: The delay must be greater than 0.";
+			throw "MSG: "+getText("延迟必须大于0。");
 		}
 
 
@@ -387,14 +387,14 @@ functionLoaders.push(function(){
 		if( x[0] instanceof Agents){
 			return new Material(sn("#e"+x[0].agents.length));
 		}
-		throw "MSG: PopulationSize must be passed an agent population as an argument.";
+		throw "MSG: "+getText("PopulationSize必须传入一个智能体种群作为参数。");
 	}
 	PrimitiveObject["populationsize"] = functionBank["populationsize"];
 
 	defineFunction("Remove", {object: [functionBank, AgentObject], params: [{needAgent: true, name: "[Agent]"}]}, function(x) {	
 		//console.log(x[0]);
 		if(x[0].dead){
-			throw "MSG: Cannot remove an already removed agent.";
+			throw "MSG: "+getText("无法移除已被移除的智能体。");
 		}
 		
 		simulate.tasks.add(new Task({
@@ -417,7 +417,7 @@ functionLoaders.push(function(){
 			x[0] = x[0].container;
 		}
 		if(! (x[0] instanceof Agents)){
-			throw "MSG: You must pass an agent population as the first argument to Add().";
+			throw "MSG: "+getText("必须将智能体种群作为第一个参数传入Add()。");
 		}
 		if(x.length == 2 ){
 			return x[0].add(x[1]);
@@ -432,7 +432,7 @@ functionLoaders.push(function(){
 
 	defineFunction("ResetTimer", {object: [functionBank, PrimitiveObject], params: [{needPrimitive: true, name: "[Action]"}]}, function(x) {
 		if(! (x[0] instanceof Action)){
-			throw "MSG: ResetTimer requires an Action primitive.";
+			throw "MSG: "+getText("ResetTimer需要一个Action图元。");
 		}
 		x[0].resetTimer();
 		return new Material(0);
@@ -440,7 +440,7 @@ functionLoaders.push(function(){
 
 	defineFunction("Transition", {object: [functionBank, PrimitiveObject], params: [{needPrimitive: true, name: "[Transition]"}]}, function(x) {
 		if(! (x[0] instanceof Transition)){
-			throw "MSG: Transition requires an Transition primitive.";
+			throw "MSG: "+getText("Transition需要一个Transition图元。");
 		}
 		x[0].doTransition()
 		return new Material(0);
@@ -492,9 +492,9 @@ functionLoaders.push(function(){
 					return x[0].children[j];
 				}
 			}
-			throw "MSG: Could not find referenced primitive for \"Value()\".";
+			throw "MSG: "+getText("找不到\"Value()\"引用的图元。");
 		}
-		throw "MSG: Invalid type for the first argument of \"Value()\".";
+		throw "MSG: "+getText("\"Value()\"的第一个参数类型无效。");
 	});
 
 	defineFunction("SetValue", {object: [functionBank, VectorObject, PrimitiveObject, AgentObject], params: [{name: "[Population]"}, {needPrimitive: true, name: "[Primitive]"}, {name: "Value", noVector: true, allowBoolean: true}]}, function(x) {//need population should be false
@@ -529,9 +529,9 @@ functionLoaders.push(function(){
 					return new Material(1);
 				}
 			}
-			throw "MSG: Could not find referenced primitive for \"SetValue()\".";
+			throw "MSG: "+getText("找不到\"SetValue()\"引用的图元。");
 		}
-		throw "MSG: Invalid type for the first argument of \"SetValue()\".";
+		throw "MSG: "+getText("\"SetValue()\"的第一个参数类型无效。");
 	});
 
 	defineFunction("FindIndex", {object: [functionBank, VectorObject, PrimitiveObject], params: [{needPopulation: true, name: "[Agent Population]"}, {name: "Index", noVector:true, noUnits: true}]}, function(x) {
@@ -545,7 +545,7 @@ functionLoaders.push(function(){
 		
 	//	debugger;
 	
-		throw "MSG: Index not found in population."
+		throw "MSG: "+getText("在种群中找不到索引。")
 	});
 
 	defineFunction("FindState", {object: [functionBank, VectorObject, PrimitiveObject], params: [{needPopulation: true, name: "[Agent Population]"}, {needPrimitive: true, name: "[State]"}]}, function(x) {
@@ -553,7 +553,7 @@ functionLoaders.push(function(){
 		var population = x[0];
 	
 		if(! ((x[1] instanceof State) || (x[1].dna.type === "State"))){
-			throw "MSG: FindState() requires a State primitive as its argument.";
+			throw "MSG: "+getText("FindState()需要State图元作为参数。");
 		}
 	
 		var id = x[1].id;
@@ -572,7 +572,7 @@ functionLoaders.push(function(){
 	
 		var population = x[0];
 		if(! ((x[1] instanceof State) || (x[1].dna.type === "State"))){
-			throw "MSG: FindNotState() requires a State primitive as its argument.";
+			throw "MSG: "+getText("FindNotState()需要State图元作为参数。");
 		}
 	
 		var id = x[1].id;
@@ -618,10 +618,10 @@ functionLoaders.push(function(){
 			count = x[2].value;
 			
 			if(count < 1){
-				throw "MSG: You must select at least one agent in FindNearest().";
+				throw "MSG: "+getText("在FindNearest()中至少选择一个智能体。");
 			}
 			if(count != Math.floor(count)){
-				throw "MSG: Count must be an integer."
+				throw "MSG: "+getText("计数必须为整数。")
 			}
 		}
 		
@@ -642,7 +642,7 @@ functionLoaders.push(function(){
 		}
 		
 		if(res.length < count){
-			throw "MSG: Can't find nearest "+count+" agents of a population of size "+res.length+".";
+			throw "MSG: "+getText("无法在大小为")+" "+res.length+" "+getText("的种群中找到")+" "+count+" "+getText("个最接近的智能体。");
 		}
 		
 	
@@ -683,10 +683,10 @@ functionLoaders.push(function(){
 			count = x[2].value;
 			
 			if(count<1){
-				throw "MSG: You must select at least one agent in FindFurthest().";
+				throw "MSG: "+getText("在FindFurthest()中至少选择一个智能体。");
 			}
 			if(count != Math.floor(count)){
-				throw "MSG: Count must be an integer."
+				throw "MSG: "+getText("计数必须为整数。")
 			}
 		}
 		
@@ -708,7 +708,7 @@ functionLoaders.push(function(){
 		}
 	
 		if(res.length < count){
-			throw "MSG: Can't find furthest "+count+" agents of a population of size "+res.length+".";
+			throw "MSG: "+getText("无法在大小为")+" "+res.length+" "+getText("的种群中找到")+" "+count+" "+getText("个最远的智能体。");
 		}
 	
 		var minItems = [res[0]];
@@ -800,7 +800,7 @@ functionLoaders.push(function(){
 
 	functionBank["die"] = function(x) {
 		console.log(x);
-		throw "MSG: Terminated using \"die\".";
+		throw "MSG: "+getText("已使用\"die\"终止。");
 	}
 
 	functionBank["print"] = function(x) {
@@ -834,7 +834,7 @@ functionLoaders.push(function(){
 
 	defineFunction("Location", {object: [functionBank, AgentObject], params: [{needAgent: true, name: "[Agent]"}]}, function(x) {
 		if(! x[0].location){
-			throw "MSG: The location is not defined."
+			throw "MSG: "+getText("位置未定义。")
 		}else{
 			return x[0].location.fullClone();
 		}
@@ -861,7 +861,7 @@ functionLoaders.push(function(){
 	function locationValue(x){
 		if(x instanceof Vector){
 			if(x.items.length != 2){
-				throw "MSG: Location vector does not contain exactly two elements."
+				throw "MSG: "+getText("位置向量必须包含恰好两个元素。")
 			}
 			else{
 				return x;
@@ -870,7 +870,7 @@ functionLoaders.push(function(){
 			try{
 				return agent(x).location;
 			}catch(err){
-				throw "MSG: Location must be a vector or an agent.";
+				throw "MSG: "+getText("位置必须是向量或智能体。");
 			}
 		}
 	}
@@ -984,7 +984,7 @@ function agent(obj){
 	}else if((! strictAgentResolution) && obj instanceof Primitive){ // flexAgents is now disabled by default, kept for compatibility 
 		return agent(obj.container);
 	}else{
-		throw "MSG: An agent is required here.";
+		throw "MSG: "+getText("此处需要智能体。");
 	}
 }
 
@@ -994,7 +994,7 @@ function agents(obj){
 	}else if((obj instanceof Primitive) || (obj instanceof Agent)){
 		return agents(obj.container);
 	}else{
-		throw "MSG: An agent population is required here.";
+		throw "MSG: "+getText("此处需要智能体种群。");
 	}
 }
 
@@ -1068,7 +1068,7 @@ function error(msg, primitive, showEditor, line, details) {
 function testPrimitive(x, name, primitiveIndexes) {
 	for (var i = 0; i < primitiveIndexes.length; i++) {
 		if (! (x[primitiveIndexes[i]] instanceof Primitive)) {
-			throw "MSG: " + name + "() requires a primitive reference to be passed to it as argument number "+(primitiveIndexes[i]+1)+".";
+			throw "MSG: " + name + getText("()需要传入一个图元引用作为参数，参数编号为")+(primitiveIndexes[i]+1)+getText("。");
 		}
 	}
 

@@ -68,7 +68,7 @@ function EquationWindow(config) {
 			neighbors.push({
 				insert: "[" + hood[i].item.getAttribute("name") + "]",
 				display: s,
-				group: " References",
+				group: getText("参考资料"),
 				tip: undefined
 			});
 		}
@@ -77,7 +77,7 @@ function EquationWindow(config) {
 	if (neighbors.length == 0) {
 		neighbors.push({
 			insert: undefined,
-			group: " References",
+			group: getText("参考资料"),
 			tip: undefined,
 			display: "<i class='gray'>" + getText("没有参考资料") + "</i>"
 		});
@@ -306,7 +306,7 @@ function EquationWindow(config) {
 	function addButton(title, vals) {
 		var tip = "<b>" + vals[1].replace(/\$\$/g, "").replace(/##/g, "").replace(/\</g, "&lt;").replace(/\>/g, "&gt;").replace(/\n/g, "<br/>").replace(/ /g, " ") + "</b><br/>" + vals[2];
 		if (vals[3]) {
-			tip = tip + "<br/><br/><b>Example:</b><br/>&nbsp;&nbsp;";
+			tip = tip + "<br/><br/><b>" + getText("示例") + ":</b><br/>&nbsp;&nbsp;";
 			if ((typeof vals[3]) == "string") {
 				tip = tip + vals[3].replace(/\</g, "&lt;").replace(/\>/g, "&gt;").replace(/\n/g, "<br/>").replace(/ /g, " ");
 			} else {
@@ -329,6 +329,17 @@ function EquationWindow(config) {
 			addButton(helpData[i][0], helpData[i][1][j]);
 		}
 	}
+
+	var refName = getText("参考资料");
+	availableLinks.group({
+		property: 'group',
+		sortFn: function(a, b) {
+			var ga = a.get('group'), gb = b.get('group');
+			if (ga === refName) return -1;
+			if (gb === refName) return 1;
+			return ga < gb ? -1 : (ga > gb ? 1 : 0);
+		}
+	});
 
 	var referenceItems = new Ext.grid.Panel({
 		hidden: !viewConfig.allowEdits,
@@ -354,7 +365,7 @@ function EquationWindow(config) {
 		}]
 	});
 
-	referenceItems.view.getFeature("typeGrouping").expand(" References");
+	referenceItems.view.getFeature("typeGrouping").expand(getText("参考资料"));
 
 	referenceItems.view.on("groupexpand", function(view, node) {
 		var items = referenceItems.getEl().query(".moreExpander", false);

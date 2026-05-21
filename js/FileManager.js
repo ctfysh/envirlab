@@ -228,8 +228,8 @@ var FileManagerWeb = new function() {
 			msg: getText('请选择保存格式：'),
 			buttons: Ext.MessageBox.YESNO,
 			buttonText: {
-				yes: getText('EVL (.evl)'),
-				no: getText('JSON (.json)')
+				yes: getText('EVL (.evl) 文件'),
+				no: getText('JSON (.json) 文件')
 			},
 			icon: Ext.MessageBox.QUESTION,
 			fn: function(btn) {

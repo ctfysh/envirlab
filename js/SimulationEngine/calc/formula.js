@@ -15,7 +15,7 @@ if(! sn){
 
 	sn.raise = function(conditionType, message){
 		if (message == "division by exact zero"){
-			throw "MSG: You cannot divide by 0."
+			throw "MSG: "+getText("不能除以零。")
 		}else{
 			throw "BigNum Error: "+message;
 		}
@@ -152,7 +152,7 @@ Vector.prototype.cloneCombine = function(other, operation, rhs, noswitch){
 Vector.prototype.combine = function(other, operation, rhs, noswitch){	
 	if(other instanceof Vector){
 		if((this.length() != other.length()) && (! this.names) && (! other.names)){
-			throw "MSG: Vectors must have equal length when combined.";
+			throw "MSG: "+getText("向量合并时长度必须相等。");
 		}
 	}
 	if((other instanceof Vector) && this.names && other.names){
@@ -166,7 +166,7 @@ Vector.prototype.combine = function(other, operation, rhs, noswitch){
 				}
 				return this;
 			}else{
-				throw "MSG: Keys do not match for vector operation."
+				throw "MSG: "+getText("向量操作的键不匹配。")
 			}
 		}
 	}
@@ -182,7 +182,7 @@ Vector.prototype.combine = function(other, operation, rhs, noswitch){
 					index = other.names.indexOf("*");
 				}
 				if(isUndefined(index) || index == -1){
-					throw "MSG: Mismatched keys for vector operation."
+					throw "MSG: "+getText("向量操作的键不匹配。")
 				}
 				if( index == -2){
 					x = undefined;
@@ -243,7 +243,7 @@ Vector.prototype.collapseDimensions = function(target){
 				}
 			}
 			if(targetLevel.items){
-				throw "MSG: Keys do not match for vector collapsing.";
+				throw "MSG: "+getText("向量折叠的键不匹配。");
 			}
 			return selectFromMatrix(this, selector);
 		}
@@ -325,12 +325,12 @@ Vector.prototype.stack = function(selector){
 		var alt = this.select(selector);
 		if((base instanceof Vector ) && (alt instanceof Vector)){
 			if((base.names && (! alt.names)) || (alt.names && (! base.names))){
-				throw "MSG: Mismatched keys for vector collapsing.";
+				throw "MSG: "+getText("向量折叠的键不匹配。");
 			}else if(base.items.length != alt.items.length){
-				throw "MSG: Vectors of unequal size.";
+				throw "MSG: "+getText("向量大小不一致。");
 			}
 		}else if(! ((base instanceof Vector ) || (alt instanceof Vector)) ){
-			throw "MSG: Mismatched keys for vector collapsing.";
+			throw "MSG: "+getText("向量折叠的键不匹配。");
 		}
 	}
 	selector[0] = 0
@@ -353,7 +353,7 @@ Vector.prototype.stack = function(selector){
 				
 				var item = this.select(newSelector);
 				if(item instanceof Vector){
-					throw("MSG: Number where vector expected in vector collapsing.")
+					throw("MSG: "+getText("向量折叠中期望向量，但得到数值。"))
 				}
 				vecs.push(item);
 			}
@@ -370,12 +370,12 @@ Vector.prototype.select = function(selector){
 	
 	for(var s = 0; s < selector.length; s++){
 		if(! b.items){
-			throw "MSG: Number where vector expected in vector collapsing.";
+			throw "MSG: "+getText("向量折叠中期望向量，但得到数值。");
 		}
 		if((selector[s] instanceof String) || (typeof selector[s] == "string")){
 			var ind = b.namesLC.indexOf(selector[s].valueOf());
 			if(ind == -1){
-				throw "MSG: Mismatched keys for vector collapsing.";
+				throw "MSG: "+getText("向量折叠的键不匹配。");
 			}
 			b = b.items[ind];
 		}else{
@@ -647,10 +647,10 @@ function negate(x){
 	}
 	
 	if((typeof x == 'boolean')){
-		throw "MSG: Cannot convert Booleans to Numbers.";
+		throw "MSG: "+getText("不能将布尔值转换为数值。");
 	}
 	if((x instanceof Agent)){
-		throw "MSG: Cannot convert Agents to Numbers.";
+		throw "MSG: "+getText("不能将代理转换为数值。");
 	}
 	
 	return new Material(fn["-"](x.value), x.units);
@@ -786,10 +786,10 @@ function eq(lhs, rhs){
 
 function comparisonValid(lhs, rhs){
 	if((lhs instanceof String) || (typeof lhs == 'string') || (rhs instanceof String) || (typeof rhs == 'string')){
-		throw "MSG: Cannot use Strings in logical inequality comparisons.";
+		throw "MSG: "+getText("字符串不能用于逻辑不等式比较。");
 	}
 	if((lhs instanceof Agent) || (rhs instanceof Agent)){
-		throw "MSG: Cannot use Agents in logical inequality comparisons.";
+		throw "MSG: "+getText("代理不能用于逻辑不等式比较。");
 	}
 }
 
@@ -917,10 +917,10 @@ function plus(lhs, rhs){
 	}
 	
 	if((typeof lhs == 'boolean') || (typeof rhs == 'boolean')){
-		throw "MSG: Cannot convert Booleans to Numbers.";
+		throw "MSG: "+getText("不能将布尔值转换为数值。");
 	}
 	if((lhs instanceof Agent) || (rhs instanceof Agent)){
-		throw "MSG: Cannot convert Agents to Numbers.";
+		throw "MSG: "+getText("不能将代理转换为数值。");
 	}
 	if(((typeof lhs == 'string') || (lhs instanceof String)) || ((typeof rhs == 'string') || (rhs instanceof String)) ){
 		var s = new String(lhs.toString()+rhs.toString());
@@ -955,10 +955,10 @@ function minus(lhs, rhs){
 	}
 	
 	if((typeof lhs == 'boolean') || (typeof rhs == 'boolean')){
-		throw "MSG: Cannot convert Booleans to Numbers.";
+		throw "MSG: "+getText("不能将布尔值转换为数值。");
 	}
 	if((lhs instanceof Agent) || (rhs instanceof Agent)){
-		throw "MSG: Cannot convert Agents to Numbers.";
+		throw "MSG: "+getText("不能将代理转换为数值。");
 	}
 	
 	if (lhs.units !== rhs.units) {
@@ -988,10 +988,10 @@ function mult(lhs, rhs){
 	}
 	
 	if((typeof lhs == 'boolean') || (typeof rhs == 'boolean')){
-		throw "MSG: Cannot convert Booleans to Numbers.";
+		throw "MSG: "+getText("不能将布尔值转换为数值。");
 	}
 	if((lhs instanceof Agent) || (rhs instanceof Agent)){
-		throw "MSG: Cannot convert Agents to Numbers.";
+		throw "MSG: "+getText("不能将代理转换为数值。");
 	}
 	
 	var x = fn["*"](lhs.value, rhs.value);
@@ -1019,10 +1019,10 @@ function div(lhs, rhs){
 	}
 	
 	if((typeof lhs == 'boolean') || (typeof rhs == 'boolean')){
-		throw "MSG: Cannot convert Booleans to Numbers.";
+		throw "MSG: "+getText("不能将布尔值转换为数值。");
 	}
 	if((lhs instanceof Agent) || (rhs instanceof Agent)){
-		throw "MSG: Cannot convert Agents to Numbers.";
+		throw "MSG: "+getText("不能将代理转换为数值。");
 	}
 	
 	var x = fn["/"](lhs.value, rhs.value);
@@ -1053,7 +1053,7 @@ funcEvalMap["POWER"] = function(node, scope) {
 		if ((rhs instanceof Vector) || ! rhs.units) {
 			rhs = power(lhs, rhs);
 		} else {
-			throw "MSG: Exponents may not have units.";
+			throw "MSG: "+getText("指数不能有单位。");
 		}
 	}
 	return rhs;
@@ -1067,10 +1067,10 @@ function power(lhs, rhs){
 	}
 	
 	if((typeof lhs == 'boolean') || (typeof rhs == 'boolean')){
-		throw "MSG: Cannot convert Booleans to Numbers.";
+		throw "MSG: "+getText("不能将布尔值转换为数值。");
 	}
 	if((lhs instanceof Agent) || (rhs instanceof Agent)){
-		throw "MSG: Cannot convert Agents to Numbers.";
+		throw "MSG: "+getText("不能将代理转换为数值。");
 	}
 	
 	var x = lhs.value;
@@ -1092,16 +1092,16 @@ function doMod(lhs, rhs){
 	}
 	
 	if((typeof lhs == 'boolean') || (typeof rhs == 'boolean')){
-		throw "MSG: Cannot convert Booleans to Numbers.";
+		throw "MSG: "+getText("不能将布尔值转换为数值。");
 	}
 	if((lhs instanceof Agent) || (rhs instanceof Agent)){
-		throw "MSG: Cannot convert Agents to Numbers.";
+		throw "MSG: "+getText("不能将代理转换为数值。");
 	}
 	
 	if (! rhs.units) {
 		return new Material(fn.mod(lhs.value, rhs.value), lhs.units);
 	} else {
-		throw "MSG: The right hand side of \"mod\" may not have units."
+		throw "MSG: "+getText("“mod”的右侧不能有单位。")
 	}
 };
 
@@ -1118,7 +1118,7 @@ funcEvalMap["IDENT"] = function(node, scope) {
 			}else if(varName=="i"){//imaginary number
 				return new Material(sn("i"));
 			}else{
-				throw "MSG: The variable or function \"" + node.origText + "\" does not exist.";
+				throw "MSG: " + getText('变量或函数 "') + node.origText + getText('" 不存在。');
 			}
 		}
 	}
@@ -1149,7 +1149,7 @@ funcEvalMap["NEW"] = function(node, scope) {
 		
 		if(! constructor){
 			if(node.children.length==2 && node.children[1].children.length>0){
-				throw "MSG: No constructor available for '"+node.children[0].text+"'.";
+				throw "MSG: "+getText("没有可用的构造函数：'")+node.children[0].text+getText("'。");
 			}
 		}else{
 			if(node.children.length==2){
@@ -1160,7 +1160,7 @@ funcEvalMap["NEW"] = function(node, scope) {
 		}
 		return n;
 	}else{
-		throw "MSG: 'New' can only be use to create instances of Vectors.";
+		throw "MSG: "+getText("「New」只能用于创建向量实例。");
 	}
 }
 
@@ -1259,7 +1259,7 @@ function callFunction(base, node, scope, lastSelf, lastBase){
 		//if(isLocal()){
 		//	console.log(base);
 		//}
-		throw "MSG: Trying to call a non-function.";
+		throw "MSG: "+getText("试图调用非函数。");
 	}
 	
 	var vals = [];
@@ -1324,7 +1324,7 @@ function createMatrixSelector(node, scope, offset, createFunctions){
 				(function(f){
 				selector.push(function(x){
 					if(! x[0].stackApply){
-						throw "MSG: Can't apply function across elements of non-vector."
+						throw "MSG: "+getText("无法在非向量元素上应用函数。")
 					}
 					
 					return x[0].stackApply(function(x){
@@ -1380,7 +1380,7 @@ function selectFromMatrix(mat, items, fill){
 			//	}else if(children[i].vector instanceof Vector){
 			//		children[i] = children[i].vector.fullClone();
 			//	}else{
-					throw "MSG: No element available for: "+selector;
+					throw "MSG: "+getText("没有可用的元素：")+selector;
 			//	}
 			}
 			//console.log(children[i])
@@ -1438,7 +1438,7 @@ function selectFromVector(vec, items, fill, doNotClone){
 		if(vec.parent){
 			return {data: doNotClone?vec.parent:vec.parent.fullClone(), collapsed:true};
 		}else{
-			throw "MSG: Vector does not have a parent.";
+			throw "MSG: "+getText("向量没有父级。");
 		}
 	}
 
@@ -1493,7 +1493,7 @@ function selectElementFromVector(vec, item, fill){
 		try{
 			if(isUndefined(fill)){
 				if(!vec.names){
-					throw "MSG: Key '"+item+"' not in vector."
+					throw "MSG: "+getText('键 "')+item+getText('" 不在向量中。')
 				}
 			}
 			if(vec.names){
@@ -1511,7 +1511,7 @@ function selectElementFromVector(vec, item, fill){
 			}
 			if(index < 0 || isUndefined(index)){
 				if(isUndefined(fill)){
-					throw "MSG: Key '"+item+"' not in vector.";
+					throw "MSG: "+getText('键 "')+item+getText('" 不在向量中。');
 				}else{
 					index = item;
 				}
@@ -1543,7 +1543,7 @@ function selectElementFromVector(vec, item, fill){
 		
 	}else{
 		if(index < 0 || (!vec.items) || index >= vec.items.length || index % 1 != 0 ){
-			throw "MSG: Index "+(1+index)+" is not in the vector.";
+			throw "MSG: "+getText("索引 ")+(1+index)+getText(" 不在向量中。");
 		}
 		if(!isUndefined(fill)){
 			vec.items[index] = fill;
@@ -1593,7 +1593,7 @@ funcEvalMap["RANGE"] = function(node, scope) {
 	var end = evaluateNode(node.children[node.children.length-1], scope).toNum();
 
 	if((! (start instanceof Material)) || (! (end instanceof Material))){
-		throw "MSG: Range elements must be numbers.";
+		throw "MSG: "+getText("范围元素必须是数值。");
 	}
 	
 	vals.push(start.fullClone());
@@ -1601,14 +1601,14 @@ funcEvalMap["RANGE"] = function(node, scope) {
 		var scale = convertUnits(start.units, end.units);
 		if (scale != 1) {
 			//console.log(scale)
-			throw "MSG: Units on both sides of ':' must be equal."
+			throw "MSG: "+getText("冒号两侧的单位必须相等。")
 		}
 	}
 	//throw "modsa";
 	var step = node.children.length==2?new Material(1, start.units):evaluateNode(node.children[1], scope).toNum();
 	
 	if(! (step instanceof Material)){
-		throw "MSG: Range elements must be numbers.";
+		throw "MSG: "+getText("范围元素必须是数值。");
 	}
 	
 	if(eq(start,end)){
@@ -1663,7 +1663,7 @@ function makeFunctionCall(varName, varNames, varDefaults, node, scope) {
 				}
 			}
 			
-			throw "MSG: Wrong number of parameters for " + varName + "("+names.join(", ")+").";
+			throw "MSG: "+getText("参数数量错误：") + varName + "(" + names.join(", ") + getText(")。");
 		}
 		var localScope = {"-parent": scope};
 		
@@ -1757,7 +1757,7 @@ funcEvalMap["FORIN"] = function(node, scope) {
 	var innerScope = {"-parent": scope};
 	var vec = evaluateNode(node.children[1], scope);
 	if(! (vec instanceof Vector)){
-		throw "MSG: The in argument of a For-In loop mush be a a vector."
+		throw "MSG: "+getText("For-In 循环的 in 参数必须是一个向量。")
 	}
 	for(var i=0; i<vec.items.length; i++){
 		innerScope[id] = vec.items[i];
@@ -1802,7 +1802,7 @@ funcEvalMap["ASSIGN"] = function(node, scope) {
 	var items = node.children.length-1;
 	var x = evaluateNode(node.children[node.children.length-1], scope);
 	if(items>1 && (!(x instanceof Vector) || x.items.length<items)){
-		throw "MSG: Too few elements returned for assignment.";
+		throw "MSG: "+getText("赋值返回的元素太少。");
 	}
 	for(var i=0; i<items; i++){
 		if(node.children[i] instanceof PrimitiveStore){
@@ -1846,7 +1846,7 @@ funcEvalMap["ASSIGN"] = function(node, scope) {
 					//throw "MSG: The variable '"+node.children[i].children[0].origText+"' is not a vector.";
 					//}
 				}else{
-					throw "MSG: The variable '"+node.children[i].children[0].origText+"' does not exist.";
+					throw "MSG: "+getText("变量 '")+node.children[i].children[0].origText+getText("' 不存在。");
 				}
 			}
 		}
@@ -1877,7 +1877,7 @@ function createSelector(node, scope){
 funcEvalMap["MATERIAL"] = function(node, scope) {
 	var v =evaluateNode(node.children[0], scope).toNum();
 	if(v.units){
-		throw "MSG: Cannot create material where numeric part itself has units."
+		throw "MSG: "+getText("不能创建数值部分本身有单位的材料。")
 	}
 	return new Material(v.value, node.children[1]);
 };
@@ -1993,7 +1993,7 @@ function evaluateNode(node, scope) {
 	}else if(node instanceof PrimitiveStore){
 		if(node.type == "totalValue"){
 			if(! node.primitive.totalContents){
-				throw "MSG: You can only use the double-bracket notation for total conveyor contents on Stock primitives.";
+				throw "MSG: "+getText("双括号表示法仅用于 Stock 图元的总传送带内容。");
 			}
 			return node.primitive.totalContents();
 		}else if(node.type == "object"){
@@ -2068,7 +2068,7 @@ trimEvalMap["MATERIAL"] = function(node, scope) {
 	}
 	if(x instanceof Material){
 		if(x.units){
-			throw "MSG: Cannot create material where numeric part itself has units."
+			throw "MSG: "+getText("不能创建数值部分本身有单位的材料。")
 		}
 		return new Material(x.value, getUnitStore(names, exponents, true));
 	}else{
@@ -2137,7 +2137,7 @@ trimEvalMap["PRIMITIVE"] = function(node, primitiveBank) {
 		res = new PrimitiveStore(primitiveBank[node.text.substr(1, node.text.length-2)], "object");
 	}
 	if(typeof res.primitive === "undefined"){
-		throw "MSG: The primitive <i>"+node.origText+"</i> could not be found.";
+		throw "MSG: "+getText("图元 <i>")+node.origText+getText("</i> 未找到。");
 	}
 	return res;
 };
@@ -2215,7 +2215,7 @@ function trueValue(q){
 	}else if(q instanceof Material){
 		return neq(q.value, 0);	
 	}else{
-		throw "MSG: Only numbers can be used in place of booleans."
+		throw "MSG: "+getText("只有数值可以替代布尔值。")
 	}
 }
 

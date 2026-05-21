@@ -67,7 +67,7 @@ Primitive.method("toNum", function(){
 	return this.value();
 });
 Primitive.method("calculateValue", function() {
-	throw "MSG: "+getText("[%s] does not have a value and can not be used as a value in an equation.", this.dna.name);
+	throw "MSG: "+getText("[%s] 没有值，不能用作方程中的值。", this.dna.name);
 });
 Primitive.method("createIds", function(){
 	this.instanceId = simulate.getID(this.agentId+"-"+this.index);
@@ -356,7 +356,7 @@ function Placeholder(dna, primitive){
 }
 Placeholder.inherits(Primitive);
 Placeholder.method("calculateValue",function(){
-	error(getText("[%s] is a placeholder and cannot be used as a direct value in equations.", clean(this.dna.name)), this.primitive, true);
+	error(getText("[%s] 是占位符，不能用作方程中的直接值。", clean(this.dna.name)), this.primitive, true);
 });
 
 function State() {
@@ -749,7 +749,7 @@ Agents.method("states", function() {
 	return this.stateIds.slice(0);
 });
 Agents.method("toNum", function(){
-	throw("MSG: "+getText("[%s] is a population of agents and cannot be used as a direct value in equations.", clean(this.dna.name)));
+	throw("MSG: "+getText("[%s] 是一个智能体种群，不能用作方程中的直接值。", clean(this.dna.name)));
 });
 Agents.method("add", function(base){
 	this.size = 1 + parseInt(this.size, 10);
@@ -979,7 +979,7 @@ Agent.method("connect", function(x, weight) {
 				x.connected.push(this);
 				x.connectedWeights.push(w);
 			}else{
-				throw("MSG: Only agents may be connected.");
+				throw("MSG: "+getText("只能连接智能体。"));
 			}
 		}else if(weight !== undefined){
 			this.connectedWeights[this.connected.indexOf(x)] = weight;
@@ -1009,7 +1009,7 @@ Agent.method("connectionWeight", function(x) {
 			return this.connectedWeights[i].fullClone();
 		}
 	}
-	throw "MSG: Agents are not connected and so do not have a connection weight.";
+	throw "MSG: "+getText("智能体未连接，因此没有连接权重。");
 });
 
 Agent.method("setConnectionWeight", function(x, w) {
@@ -1020,7 +1020,7 @@ Agent.method("setConnectionWeight", function(x, w) {
 			return;
 		}
 	}
-	throw "MSG: Agents are not connected and so do not have a connection weight.";
+	throw "MSG: "+getText("智能体未连接，因此没有连接权重。");
 });
 
 function Stock() {
@@ -1655,7 +1655,7 @@ Flow.method("apply", function(timeChange, oldTime, newTime) {
 				stock= this.alpha;
 			}
 
-			if(err == "MSG: Keys do not match for vector operation."){
+			if(err == "MSG: 向量操作的键不匹配。"){
 				error(getText("流 %s 和连接的库 %s 的向量键不兼容。", "<i>["+clean(this.dna.name)+"]</i>", "<i>["+clean(stock.dna.name)+"]</i>"), this, false);
 			}else{
 				error(getText("流 %s 和连接的库 %s 的单位不兼容。库的单位为 %s。流的单位应等价于除以某个时间单位（如年）后的结果。", "<i>["+clean(this.dna.name)+"]</i>", "<i>["+clean(stock.dna.name)+"]</i>", "<i>"+(stock.dna.units?clean(stock.dna.units.toString()):"unitless")+"</i>"), this, false);

@@ -205,7 +205,7 @@ try {
 	mxUtils.alert = showNotification;
 
 } catch (err) {
-	alert("Insight Maker failed to load all its resources. Check your network connection and try to reload Insight Maker.");
+			alert(getText('EnVirLab 资源加载失败，请检查网络连接后重试。'));
 }
 
 var GraphEditor = {};
@@ -1762,7 +1762,13 @@ function main() {
 				'group': ' ' + getText('配置'),
 				'editor': new Ext.form.ComboBox({
 					triggerAction: "all",
-					store: ['Timeout', 'Probability', 'Condition'],
+					store: [
+						['Timeout', '超时'],
+						['Probability', '概率'],
+						['Condition', '条件']
+					],
+					valueField: 'field1',
+					displayField: 'field2',
 					editable: false,
 					selectOnFocus: false
 				})
@@ -1797,7 +1803,13 @@ function main() {
 				'group': ' ' + getText('配置'),
 				'editor': new Ext.form.ComboBox({
 					triggerAction: "all",
-					store: ['Timeout', 'Probability', 'Condition'],
+					store: [
+						['Timeout', '超时'],
+						['Probability', '概率'],
+						['Condition', '条件']
+					],
+					valueField: 'field1',
+					displayField: 'field2',
 					editable: false,
 					selectOnFocus: false
 				})
