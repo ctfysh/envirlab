@@ -1249,3 +1249,26 @@ var downloadButton = function(name){
 					xml,
 					"text/svg");
 			};
+
+// Graph model transaction helpers
+function setModelAttribute(cell, name, value) {
+  var model = graph.getModel();
+  model.beginUpdate();
+  try {
+    model.execute(new mxCellAttributeChange(cell, name, String(value)));
+  } finally {
+    model.endUpdate();
+  }
+}
+
+function modelTransaction(fn) {
+  var model = graph.getModel();
+  model.beginUpdate();
+  try {
+    var result = fn();
+    clearPrimitiveCache();
+    return result;
+  } finally {
+    model.endUpdate();
+  }
+}
