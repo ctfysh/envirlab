@@ -14,10 +14,7 @@ function getStyleSheet() {
 }
 
 function setStyleSheet(style) {
-	var edit = new mxCellAttributeChange(
-		getSetting(), "StyleSheet",
-		JSON.stringify(style));
-	graph.getModel().execute(edit);
+	setModelAttribute(getSetting(), "StyleSheet", JSON.stringify(style));
 }
 
 function loadStyleSheet() {
@@ -120,9 +117,9 @@ function showStyleManager() {
 					glyph: 0xf05e,
 					handler: function(){
 
-						graph.getModel().beginUpdate();
-						setStyleSheet({});
-						graph.getModel().endUpdate();
+						modelTransaction(function() {
+							setStyleSheet({});
+						});
 						
 						loadStyleSheet();
 						

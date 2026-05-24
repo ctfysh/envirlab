@@ -16,39 +16,22 @@ function formatUnitsBut(s) {
 	}
 }
 
-var EquationEditor = Ext.extend(Ext.form.TextField, {
-	enableKeyEvents: false,
-	selectOnFocus: true,
-	triggers: {
-		edit: {
-			hideOnReadOnly: false,
-			handler: function() {
-
-				this.editorWindow = new EquationWindow({
-					parent: this,
-					equation: this.getValue(),
-					cell: getSelected()[0],
-					help: this.help
-				});
-				this.editorWindow.show();
-			}
-		}
-	},
-	listeners: {
-		'keydown': function(field) {
-			field.setEditable(!/\\n/.test(field.getValue()));
+var EquationEditor = Ext.extend(Ext.form.TextField,
+	createEditorFieldConfig({
+		editorWindowClass: EquationWindow,
+		getEditorWindowConfig: function() {
+			return {
+				parent: this,
+				equation: this.getValue(),
+				cell: getSelected()[0],
+				help: this.help
+			};
 		},
-		'beforerender': function() {
-
-			if (this.regex != undefined) {
-				this.validator = function(value) {
-					return this.regex.test(value);
-				};
-			}
-
+		_onKeyDown: function(field) {
+			field.setEditable(!/\\n/.test(field.getValue()));
 		}
-	}
-});
+	})
+);
 
 function EquationWindow(config) {
 	var me = this;
@@ -571,17 +554,14 @@ function EquationWindow(config) {
 
 	});
 
-	var win = new Ext.Window({
-		title: title + ': ' + clean(cell.getAttribute("name")),
-		layout: 'border',
-		stateful: is_editor && (!is_embed),
+	var win = editorWindow(title + ': ' + clean(cell.getAttribute("name")), config, [
+		equationEditor, referenceItems, left, helpBox, extraBox
+	], {
 		stateId: "equation_window",
-		closeAction: 'destroy',
-		border: false,
-		modal: true,
 		closable: true,
+		maxWidth: mxClient.IS_TOUCH ? 770 : 720,
+		maxHeight: 500,
 		tools: [
-
 			{
 				id: 'upButton',
 				type: 'up',
@@ -594,7 +574,6 @@ function EquationWindow(config) {
 					Ext.state.Manager.set('equationHelpCollapsed', true);
 				}
 			}, {
-
 				id: 'downButton',
 				type: 'down',
 				tooltip: getText('显示描述'),
@@ -607,15 +586,6 @@ function EquationWindow(config) {
 				}
 			}
 		],
-		items: [equationEditor, referenceItems, left, helpBox, extraBox],
-		minHeight: 400,
-		minWidth: 550,
-		width: Math.min(Ext.getBody().getViewSize().width, mxClient.IS_TOUCH ? 770 : 720),
-		height: Math.min(Ext.getBody().getViewSize().height, 500),
-		resizable: true,
-		maximizable: true,
-		shadow: true,
-		buttonAlign: 'left',
 		buttons: [{
 			hidden: !viewConfig.allowEdits || cell.value.nodeName == "State" || cell.value.nodeName == "Action" || cell.value.nodeName == "Transition" || cell.value.nodeName == "Agents",
 			scale: "large",
@@ -631,47 +601,18 @@ function EquationWindow(config) {
 				});
 				unitsWindow.show();
 			}
-		}, '->', {
-			scale: "large",
-			glyph: 0xf05c,
-			text: getText('取消'),
-			handler: function() {
-				win.close();
-				if (config.parent != "") {
-					config.parent.resumeEvents();
+		}, '->',
+			editorCancelButton(config),
+			editorApplyButton(config, {
+				getValue: function() {
+					return equationEditor.getValue().replace(/\n|\r/g, "\\n");
+				},
+				saveValue: function(cell, val) { setValue(cell, val); },
+				afterApply: function(config, value) {
+					if(config.saveExtra) config.saveExtra();
 				}
-			}
-		}, {
-			hidden: !viewConfig.allowEdits,
-			glyph: 0xf00c,
-			scale: "large",
-			text: getText('应用'),
-			handler: function() {
-				var newEquation = equationEditor.getValue();
-				newEquation = newEquation.replace(/\n|\r/g, "\\n");
-
-				win.close();
-
-				if (config.parent != "") {
-					editingRecord.set("value", newEquation);
-					saveConfigRecord(editingRecord);
-
-					if(config.saveExtra){
-						config.saveExtra();
-					}
-				} else {
-					graph.getModel().beginUpdate();
-					setValue(config.cell, newEquation);
-
-					if(config.saveExtra){
-						config.saveExtra();
-					}
-					
-					graph.getModel().endUpdate();
-					selectionChanged(false);
-				}
-			}
-		}]
+			})
+		]
 	});
 
 
@@ -685,12 +626,7 @@ function EquationWindow(config) {
 
 
 	me.show = function() {
-		win.show();
-		equationEditor.focus(true, true);
-		equationEditor.editor.focus();
-		setTimeout(function() {
-			equationEditor.editor.focus();
-		}, 100)
+		showAndFocusEditor(win, equationEditor);
 	}
 
 	function insertAtCursor(myValue, start, end) {

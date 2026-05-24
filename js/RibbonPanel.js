@@ -8,198 +8,6 @@ terms of the Insight Maker Public License.
 
 */
 
-var scratchPadStatus = "";
-
-function ribbonPanelItems() {
-    var z = ribbonPanel.getDockedItems()[0];
-    return z;
-}
-
-var reverseDirection = function() {
-    graph.getModel().beginUpdate();
-
-    var myCells = graph.getSelectionCells();
-    if (myCells != null) {
-        for (var i = 0; i < myCells.length; i++) {
-            if (myCells[i].isEdge()) {
-                var geo = myCells[i].getGeometry();
-
-                var tmp = myCells[i].source;
-                var edit = new mxTerminalChange(graph.getModel(), myCells[i], myCells[i].target, true);
-                graph.getModel().execute(edit);
-                edit = new mxTerminalChange(graph.getModel(), myCells[i], tmp, false);
-                graph.getModel().execute(edit);
-
-                tmp = geo.sourcePoint;
-                geo.sourcePoint = geo.targetPoint;
-                geo.targetPoint = tmp;
-                if (geo.points != null) {
-                    geo.points.reverse();
-                }
-                edit = new mxGeometryChange(graph.getModel(), myCells[i], geo);
-                graph.getModel().execute(edit);
-
-
-                if (myCells[i].value.nodeName == "Link") {
-                    linkBroken(myCells[i]);
-                }
-            }
-        }
-    }
-
-    graph.getModel().endUpdate();
-
-
-};
-
-var showMacros = function(annotations) {
-    var equationEditor = new Ext.ux.AceEditor({
-        id: 'macroTxt',
-        name: 'macroTxt',
-        readOnly: !viewConfig.allowEdits,
-        flex: 1,
-        value: getSetting().getAttribute("Macros"),
-        annotations: annotations
-    });
-
-    var macrosWin = new Ext.Window({
-        layout: {
-            type: 'vbox',
-            align: 'stretch'
-        },
-        tools: [],
-        modal: true,
-        stateful: is_editor && (!is_embed),
-        stateId: "macros_window",
-        width: Math.min(Ext.getBody().getViewSize().width, 540),
-        height: Math.min(Ext.getBody().getViewSize().height, 450),
-        title: getText("模型宏"),
-        resizable: true,
-        maximizable: true,
-        closeAction: 'destroy',
-        plain: true,
-        items: [
-            equationEditor,
-
-            {
-                xtype: "box",
-                padding: 8,
-                style: {
-                    "border-top": "solid 1px lightgrey"
-                },
-                html: "<b>" + getText('示例宏') + "</b><br>g <- {9.80665 meters/seconds^2} # 自定义变量<br/>TemperatureFtoC(f) <- (f+32)*5/9 # 自定义函数<br/>"
-            }
-        ],
-
-        buttons: [{
-                scale: "large",
-                glyph: 0xf05c,
-                text: getText('取消'),
-                handler: function() {
-                    macrosWin.close();
-                }
-            }, {
-                glyph: 0xf00c,
-                scale: "large",
-                text: getText('应用'),
-                handler: function() {
-
-                    graph.getModel().beginUpdate();
-
-                    var edit = new mxCellAttributeChange(
-                        getSetting(), "Macros", Ext.getCmp('macroTxt').getValue());
-                    graph.getModel().execute(edit);
-
-                    graph.getModel().endUpdate();
-
-                    macrosWin.close();
-
-                }
-            }
-
-        ]
-    });
-
-    macrosWin.show();
-
-    equationEditor.focus(true, true);
-    equationEditor.editor.focus();
-    setTimeout(function() {
-        equationEditor.editor.focus();
-    }, 200);
-};
-
-var scratchpadFn = function() {
-    if (scratchPadStatus == "shown") {
-        Ext.get("mainGraph").setDisplayed("none");
-        scratchPadStatus = "hidden";
-    } else if (scratchPadStatus == "hidden") {
-        Ext.get("mainGraph").setDisplayed("block");
-        scratchPadStatus = "shown";
-    } else {
-        Ext.get("mainGraph").setDisplayed("block");
-        Scratchpad($('#mainGraph'));
-        scratchPadStatus = "shown";
-    }
-    ribbonPanel.down("#scratchpad").setChecked(scratchPadStatus == "shown");
-};
-
-var editActions = [];
-
-editActions.copy = {
-    hidden: is_ebook,
-    itemId: 'copy',
-    text: getText('复制'),
-    glyph: 0xf0c5,
-    tooltip: getText('复制') + ' ' + cmd("C"),
-    handler: function() {
-        mxClipboard.copy(graph);
-        clipboardListener();
-    },
-    scope: this
-};
-
-editActions.cut = {
-    hidden: is_ebook,
-    itemId: 'cut',
-    text: getText('剪切'),
-    glyph: 0xf0c4,
-    tooltip: getText('剪切') + ' ' + cmd("X"),
-    handler: function() {
-        mxClipboard.cut(graph);
-
-        clipboardListener();
-
-    },
-    scope: this
-};
-
-editActions.paste = {
-    hidden: is_ebook,
-    text: getText('粘贴'),
-    glyph: 0xf0ea,
-    tooltip: getText('粘贴') + ' ' + cmd("V"),
-    itemId: 'paste',
-    handler: function() {
-        mxClipboard.paste(graph);
-
-        clipboardListener();
-
-    },
-    scope: this
-};
-
-editActions["delete"] = {
-    itemId: 'delete',
-    text: getText('删除'),
-    glyph: 0xf00d,
-    tooltip: getText('删除图元'),
-    handler: function() {
-        graph.removeCells(graph.getSelectionCells(), false);
-    },
-    scope: this
-};
-
 var sizeCombo;
 var fontCombo;
 var RibbonPanel = function(graph, mainPanel, configPanel) {
@@ -228,23 +36,22 @@ var RibbonPanel = function(graph, mainPanel, configPanel) {
             handler: function(cm, color) {
                 if (typeof(color) == "string") {
 
-                    graph.getModel().beginUpdate();
-                    graph.setCellStyles(mxConstants.STYLE_FILLCOLOR, '#' + color, excludeType(graph.getSelectionCells(), "Ghost"));
-                    var p = graph.getSelectionCells(),
-                        cells = [];
-                    for (var i = 0; i < p.length; i++) {
-                        if (p[i].value.nodeName == "Link" || p[i].value.nodeName == "Flow") {
-                            cells.push(p[i]);
+                    modelTransaction(function() {
+                        graph.setCellStyles(mxConstants.STYLE_FILLCOLOR, '#' + color, excludeType(graph.getSelectionCells(), "Ghost"));
+                        var p = graph.getSelectionCells(),
+                            cells = [];
+                        for (var i = 0; i < p.length; i++) {
+                            if (p[i].value.nodeName == "Link" || p[i].value.nodeName == "Flow") {
+                                cells.push(p[i]);
+                            }
                         }
-                    }
-                    graph.setCellStyles(mxConstants.STYLE_LABEL_BACKGROUNDCOLOR, '#' + color, cells, excludeType(graph.getSelectionCells(), "Ghost"));
+                        graph.setCellStyles(mxConstants.STYLE_LABEL_BACKGROUNDCOLOR, '#' + color, cells, excludeType(graph.getSelectionCells(), "Ghost"));
 
-                    if (graph.isSelectionEmpty()) {
-                        graph.getModel().execute(new mxCellAttributeChange(getSetting(), "BackgroundColor", '#' + color));
-                        loadBackgroundColor();
-                    }
-
-                    graph.getModel().endUpdate();
+                        if (graph.isSelectionEmpty()) {
+                            graph.getModel().execute(new mxCellAttributeChange(getSetting(), "BackgroundColor", '#' + color));
+                            loadBackgroundColor();
+                        }
+                    });
 
                     if (document.activeElement && document.activeElement.blur) {
                         document.activeElement.blur()
@@ -256,48 +63,46 @@ var RibbonPanel = function(graph, mainPanel, configPanel) {
         {
             text: getText("自定义颜色") + "...",
             handler: customColor(function(color) {
-                graph.getModel().beginUpdate();
-                graph.setCellStyles(mxConstants.STYLE_FILLCOLOR, color, excludeType(graph.getSelectionCells(), "Ghost"));
-                var p = graph.getSelectionCells(),
-                    cells = [];
-                for (var i = 0; i < p.length; i++) {
-                    if (p[i].value.nodeName == "Link" || p[i].value.nodeName == "Flow") {
-                        cells.push(p[i]);
+                modelTransaction(function() {
+                    graph.setCellStyles(mxConstants.STYLE_FILLCOLOR, color, excludeType(graph.getSelectionCells(), "Ghost"));
+                    var p = graph.getSelectionCells(),
+                        cells = [];
+                    for (var i = 0; i < p.length; i++) {
+                        if (p[i].value.nodeName == "Link" || p[i].value.nodeName == "Flow") {
+                            cells.push(p[i]);
+                        }
                     }
-                }
-                graph.setCellStyles(mxConstants.STYLE_LABEL_BACKGROUNDCOLOR, color, cells, excludeType(graph.getSelectionCells(), "Ghost"));
+                    graph.setCellStyles(mxConstants.STYLE_LABEL_BACKGROUNDCOLOR, color, cells, excludeType(graph.getSelectionCells(), "Ghost"));
 
-                if (graph.isSelectionEmpty()) {
-                    graph.getModel().execute(new mxCellAttributeChange(getSetting(), "BackgroundColor", color));
-                    loadBackgroundColor();
-                }
-
-                graph.getModel().endUpdate();
+                    if (graph.isSelectionEmpty()) {
+                        graph.getModel().execute(new mxCellAttributeChange(getSetting(), "BackgroundColor", color));
+                        loadBackgroundColor();
+                    }
+                });
             })
         },
         {
             text: getText('没有填充颜色'),
             handler: function() {
 
-                graph.getModel().beginUpdate();
-                graph.setCellStyles(mxConstants.STYLE_FILLCOLOR, mxConstants.NONE, excludeType(graph.getSelectionCells(), "Ghost"));
-                var p = graph.getSelectionCells(),
-                    cells = [];
-                for (var i = 0; i < p.length; i++) {
-                    if (p[i].value.nodeName == "Link" || p[i].value.nodeName == "Flow") {
-                        cells.push(p[i]);
+                modelTransaction(function() {
+                    graph.setCellStyles(mxConstants.STYLE_FILLCOLOR, mxConstants.NONE, excludeType(graph.getSelectionCells(), "Ghost"));
+                    var p = graph.getSelectionCells(),
+                        cells = [];
+                    for (var i = 0; i < p.length; i++) {
+                        if (p[i].value.nodeName == "Link" || p[i].value.nodeName == "Flow") {
+                            cells.push(p[i]);
+                        }
                     }
-                }
-                graph.setCellStyles(mxConstants.STYLE_LABEL_BACKGROUNDCOLOR, mxConstants.NONE, cells, excludeType(graph.getSelectionCells(), "Ghost"));
+                    graph.setCellStyles(mxConstants.STYLE_LABEL_BACKGROUNDCOLOR, mxConstants.NONE, cells, excludeType(graph.getSelectionCells(), "Ghost"));
 
-                if (graph.isSelectionEmpty()) {
+                    if (graph.isSelectionEmpty()) {
 
-                    graph.getModel().execute(new mxCellAttributeChange(getSetting(), "BackgroundColor", "white"));
-                    loadBackgroundColor();
+                        graph.getModel().execute(new mxCellAttributeChange(getSetting(), "BackgroundColor", "white"));
+                        loadBackgroundColor();
 
-                }
-
-                graph.getModel().endUpdate();
+                    }
+                });
             }
         },
         "-",
@@ -306,66 +111,57 @@ var RibbonPanel = function(graph, mainPanel, configPanel) {
             menu: [{
                     text: getText('长方形'),
                     handler: function() {
-                        graph.setCellStyles(mxConstants.STYLE_SHAPE, mxConstants.SHAPE_RECTANGLE, excludeType(graph.getSelectionCells(), ["Ghost", "Flow", "Link", "Transition"]));
-                        graph.setCellStyles(mxConstants.STYLE_PERIMETER, mxConstants.PERIMETER_RECTANGLE, excludeType(graph.getSelectionCells(), ["Ghost", "Flow", "Link", "Transition"]));
+                        setCellShape(mxConstants.SHAPE_RECTANGLE, mxConstants.PERIMETER_RECTANGLE, excludeType(graph.getSelectionCells(), ["Ghost", "Flow", "Link", "Transition"]));
                     }
                 },
                 {
                     text: getText('椭圆'),
                     handler: function() {
-                        graph.setCellStyles(mxConstants.STYLE_SHAPE, mxConstants.SHAPE_ELLIPSE, excludeType(graph.getSelectionCells(), ["Ghost", "Flow", "Link", "Transition"]));
-                        graph.setCellStyles(mxConstants.STYLE_PERIMETER, mxConstants.PERIMETER_ELLIPSE, excludeType(graph.getSelectionCells(), ["Ghost", "Flow", "Link", "Transition"]));
+                        setCellShape(mxConstants.SHAPE_ELLIPSE, mxConstants.PERIMETER_ELLIPSE, excludeType(graph.getSelectionCells(), ["Ghost", "Flow", "Link", "Transition"]));
                     }
                 },
                 {
                     text: getText('圆柱'),
                     handler: function() {
-                        graph.setCellStyles(mxConstants.STYLE_SHAPE, mxConstants.SHAPE_CYLINDER, excludeType(graph.getSelectionCells(), ["Ghost", "Flow", "Link", "Transition"]));
-                        graph.setCellStyles(mxConstants.STYLE_PERIMETER, mxConstants.PERIMETER_RECTANGLE, excludeType(graph.getSelectionCells(), ["Ghost", "Flow", "Link", "Transition"]));
+                        setCellShape(mxConstants.SHAPE_CYLINDER, mxConstants.PERIMETER_RECTANGLE, excludeType(graph.getSelectionCells(), ["Ghost", "Flow", "Link", "Transition"]));
                     }
                 },
 
                 {
                     text: getText('云状'),
                     handler: function() {
-                        graph.setCellStyles(mxConstants.STYLE_SHAPE, mxConstants.SHAPE_CLOUD, excludeType(graph.getSelectionCells(), ["Ghost", "Flow", "Link", "Transition"]));
-                        graph.setCellStyles(mxConstants.STYLE_PERIMETER, mxConstants.PERIMETER_RECTANGLE, excludeType(graph.getSelectionCells(), ["Ghost", "Flow", "Link", "Transition"]));
+                        setCellShape(mxConstants.SHAPE_CLOUD, mxConstants.PERIMETER_RECTANGLE, excludeType(graph.getSelectionCells(), ["Ghost", "Flow", "Link", "Transition"]));
                     }
                 },
 
                 /*{
                 	text: getText('Actor'),
                 	handler: function() {
-                		graph.setCellStyles(mxConstants.STYLE_SHAPE, mxConstants.SHAPE_ACTOR, excludeType(graph.getSelectionCells(), "Ghost"));
-                		graph.setCellStyles(mxConstants.STYLE_PERIMETER, mxConstants.PERIMETER_RECTANGLE, excludeType(graph.getSelectionCells(), "Ghost"));
+                		setCellShape(mxConstants.SHAPE_ACTOR, mxConstants.PERIMETER_RECTANGLE, excludeType(graph.getSelectionCells(), "Ghost"));
                 	}
                 },
                 {
                 	text: getText('Arrow'),
                 	handler: function() {
-                		graph.setCellStyles(mxConstants.STYLE_SHAPE, mxConstants.SHAPE_ARROW, excludeType(graph.getSelectionCells(), "Ghost"));
-                		graph.setCellStyles(mxConstants.STYLE_PERIMETER, mxConstants.PERIMETER_RECTANGLE, excludeType(graph.getSelectionCells(), "Ghost"));
+                		setCellShape(mxConstants.SHAPE_ARROW, mxConstants.PERIMETER_RECTANGLE, excludeType(graph.getSelectionCells(), "Ghost"));
                 	}
                 },*/
                 {
                     text: getText('六边形'),
                     handler: function() {
-                        graph.setCellStyles(mxConstants.STYLE_SHAPE, mxConstants.SHAPE_HEXAGON, excludeType(graph.getSelectionCells(), ["Ghost", "Flow", "Link", "Transition"]));
-                        graph.setCellStyles(mxConstants.STYLE_PERIMETER, mxConstants.PERIMETER_HEXAGON, excludeType(graph.getSelectionCells(), ["Ghost", "Flow", "Link", "Transition"]));
+                        setCellShape(mxConstants.SHAPE_HEXAGON, mxConstants.PERIMETER_HEXAGON, excludeType(graph.getSelectionCells(), ["Ghost", "Flow", "Link", "Transition"]));
                     }
                 },
                 {
                     text: getText('菱形'),
                     handler: function() {
-                        graph.setCellStyles(mxConstants.STYLE_SHAPE, mxConstants.SHAPE_RHOMBUS, excludeType(graph.getSelectionCells(), ["Ghost", "Flow", "Link", "Transition"]));
-                        graph.setCellStyles(mxConstants.STYLE_PERIMETER, mxConstants.PERIMETER_RHOMBUS, excludeType(graph.getSelectionCells(), ["Ghost", "Flow", "Link", "Transition"]));
+                        setCellShape(mxConstants.SHAPE_RHOMBUS, mxConstants.PERIMETER_RHOMBUS, excludeType(graph.getSelectionCells(), ["Ghost", "Flow", "Link", "Transition"]));
                     }
                 },
                 {
                     text: getText('三角形'),
                     handler: function() {
-                        graph.setCellStyles(mxConstants.STYLE_SHAPE, mxConstants.SHAPE_TRIANGLE, excludeType(graph.getSelectionCells(), ["Ghost", "Flow", "Link", "Transition"]));
-                        graph.setCellStyles(mxConstants.STYLE_PERIMETER, mxConstants.PERIMETER_TRIANGLE, excludeType(graph.getSelectionCells(), ["Ghost", "Flow", "Link", "Transition"]));
+                        setCellShape(mxConstants.SHAPE_TRIANGLE, mxConstants.PERIMETER_TRIANGLE, excludeType(graph.getSelectionCells(), ["Ghost", "Flow", "Link", "Transition"]));
                     }
                 }
             ]
@@ -384,15 +180,6 @@ var RibbonPanel = function(graph, mainPanel, configPanel) {
             }
         }
     ];
-
-
-    function customColor(fn) {
-        return function() {
-            getCustomColor(function(col) {
-                fn(col);
-            });
-        }
-    }
 
     var fontColorMenu = [{
             xtype: 'colorpicker',
@@ -416,54 +203,12 @@ var RibbonPanel = function(graph, mainPanel, configPanel) {
 
     var widthMenu = [];
 
-    function widthItem(size) {
-        widthMenu.push({
-            text: getText('宽度: %s', size),
-            handler: function() {
-                graph.setCellStyles(mxConstants.STYLE_STROKEWIDTH, size, excludeType(graph.getSelectionCells(), "Ghost"));
-                graph.setCellStyles(mxConstants.ARROW_SIZE, size * 10, excludeType(graph.getSelectionCells(), "Ghost"));
-            }
-        });
-    }
     for (var i = 1; i <= 10; i++) {
-        widthItem(i);
+        widthItem(i, widthMenu);
     }
     for (var i = 15; i <= 50; i += 5) {
-        widthItem(i);
+        widthItem(i, widthMenu);
     }
-
-    function capMenu(start) {
-
-        function createSetter(val) {
-            return function() {
-                if (start) {
-                    graph.setCellStyles(mxConstants.STYLE_STARTARROW, val, excludeType(graph.getSelectionCells(), "Ghost"));
-                } else {
-                    graph.setCellStyles(mxConstants.STYLE_ENDARROW, val, excludeType(graph.getSelectionCells(), "Ghost"));
-                }
-            }
-        }
-        var items = [
-            ["无", mxConstants.NONE],
-            '-', ["常规箭头", mxConstants.ARROW_CLASSIC],
-            ["块箭头", mxConstants.ARROW_BLOCK],
-            ["打开箭头", mxConstants.ARROW_OPEN],
-            ["菱形", mxConstants.ARROW_DIAMOND],
-            ["瘦菱形", mxConstants.ARROW_DIAMOND_THIN],
-            ["椭圆", mxConstants.ARROW_OVAL]
-        ];
-
-        for (var i = 0; i < items.length; i++) {
-            if (items[i] !== "-") {
-                items[i] = {
-                    text: items[i][0],
-                    handler: createSetter(items[i][1])
-                }
-            }
-        }
-        return items;
-    }
-
 
     var lineColorMenu = [{
             xtype: 'colorpicker',
@@ -776,7 +521,7 @@ var RibbonPanel = function(graph, mainPanel, configPanel) {
             glyph: 0xf032,
             tooltip: getText('粗体') + ' ' + cmd("B"),
             handler: function() {
-                graph.toggleCellStyleFlags(mxConstants.STYLE_FONTSTYLE, mxConstants.FONT_BOLD, excludeType(graph.getSelectionCells(), "Ghost"));
+                toggleFontBold(excludeType(graph.getSelectionCells(), "Ghost"));
                 setStyles();
             },
             scope: this
@@ -787,7 +532,7 @@ var RibbonPanel = function(graph, mainPanel, configPanel) {
             tooltip: getText('斜体') + ' ' + cmd("I"),
             glyph: 0xf033,
             handler: function() {
-                graph.toggleCellStyleFlags(mxConstants.STYLE_FONTSTYLE, mxConstants.FONT_ITALIC, excludeType(graph.getSelectionCells(), "Ghost"));
+                toggleFontItalic(excludeType(graph.getSelectionCells(), "Ghost"));
                 setStyles();
             },
             scope: this
@@ -798,7 +543,7 @@ var RibbonPanel = function(graph, mainPanel, configPanel) {
             tooltip: getText('下划线') + ' ' + cmd("U"),
             glyph: 0xf0cd,
             handler: function() {
-                graph.toggleCellStyleFlags(mxConstants.STYLE_FONTSTYLE, mxConstants.FONT_UNDERLINE, excludeType(graph.getSelectionCells(), "Ghost"));
+                toggleFontUnderline(excludeType(graph.getSelectionCells(), "Ghost"));
                 setStyles();
             },
             scope: this
@@ -814,21 +559,21 @@ var RibbonPanel = function(graph, mainPanel, configPanel) {
                     scope: this,
                     iconCls: 'left-icon',
                     handler: function() {
-                        graph.setCellStyles(mxConstants.STYLE_ALIGN, mxConstants.ALIGN_LEFT, excludeType(graph.getSelectionCells(), "Ghost"));
+                        setCellAlignment(excludeType(graph.getSelectionCells(), "Ghost"), mxConstants.ALIGN_LEFT);
                     }
                 }, {
                     text: getText('居中'),
                     scope: this,
                     iconCls: 'center-icon',
                     handler: function() {
-                        graph.setCellStyles(mxConstants.STYLE_ALIGN, mxConstants.ALIGN_CENTER, excludeType(graph.getSelectionCells(), "Ghost"));
+                        setCellAlignment(excludeType(graph.getSelectionCells(), "Ghost"), mxConstants.ALIGN_CENTER);
                     }
                 }, {
                     text: getText('右对齐'),
                     scope: this,
                     iconCls: 'right-icon',
                     handler: function() {
-                        graph.setCellStyles(mxConstants.STYLE_ALIGN, mxConstants.ALIGN_RIGHT, excludeType(graph.getSelectionCells(), "Ghost"));
+                        setCellAlignment(excludeType(graph.getSelectionCells(), "Ghost"), mxConstants.ALIGN_RIGHT);
                     }
                 }, '-', {
                     text: getText('位置中间'),
@@ -836,15 +581,14 @@ var RibbonPanel = function(graph, mainPanel, configPanel) {
                     iconCls: 'middle-icon',
                     handler: function() {
                         var cells = excludeType(getSelected(), "Ghost");
-                        graph.getModel().beginUpdate();
-                        for (var i = 0; i < cells.length; i++) {
-                            if (isDefined(cells[i].getAttribute("LabelPosition"))) {
-                                var edit = new mxCellAttributeChange(cells[i], "LabelPosition", "Middle");
-                                graph.getModel().execute(edit);
-                                setLabelPosition(cells[i]);
+                        modelTransaction(function() {
+                            for (var i = 0; i < cells.length; i++) {
+                                if (isDefined(cells[i].getAttribute("LabelPosition"))) {
+                                    graph.getModel().execute(new mxCellAttributeChange(cells[i], "LabelPosition", "Middle"));
+                                    setLabelPosition(cells[i]);
+                                }
                             }
-                        }
-                        graph.getModel().endUpdate();
+                        });
 
                     }
                 }, {
@@ -854,15 +598,14 @@ var RibbonPanel = function(graph, mainPanel, configPanel) {
                     iconCls: 'top-icon',
                     handler: function() {
                         var cells = excludeType(getSelected(), "Ghost");
-                        graph.getModel().beginUpdate();
-                        for (var i = 0; i < cells.length; i++) {
-                            if (isDefined(cells[i].getAttribute("LabelPosition"))) {
-                                var edit = new mxCellAttributeChange(cells[i], "LabelPosition", "Top");
-                                graph.getModel().execute(edit);
-                                setLabelPosition(cells[i]);
+                        modelTransaction(function() {
+                            for (var i = 0; i < cells.length; i++) {
+                                if (isDefined(cells[i].getAttribute("LabelPosition"))) {
+                                    graph.getModel().execute(new mxCellAttributeChange(cells[i], "LabelPosition", "Top"));
+                                    setLabelPosition(cells[i]);
+                                }
                             }
-                        }
-                        graph.getModel().endUpdate();
+                        });
 
                     }
                 }, {
@@ -871,15 +614,14 @@ var RibbonPanel = function(graph, mainPanel, configPanel) {
                     iconCls: 'left-icon',
                     handler: function() {
                         var cells = excludeType(getSelected(), "Ghost");
-                        graph.getModel().beginUpdate();
-                        for (var i = 0; i < cells.length; i++) {
-                            if (isDefined(cells[i].getAttribute("LabelPosition"))) {
-                                var edit = new mxCellAttributeChange(cells[i], "LabelPosition", "Right");
-                                graph.getModel().execute(edit);
-                                setLabelPosition(cells[i]);
+                        modelTransaction(function() {
+                            for (var i = 0; i < cells.length; i++) {
+                                if (isDefined(cells[i].getAttribute("LabelPosition"))) {
+                                    graph.getModel().execute(new mxCellAttributeChange(cells[i], "LabelPosition", "Right"));
+                                    setLabelPosition(cells[i]);
+                                }
                             }
-                        }
-                        graph.getModel().endUpdate();
+                        });
 
                     }
                 }, {
@@ -888,15 +630,14 @@ var RibbonPanel = function(graph, mainPanel, configPanel) {
                     iconCls: 'bottom-icon',
                     handler: function() {
                         var cells = excludeType(getSelected(), "Ghost");
-                        graph.getModel().beginUpdate();
-                        for (var i = 0; i < cells.length; i++) {
-                            if (isDefined(cells[i].getAttribute("LabelPosition"))) {
-                                var edit = new mxCellAttributeChange(cells[i], "LabelPosition", "Bottom");
-                                graph.getModel().execute(edit);
-                                setLabelPosition(cells[i]);
+                        modelTransaction(function() {
+                            for (var i = 0; i < cells.length; i++) {
+                                if (isDefined(cells[i].getAttribute("LabelPosition"))) {
+                                    graph.getModel().execute(new mxCellAttributeChange(cells[i], "LabelPosition", "Bottom"));
+                                    setLabelPosition(cells[i]);
+                                }
                             }
-                        }
-                        graph.getModel().endUpdate();
+                        });
 
                     }
                 }, {
@@ -906,15 +647,14 @@ var RibbonPanel = function(graph, mainPanel, configPanel) {
                     iconCls: 'right-icon',
                     handler: function() {
                         var cells = excludeType(getSelected(), "Ghost");
-                        graph.getModel().beginUpdate();
-                        for (var i = 0; i < cells.length; i++) {
-                            if (isDefined(cells[i].getAttribute("LabelPosition"))) {
-                                var edit = new mxCellAttributeChange(cells[i], "LabelPosition", "Left");
-                                graph.getModel().execute(edit);
-                                setLabelPosition(cells[i]);
+                        modelTransaction(function() {
+                            for (var i = 0; i < cells.length; i++) {
+                                if (isDefined(cells[i].getAttribute("LabelPosition"))) {
+                                    graph.getModel().execute(new mxCellAttributeChange(cells[i], "LabelPosition", "Left"));
+                                    setLabelPosition(cells[i]);
+                                }
                             }
-                        }
-                        graph.getModel().endUpdate();
+                        });
 
                     }
                 }]
@@ -982,18 +722,14 @@ var RibbonPanel = function(graph, mainPanel, configPanel) {
                         iconCls: 'fliph-icon',
                         handler: function() {
                             var cells = excludeType(getSelected(), "Ghost");
-
-                            graph.getModel().beginUpdate();
-
-                            for (var i = 0; i < cells.length; i++) {
-                                if (isDefined(cells[i].getAttribute("FlipHorizontal"))) {
-                                    var edit = new mxCellAttributeChange(cells[i], "FlipHorizontal", !isTrue(cells[i].getAttribute("FlipHorizontal")));
-                                    graph.getModel().execute(edit);
-                                    setPicture(cells[i]);
+                            modelTransaction(function() {
+                                for (var i = 0; i < cells.length; i++) {
+                                    if (isDefined(cells[i].getAttribute("FlipHorizontal"))) {
+                                        graph.getModel().execute(new mxCellAttributeChange(cells[i], "FlipHorizontal", !isTrue(cells[i].getAttribute("FlipHorizontal"))));
+                                        setPicture(cells[i]);
+                                    }
                                 }
-                            }
-
-                            graph.getModel().endUpdate();
+                            });
 
                         },
                         scope: this
@@ -1003,15 +739,14 @@ var RibbonPanel = function(graph, mainPanel, configPanel) {
                         iconCls: 'flipv-icon',
                         handler: function() {
                             var cells = excludeType(getSelected(), "Ghost");
-                            graph.getModel().beginUpdate();
-                            for (var i = 0; i < cells.length; i++) {
-                                if (isDefined(cells[i].getAttribute("FlipVertical"))) {
-                                    var edit = new mxCellAttributeChange(cells[i], "FlipVertical", !isTrue(cells[i].getAttribute("FlipVertical")));
-                                    graph.getModel().execute(edit);
-                                    setPicture(cells[i]);
+                            modelTransaction(function() {
+                                for (var i = 0; i < cells.length; i++) {
+                                    if (isDefined(cells[i].getAttribute("FlipVertical"))) {
+                                        graph.getModel().execute(new mxCellAttributeChange(cells[i], "FlipVertical", !isTrue(cells[i].getAttribute("FlipVertical"))));
+                                        setPicture(cells[i]);
+                                    }
                                 }
-                            }
-                            graph.getModel().endUpdate();
+                            });
 
                         },
                         scope: this

@@ -41,16 +41,14 @@ function saveUnfoldingStatus(config) {
 	var oldUnfolding = unfoldingManager.unfolding;
 	unfoldingManager.unfolding = false;
 
-	graph.getModel().beginUpdate();
-
-	var edit = new mxCellAttributeChange(getSetting(), "unfolding", config.steps);
-	graph.getModel().execute(edit);
-	edit = new mxCellAttributeChange(getSetting(), "unfoldingStatus", config.enabled);
-	graph.getModel().execute(edit);
-	edit = new mxCellAttributeChange(getSetting(), "unfoldingAuto", config.auto);
-	graph.getModel().execute(edit);
-
-	graph.getModel().endUpdate();
+	modelTransaction(function() {
+		var edit = new mxCellAttributeChange(getSetting(), "unfolding", config.steps);
+		graph.getModel().execute(edit);
+		edit = new mxCellAttributeChange(getSetting(), "unfoldingStatus", config.enabled);
+		graph.getModel().execute(edit);
+		edit = new mxCellAttributeChange(getSetting(), "unfoldingAuto", config.auto);
+		graph.getModel().execute(edit);
+	});
 
 
 	unfoldingManager.unfolding = oldUnfolding;
@@ -140,25 +138,29 @@ function executeUnfoldAction(action) {
 	} else if (action.type == "visibility") {
 		lastStepTypes.push("diagram");
 		var data = JSON.parse(action.data)
-		graph.getModel().beginUpdate();
-		var items = findID(data.ids).filter(function(x) {
-			return x !== null
-		});
-		if (items.length == []) {
-			items = findAll();
-		}
-		var ghosts = [];
-		var nonGhosts = [];
-		items.forEach(function(cell) {
-			if (cell.value.nodeName == "Ghost") {
-				ghosts.push(cell)
-			} else {
-				nonGhosts.push(cell);
+		var model = graph.getModel();
+		model.beginUpdate();
+		try {
+			var items = findID(data.ids).filter(function(x) {
+				return x !== null
+			});
+			if (items.length == []) {
+				items = findAll();
 			}
-		})
-		setOpacity(nonGhosts, data.opacity);
-		setOpacity(ghosts, data.opacity * .3);
-		graph.getModel().endUpdate();
+			var ghosts = [];
+			var nonGhosts = [];
+			items.forEach(function(cell) {
+				if (cell.value.nodeName == "Ghost") {
+					ghosts.push(cell)
+				} else {
+					nonGhosts.push(cell);
+				}
+			})
+			setOpacity(nonGhosts, data.opacity);
+			setOpacity(ghosts, data.opacity * .3);
+		} finally {
+			model.endUpdate();
+		}
 	} else if (action.type == "action") {
 		//lastStepTypes.push("diagram")
 		runAction(action.data);

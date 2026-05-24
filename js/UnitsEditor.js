@@ -8,36 +8,15 @@ terms of the Insight Maker Public License.
 
 */
 
-var UnitsEditor = Ext.extend(Ext.form.TextField, {
-	enableKeyEvents: false,
-	selectOnFocus: true,
-	stripCharsRe: /[^A-Za-z 0-9\.\/\(\)\*\^]/g,
-	triggers: {
-		edit: {
-			hideOnReadOnly: false,
-			handler: function() {
-				this.editorWindow = new UnitsWindow({
-					parent: this,
-					units: this.getValue()
-				});
-				this.editorWindow.show();
-			}
+var UnitsEditor = Ext.extend(Ext.form.TextField,
+	createEditorFieldConfig({
+		editorWindowClass: UnitsWindow,
+		stripCharsRe: /[^A-Za-z 0-9\.\/\(\)\*\^]/g,
+		getEditorWindowConfig: function() {
+			return { parent: this, units: this.getValue() };
 		}
-	},
-	listeners: {
-		'keydown': function(field) {
-			field.setEditable(false);
-		},
-		'beforerender': function() {
-			if (this.regex != undefined) {
-				this.validator = function(value) {
-					return this.regex.test(value);
-				};
-			}
-
-		}
-	}
-});
+	})
+);
 
 
 function UnitsWindow(config) {
@@ -179,28 +158,15 @@ function UnitsWindow(config) {
 
 	setupUnits(tree);
 
-	var win = new Ext.Window({
-		title: getText('图元单位'),
-		layout: {
-			type: "vbox",
+	var win = editorWindow(getText('图元单位'), config, [unitsLabel, tree], {
+		stateId: "units_window",
+		layout: "vbox",
+		layoutConfig: { columns: 1 },
+		maxWidth: 560,
+		maxHeight: 400,
+		extra: {
 			align: "stretch"
 		},
-		tools: [],
-		closeAction: 'destroy',
-		border: false,
-		modal: true,
-		resizable: true,
-		maximizable: true,
-		stateful: is_editor && (!is_embed),
-		stateId: "units_window",
-		shadow: true,
-		buttonAlign: 'left',
-		layoutConfig: {
-			columns: 1
-		},
-		width: Math.min(Ext.getBody().getViewSize().width, 560),
-		height: Math.min(Ext.getBody().getViewSize().height, 400),
-		items: [unitsLabel, tree],
 		buttons: [{
 			id: 'units_but',
 			scale: "large",
@@ -337,12 +303,7 @@ function UnitsWindow(config) {
 						newUnits = newUnits + "\n" + store.getAt(i).get("name") + "<>" + store.getAt(i).get("scale") + "<>" + store.getAt(i).get("synonym");
 					}
 
-					graph.getModel().beginUpdate();
-
-					var edit = new mxCellAttributeChange(
-						setting, "Units", newUnits);
-					graph.getModel().execute(edit);
-					graph.getModel().endUpdate();
+					setModelAttribute(setting, "Units", newUnits);
 					setupUnits(tree);
 
 					unitsWin.close();
@@ -353,67 +314,55 @@ function UnitsWindow(config) {
 					grid.getDockedItems()[0].getComponent("removeBut").setDisabled(sm.getCount() < 1);
 				});
 
-				var unitsWin = new Ext.Window({
-					layout: 'fit',
-					modal: true,
-					title: getText("配置自定义单位转换"),
-					width: Math.min(Ext.getBody().getViewSize().width, 530),
-					height: Math.min(Ext.getBody().getViewSize().height, 430),
-					resizable: true,
+				var unitsWin = editorWindow(getText("配置自定义单位转换"), config, [grid], {
+					stateId: "units_convert_window",
+					layout: "fit",
+					maxWidth: 530,
+					maxHeight: 430,
 					closeAction: 'close',
-					closable: false,
-					items: [grid],
+					extra: {
+						closable: false
+					},
 					buttons: [{
 						scale: "large",
 						glyph: 0xf05c,
 						text: getText('取消'),
 						handler: function() {
-							unitsWin.close()
+							var w = this.up('window');
+							if (w) w.close();
 						}
 					}, {
-						scale: "large",
-						glyph: 0xf00c,
-						text: getText('应用'),
-						handler: saveUnits
-					}]
-
+							scale: "large",
+							glyph: 0xf00c,
+							text: getText('应用'),
+							handler: saveUnits
+						}
+					]
 				});
 
 				unitsWin.show();
 			},
 			scope: this
-		}, "->", {
-			scale: "large",
-			glyph: 0xf05c,
-			text: getText('取消'),
-			handler: function() {
-				win.close();
-				if (config.parent != "") {
-					config.parent.resumeEvents();
+		}, "->",
+			editorCancelButton(config),
+			editorApplyButton(config, {
+				getValue: function() { return unitsLabel.getValue(); },
+				saveValue: function(cell, val) {
+					var model = graph.getModel();
+					model.beginUpdate();
+					try {
+						cell.setAttribute("Units", val);
+					} finally {
+						model.endUpdate();
+					}
+				},
+				afterApply: function() {
+					if (Ext.getCmp("equationUnitsBut")) {
+						Ext.getCmp("equationUnitsBut").setText(formatUnitsBut(unitsLabel.getValue()));
+					}
 				}
-			}
-		}, {
-			hidden: !viewConfig.allowEdits,
-			scale: "large",
-			glyph: 0xf00c,
-			text: getText('应用'),
-			handler: function() {;
-				if (config.parent != "") {
-					win.close();
-					editingRecord.set("value", unitsLabel.getValue());
-					saveConfigRecord(editingRecord);
-				} else {
-					graph.getModel().beginUpdate();
-					config.cell.setAttribute("Units", unitsLabel.getValue());
-					graph.getModel().endUpdate();
-					win.close();
-				}
-				if (Ext.getCmp("equationUnitsBut")) {
-					Ext.getCmp("equationUnitsBut").setText(formatUnitsBut(unitsLabel.getValue()));
-				}
-			}
-		}]
-
+			})
+		]
 	});
 
 	me.show = function() {

@@ -293,7 +293,7 @@ function doOptimizer(){
 				}
 				var mySetting = getSetting();
 				
-                graph.getModel().beginUpdate();
+                modelTransaction(function() {
 
                 var edit = new mxCellAttributeChange(mySetting, "OptimizerPrimitives", changePrimitives.join(","));
                 graph.getModel().execute(edit);
@@ -324,7 +324,7 @@ function doOptimizer(){
 				edit = new mxCellAttributeChange(mySetting, "OptimizerGridStore", JSON.stringify(gridData));
                 graph.getModel().execute(edit);
 				
-				graph.getModel().endUpdate();
+                });
 				
 			    optimizerProgress = Ext.MessageBox.show({msg: getText("优化模型..."),icon:'run-icon',width:300, closable:false, modal:true, progress:true, progressText:' '});
 				

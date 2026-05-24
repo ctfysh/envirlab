@@ -568,28 +568,32 @@ function importXMILEFromContent(contents, fileName) {
 				arrify(a.table).forEach(function(table){
 					var d = graph.insertVertex(graph.getDefaultParent(), null, primitiveBank.display.cloneNode(true), 10, 10, 64, 64, "display");
 					d.visible = false;
+				modelTransaction(function() {
 					graph.getModel().execute(new mxCellAttributeChange(d, "name", table._title || "Table"));
 					graph.getModel().execute(new mxCellAttributeChange(d, "AutoAddPrimitives", "false"));
 					graph.getModel().execute(new mxCellAttributeChange(d, "Type", "Tabular"));
 					graph.getModel().execute(new mxCellAttributeChange(d, "Primitives", findItems(arrify(table.item))));
+				});
 				});
 
 				arrify(a.graph).forEach(function(chart){
 					if(chart._type == "time_series" || chart._type == "scatterplot"){
 						var d = graph.insertVertex(graph.getDefaultParent(), null, primitiveBank.display.cloneNode(true), 10, 10, 64, 64, "display");
 						d.visible = false;
-						graph.getModel().execute(new mxCellAttributeChange(d, "name", chart._title || "Chart"));
-						graph.getModel().execute(new mxCellAttributeChange(d, "AutoAddPrimitives", "false"));
-						if(chart._type == "time_series"){
-							graph.getModel().execute(new mxCellAttributeChange(d, "Type", "Time Series"));
-							graph.getModel().execute(new mxCellAttributeChange(d, "xAxis", "Time (%u)"));
-						}
-						if(chart._type == "scatterplot"){
-							graph.getModel().execute(new mxCellAttributeChange(d, "Type", "Scatterplot"));
-							graph.getModel().execute(new mxCellAttributeChange(d, "xAxis", "%o"));
-						}
-						graph.getModel().execute(new mxCellAttributeChange(d, "yAxis", "%o"));
-						graph.getModel().execute(new mxCellAttributeChange(d, "Primitives", findItems(arrify(chart.plot))));
+				modelTransaction(function() {
+					graph.getModel().execute(new mxCellAttributeChange(d, "name", chart._title || "Chart"));
+					graph.getModel().execute(new mxCellAttributeChange(d, "AutoAddPrimitives", "false"));
+					if(chart._type == "time_series"){
+						graph.getModel().execute(new mxCellAttributeChange(d, "Type", "Time Series"));
+						graph.getModel().execute(new mxCellAttributeChange(d, "xAxis", "Time (%u)"));
+					}
+					if(chart._type == "scatterplot"){
+						graph.getModel().execute(new mxCellAttributeChange(d, "Type", "Scatterplot"));
+						graph.getModel().execute(new mxCellAttributeChange(d, "xAxis", "%o"));
+					}
+					graph.getModel().execute(new mxCellAttributeChange(d, "yAxis", "%o"));
+					graph.getModel().execute(new mxCellAttributeChange(d, "Primitives", findItems(arrify(chart.plot))));
+				});
 					}
 				});
 			});

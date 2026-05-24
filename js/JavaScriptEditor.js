@@ -8,37 +8,19 @@ terms of the Insight Maker Public License.
 
 */
 
-var JavaScriptEditor = Ext.extend(Ext.form.field.TextArea, {
-	enableKeyEvents: true,
-	selectOnFocus: true,
-	disableKeyFilter: true,
-	triggers: {
-		edit: {
-			hideOnReadOnly: false,
-			handler: function() {
-				this.editorWindow = new JavaScriptWindow({
-					parent: this,
-					code: this.getValue()
-				});
-				this.editorWindow.show();
-			}
-		}
-	},
-
-	listeners: {
-		'keydown': function(field) {
-			field.setEditable(true);
+var JavaScriptEditor = Ext.extend(Ext.form.field.TextArea,
+	createEditorFieldConfig({
+		editorWindowClass: JavaScriptWindow,
+		enableKeyEvents: true,
+		disableKeyFilter: true,
+		getEditorWindowConfig: function() {
+			return { parent: this, code: this.getValue() };
 		},
-		'beforerender': function() {
-			if (this.regex != undefined) {
-				this.validator = function(value) {
-					return this.regex.test(value);
-				};
-			}
-
+		_onKeyDown: function(field) {
+			field.setEditable(true);
 		}
-	}
-});
+	})
+);
 
 function JavaScriptWindow(config) {
 	var me = this;
@@ -49,66 +31,22 @@ function JavaScriptWindow(config) {
 		value: config.code
 	});
 
-
-	var win = new Ext.Window({
-		title: getText('JavaScript编辑器'),
-		layout: {
-			type: "fit"
-		},
-		tools: [],
-		closeAction: 'destroy',
-		border: false,
-		modal: true,
-		resizable: true,
-		maximizable: true,
-		stateful: is_editor && (!is_embed),
+	var win = editorWindow(getText('JavaScript编辑器'), config, [codeEditor], {
 		stateId: "js_window",
-		shadow: true,
-		buttonAlign: 'right',
-		width: Math.min(Ext.getBody().getViewSize().width, 520),
-		height: Math.min(Ext.getBody().getViewSize().height, 400),
-		items: [codeEditor],
-		buttons: [{
-			scale: "large",
-			glyph: 0xf05c,
-			text: getText('取消'),
-			handler: function() {
-				win.close();
-				if (config.parent != "") {
-					config.parent.resumeEvents();
-				}
-			}
-		}, {
-			scale: "large",
-			glyph: 0xf00c,
-			text: getText('应用'),
-			handler: function() {
-				if (config.parent != "") {
-
-					editingRecord.set("value", codeEditor.getValue());
-					saveConfigRecord(editingRecord);
-
-				} else {
-					graph.getModel().beginUpdate();
-					setNote(config.cell, codeEditor.getValue());
-					graph.getModel().endUpdate();
-					selectionChanged(false);
-				}
-
-
-				win.close();
-
-			}
-		}]
-
+		layout: "fit",
+		buttonAlign: "right",
+		maxWidth: 520,
+		maxHeight: 400,
+		buttons: [
+			editorCancelButton(config),
+			editorApplyButton(config, {
+				getValue: function() { return codeEditor.getValue(); },
+				saveValue: function(cell, val) { setNote(cell, val); }
+			})
+		]
 	});
 
 	me.show = function() {
-		win.show();
-		codeEditor.focus(true, true);
-		codeEditor.editor.focus();
-		setTimeout(function() {
-			codeEditor.editor.focus();
-		}, 100)
+		showAndFocusEditor(win, codeEditor);
 	}
 }

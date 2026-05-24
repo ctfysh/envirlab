@@ -310,8 +310,6 @@ function showArrayWin() {
 			glyph: 0xf00c,
 			text: getText('应用'),
 			handler: function() {
-			    graph.getModel().beginUpdate();
-
 				var data = [];
 				for(var i=0; i<dimensionsStore.count(); i++){
 					var item = dimensionsStore.getAt(i);
@@ -320,10 +318,7 @@ function showArrayWin() {
 						data: item.get("data")
 					})
 				}
-			    var edit = new mxCellAttributeChange(getSetting(), "arrays", JSON.stringify(data));
-				graph.getModel().execute(edit);
-	
-				graph.getModel().endUpdate();
+				setModelAttribute(getSetting(), "arrays", JSON.stringify(data));
 
 
 				win.close();

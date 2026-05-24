@@ -118,22 +118,22 @@ function showFindAndReplace(){
 						showNotification(getText("您必须至少在一个类别中搜索。"), "error", true);
 						return;
 					}
-					graph.getModel().beginUpdate();
-					for(var i = 0; i < items.length; i++){
-						var item = items[i];
-						if(item.isVisible()){
-							if(searchNames && getName(item)){
-								setName(item, getName(item).replace(search, replace));
-							}
-							if(searchNotes && getNote(item)){
-								setNote(item, getNote(item).replace(search, replace));
-							}
-							if(searchValues && getValue(item)){
-								setValue(item, getValue(item).replace(search, replace));
+					modelTransaction(function() {
+						for(var i = 0; i < items.length; i++){
+							var item = items[i];
+							if(item.isVisible()){
+								if(searchNames && getName(item)){
+									setName(item, getName(item).replace(search, replace));
+								}
+								if(searchNotes && getNote(item)){
+									setNote(item, getNote(item).replace(search, replace));
+								}
+								if(searchValues && getValue(item)){
+									setValue(item, getValue(item).replace(search, replace));
+								}
 							}
 						}
-					}
-					graph.getModel().endUpdate();
+					});
 					findAndReplaceWin.hide();
 				}
 	        },{

@@ -141,7 +141,7 @@ var sensitivityController = {}
 					}
 					var mySetting = getSetting();
 
-					graph.getModel().beginUpdate();
+					modelTransaction(function() {
 
 					var edit = new mxCellAttributeChange(
 						mySetting, "SensitivityPrimitives",
@@ -163,7 +163,7 @@ var sensitivityController = {}
 						showRuns);
 					graph.getModel().execute(edit);
 
-					graph.getModel().endUpdate();
+					});
 
 					sensitivityProgress = Ext.MessageBox.show({
 						msg: getText("运行灵敏度分析......"),

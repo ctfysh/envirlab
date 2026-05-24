@@ -112,6 +112,12 @@ XMILE 导入使用 xmldom（已内置于 `js/xmldom.js`）进行解析，输出�
 
 ## 修改记录
 
+### 2026-05-24
+
+- **架构深化第一阶段**：`InsightEditor.js` 中 `main()` 函数拆分为 8 个独立模块（`initGlobals`、`initGraph`、`initGraphUI`、`initMenusAndToolbars`、`initEquationEditor`、`initConfigPanel`、`initUnfoldManager`、`startApp`），主函数缩减 574 行；`ChartRenderer.js` 从 `Results.js` 中拆分（约 1130 行 → 独立的图表渲染模块）；`API.js` 拆分为 19 个按职责划分的子模块（`header.js`、`dialogues.js`、`find.js`、`create.js` 等）；新增 `GraphConfig.js`、`CellIDManager.js`、`ChartUtils.js`、`ContextMenu.js`、`PropertyPanel.js`、`SharedMenuConfig.js`、`EditorBase.js` 等模块。
+- **删除冗余文件**：内联 `TouchConfig.js`、`KeyboardShortcuts.js` 回 `InsightEditor.js`；合并 `HistogramUtils.js` 到 `Results.js`；删除重复的 `GraphHandlers.js`；**删除 `Utilities.js`（1251 行，其中 60+ 个函数与 8 个提取模块完全重复，4 个全局变量重复定义）**，更新 2 个示例页面加载提取模块。
+- **减少耦合**：`RibbonPanel.js` 中 24 个直接 `mxConstants`/`graph.setCellStyles` 调用改为调用 `GraphStyle.js` 包装函数（`setCellShape`、`toggleFontBold`、`toggleFontItalic`、`toggleFontUnderline`、`setCellAlignment`）。
+
 ### 2026-05-21
 
 - **深度汉化第二阶段**：翻译仿真引擎中约 149 处 `"MSG:"` 运行时错误字符串（涉及 `Functions.js`、`calc/functions.js`、`calc/formula.js`、`calc/rand.js`、`calc/units.js`、`Primitives.js`），使用 `getText()` 包裹确保 i18n 一致性；修复 `Primitives.js` 中因汉化导致的断言比较不一致。

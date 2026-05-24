@@ -8,39 +8,19 @@ terms of the Insight Maker Public License.
 
 */
 
-var ConverterEditor = Ext.extend(Ext.form.TextField, {
-	enableKeyEvents: false,
-	selectOnFocus: true,
-	stripCharsRe: /[^0-9\;\,\. \-]/g,
-	triggers: {
-		edit: {
-
-			hideOnReadOnly: false,
-			handler: function() {
-				this.editorWindow = new ConverterWindow({
-					parent: this,
-					oldKeys: this.getValue(),
-					interpolation: graph.getSelectionCell().getAttribute("Interpolation")
-				});
-				this.editorWindow.show();
-			}
+var ConverterEditor = Ext.extend(Ext.form.TextField,
+	createEditorFieldConfig({
+		editorWindowClass: ConverterWindow,
+		stripCharsRe: /[^0-9\;\,\. \-]/g,
+		getEditorWindowConfig: function() {
+			return {
+				parent: this,
+				oldKeys: this.getValue(),
+				interpolation: graph.getSelectionCell().getAttribute("Interpolation")
+			};
 		}
-	},
-
-	listeners: {
-		'keydown': function(field) {
-			field.setEditable(false);
-		},
-		'beforerender': function() {
-			if (this.regex != undefined) {
-				this.validator = function(value) {
-					return this.regex.test(value);
-				};
-			}
-
-		}
-	}
-});
+	})
+);
 
 function ConverterWindow(config) {
 	var me = this;
@@ -245,22 +225,10 @@ function ConverterWindow(config) {
 	});
 
 
-	var win = new Ext.Window({
-		title: getText('转换器数据确定'),
-		layout: 'border',
-		closeAction: 'destroy',
-		tools: [],
-		border: false,
-		stateful: is_editor && (!is_embed),
+	var win = editorWindow(getText('转换器数据确定'), config, [chartPanel, gridPan], {
 		stateId: "converter_window",
-		modal: true,
-		resizable: true,
-		maximizable: true,
-		shadow: true,
-		buttonAlign: 'left',
-		layoutConfig: {
-			columns: 1
-		},
+		maxWidth: 560,
+		maxHeight: 530,
 		listeners: {
 			'afterrender': function() {
 				chart.getEl().on({
@@ -362,11 +330,6 @@ function ConverterWindow(config) {
 				});
 			}
 		},
-		width: Math.min(Ext.getBody().getViewSize().width, 560),
-		height: Math.min(Ext.getBody().getViewSize().height, 530),
-		minWidth: 550,
-		minHeight: 500,
-		items: [chartPanel, gridPan],
 		buttons: [{
 				hidden: !viewConfig.allowEdits,
 				scale: "large",
@@ -383,45 +346,22 @@ function ConverterWindow(config) {
 					unitsWindow.show();
 				}
 			},
-			'->', {
-				scale: "large",
-				glyph: 0xf05c,
-				text: getText('取消'),
-				handler: function() {
-					win.close();
-					if (config.parent != "") {
-						config.parent.resumeEvents();
-					}
-				}
-			}, {
-				hidden: !viewConfig.allowEdits,
-				scale: "large",
-				glyph: 0xf00c,
-				text: getText('应用'),
-				handler: function() {
+			'->',
+			editorCancelButton(config),
+			editorApplyButton(config, {
+				getValue: function() {
 					editor.completeEdit();
-					if (config.parent != "") {
-						editingRecord.set("value", getKeys());
-						saveConfigRecord(editingRecord);
-					} else {
-						graph.getModel().beginUpdate();
-						setValue(cell, getKeys());
-						graph.getModel().endUpdate();
-					}
-
-					win.close();
-
-
+					return getKeys();
+				},
+				saveValue: function(cell, val) { setValue(cell, val); },
+				afterApply: function(config) {
 					if (config.parent != "") {
 						config.parent.resumeEvents();
 						grid.plugins[0].completeEdit();
-					} else {
-						selectionChanged(false);
 					}
 				}
-			}
+			})
 		]
-
 	});
 
 	window.chart = chart;

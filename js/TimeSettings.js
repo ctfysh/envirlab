@@ -191,7 +191,7 @@ function showTimeSettings(config)
 					  );
 					  
 				
-                    graph.getModel().beginUpdate();
+                    modelTransaction(function() {
 					if(config.cell){
 						
 	                    edit = new mxCellAttributeChange(
@@ -240,7 +240,7 @@ function showTimeSettings(config)
 	                    graph.getModel().execute(edit);
 					}
 
-                    graph.getModel().endUpdate();
+                    });
 					
                     configWin.close();
                 }
